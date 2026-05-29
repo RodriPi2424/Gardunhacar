@@ -12,12 +12,35 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
-});
+function getDbConnectionString() {
+  return process.env.DATABASE_URL || process.env.SUPABASE_DB_URL || "";
+}
+
+function createPool() {
+  const connectionString = getDbConnectionString();
+
+  if (!connectionString) {
+    return null;
+  }
+
+  return new Pool({
+    connectionString,
+    ssl: { rejectUnauthorized: false }
+  });
+}
+
+const pool = createPool();
+
+function assertDbConfigured() {
+  if (!pool) {
+    const error = new Error("DATABASE_URL (or SUPABASE_DB_URL) is missing. Create .env from .env.example.");
+    error.statusCode = 500;
+    throw error;
+  }
+}
 
 async function ensureUsersTable() {
+  assertDbConfigured();
   await pool.query(`
     create table if not exists public.users (
       id bigserial primary key,
@@ -52,14 +75,8 @@ app.get("/", (_req, res) => {
 });
 
 app.get("/api/db/health", async (_req, res) => {
-  if (!process.env.DATABASE_URL) {
-    return res.status(500).json({
-      ok: false,
-      message: "DATABASE_URL is missing. Create a .env file from .env.example"
-    });
-  }
-
   try {
+    assertDbConfigured();
     const result = await pool.query("select now() as server_time");
     res.json({ ok: true, serverTime: result.rows[0].server_time });
   } catch (error) {
@@ -73,6 +90,7 @@ app.get("/api/db/health", async (_req, res) => {
 
 app.get("/api/db/tables", async (_req, res) => {
   try {
+    assertDbConfigured();
     const result = await pool.query(`
       select table_schema, table_name
       from information_schema.tables
@@ -89,7 +107,7 @@ app.post("/api/auth/register", async (req, res) => {
   const { name, email, password } = req.body || {};
 
   if (!name || !email || !password) {
-    return res.status(400).json({ ok: false, message: "Nome, email e password são obrigatórios." });
+    return res.status(400).json({ ok: false, message: "Nome, email e password sao obrigatorios." });
   }
 
   if (password.length < 8) {
@@ -105,7 +123,7 @@ app.post("/api/auth/register", async (req, res) => {
     );
 
     if (existing.rowCount > 0) {
-      return res.status(409).json({ ok: false, message: "Este email já está registado." });
+      return res.status(409).json({ ok: false, message: "Este email ja esta registado." });
     }
 
     const passwordHash = hashPassword(password);
