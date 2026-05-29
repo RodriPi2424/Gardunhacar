@@ -1,0 +1,495 @@
+﻿<!DOCTYPE html>
+
+<html lang="pt"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Hanken+Grotesk:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#ffffff",
+                        "on-primary-fixed-variant": "#254b5b",
+                        "primary-container": "#153e4d",
+                        "on-tertiary": "#ffffff",
+                        "background": "#f8f9ff",
+                        "surface-container-high": "#dbe9ff",
+                        "on-surface-variant": "#41484b",
+                        "surface-bright": "#f8f9ff",
+                        "on-primary-fixed": "#001f29",
+                        "surface-tint": "#3e6373",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#c1c7cb",
+                        "error-container": "#ffdad6",
+                        "surface-container-highest": "#d1e4ff",
+                        "inverse-on-surface": "#e9f1ff",
+                        "surface-dim": "#c4dcfd",
+                        "on-secondary-fixed": "#261900",
+                        "inverse-primary": "#a5ccdf",
+                        "surface-container": "#e4efff",
+                        "primary": "#002835",
+                        "on-secondary-fixed-variant": "#5d4200",
+                        "tertiary-container": "#503410",
+                        "on-primary-container": "#83a9bb",
+                        "on-tertiary-fixed-variant": "#5f411c",
+                        "tertiary-fixed-dim": "#eabf8f",
+                        "secondary-fixed": "#ffdea4",
+                        "primary-fixed-dim": "#a5ccdf",
+                        "outline": "#71787c",
+                        "tertiary-fixed": "#ffddba",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed-dim": "#fabd32",
+                        "secondary-container": "#fdbf35",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#d1e4ff",
+                        "inverse-surface": "#19324b",
+                        "surface-container-low": "#eef4ff",
+                        "on-tertiary-container": "#c59c6f",
+                        "on-primary": "#ffffff",
+                        "secondary": "#7b5900",
+                        "primary-fixed": "#c1e8fb",
+                        "on-background": "#011d35",
+                        "on-secondary-container": "#6e4f00",
+                        "surface": "#f8f9ff",
+                        "on-tertiary-fixed": "#2b1700",
+                        "on-surface": "#011d35",
+                        "on-secondary": "#ffffff",
+                        "tertiary": "#371f00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-max": "1280px",
+                        "unit-xs": "4px",
+                        "gutter": "24px",
+                        "margin-desktop": "48px",
+                        "margin-mobile": "16px",
+                        "unit-sm": "8px",
+                        "unit-xl": "40px",
+                        "unit-lg": "24px",
+                        "unit-md": "16px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Manrope"],
+                        "headline-lg-mobile": ["Manrope"],
+                        "headline-lg": ["Manrope"],
+                        "label-sm": ["Hanken Grotesk"],
+                        "body-md": ["Manrope"],
+                        "headline-xl": ["Manrope"],
+                        "headline-md": ["Manrope"],
+                        "label-bold": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-bold": ["14px", {"lineHeight": "20px", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f8f9ff;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="font-body-md text-on-surface">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-on-background border-b border-outline-variant dark:border-on-surface-variant w-full h-16 z-50 sticky top-0" style="background-color: rgb(21, 62, 77); border-color: rgba(255, 255, 255, 0.1);">
+<div class="max-w-container-max mx-auto h-full px-margin-mobile md:px-margin-desktop flex justify-between items-center">
+<div class="flex items-center">
+<a href="index.html">
+<img alt="autenticar" class="h-8 md:h-10 w-auto" src="Logo.png"/>
+</a>
+</div>
+<div class="hidden md:flex items-center gap-unit-xl">
+<nav class="flex gap-unit-lg">
+<a class="transition-colors px-2 py-1 rounded-lg font-label-bold text-label-bold text-white hover:bg-white/10" href="#">Início</a>
+<a class="transition-colors px-2 py-1 rounded-lg font-label-bold text-label-bold text-white hover:bg-white/10" href="#">Comprar</a>
+<a class="transition-colors px-2 py-1 rounded-lg font-label-bold text-label-bold text-white hover:bg-white/10" href="#">Vender</a>
+<a class="transition-colors px-2 py-1 rounded-lg font-label-bold text-label-bold text-white hover:bg-white/10" href="#">Notícias</a>
+</nav>
+<a href="login.html" class="flex items-center gap-unit-sm bg-primary-container text-on-primary-container px-4 py-2 rounded-full cursor-pointer hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined text-[20px]" data-icon="person">person</span>
+<span class="font-label-bold text-label-bold">Entrar / Registar</span>
+</a>
+</div>
+<div class="md:hidden">
+<span class="material-symbols-outlined text-white" data-icon="person">person</span>
+</div>
+</div>
+</header>
+<main class="max-w-[1280px] mx-auto px-margin-mobile md:px-margin-desktop py-unit-xl">
+<!-- Category Header -->
+<header class="mb-unit-xl">
+<h1 class="font-headline-xl text-headline-xl text-primary mb-unit-sm">Carros Familiares</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                Comece a sua jornada na estrada com confiança. Selecionámos veículos económicos, seguros e fáceis de manter, ideais para novos condutores que procuram a sua primeira experiência ao volante.
+            </p>
+</header>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Filter Sidebar -->
+<aside class="md:col-span-3 space-y-unit-lg">
+<div class="bg-surface-container-lowest p-unit-lg rounded-xl shadow-sm border border-outline-variant">
+<h2 class="font-label-bold text-label-bold text-primary mb-unit-md uppercase tracking-wider">Filtros Familiares</h2>
+<!-- Budget Filter -->
+<div class="mb-unit-lg">
+<label class="font-label-bold text-label-bold block mb-unit-sm">Orçamento Máximo</label>
+<select id="budgetFilter" class="w-full bg-surface border border-outline rounded-lg px-unit-md py-unit-sm focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+<option>Até 5.000 €</option>
+<option>Até 7.500 €</option>
+<option>Até 10.000 €</option>
+<option selected="">Até 15.000 €</option>
+</select>
+</div>
+<!-- Transmission -->
+<div class="mb-unit-lg">
+<label class="font-label-bold text-label-bold block mb-unit-sm">Caixa de Velocidades</label>
+<div class="flex flex-wrap gap-2">
+<button class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full text-label-sm font-label-bold cursor-pointer" data-gear="manual" type="button">Manual</button>
+<button class="bg-surface-variant text-on-surface-variant px-3 py-1 rounded-full text-label-sm font-label-bold cursor-pointer hover:bg-outline-variant" data-gear="automatic" type="button">Automática</button>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary py-3 rounded-xl font-label-bold text-label-bold hover:opacity-90 transition-opacity" id="applyFilters" type="button">
+                        Aplicar Filtros
+                    </button>
+</div>
+<div class="bg-secondary-container text-on-secondary-container p-unit-lg rounded-xl">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined" data-icon="verified">verified</span>
+<span class="font-label-bold">Dica de Família</span>
+</div>
+<p class="text-label-sm">Procure sempre carros com histórico de manutenção completo e menos de 100.000km para o seu primeiro veículo.</p>
+</div>
+</aside>
+<!-- Results Grid -->
+<div class="md:col-span-9">
+<section class="mb-unit-xl bg-primary-container text-white p-unit-lg md:p-unit-xl rounded-xl">
+<h2 class="font-headline-lg text-headline-lg mb-unit-lg border-b border-white/20 pb-unit-sm">Guia de Carros Familiares</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- O que verificar? -->
+<div class="space-y-unit-md">
+<div class="flex items-center gap-unit-sm">
+<span class="material-symbols-outlined text-secondary-container" data-icon="fact_check">fact_check</span>
+<h3 class="font-headline-md text-headline-md">O que verificar?</h3>
+</div>
+<ul class="space-y-unit-sm text-body-md opacity-90">
+<li class="flex gap-2"><span class="material-symbols-outlined text-[20px]" data-icon="check_circle">check_circle</span> Estado do motor e mecânica</li>
+<li class="flex gap-2"><span class="material-symbols-outlined text-[20px]" data-icon="check_circle">check_circle</span> Desgaste dos pneus</li>
+<li class="flex gap-2"><span class="material-symbols-outlined text-[20px]" data-icon="check_circle">check_circle</span> Histórico de revisões completo</li>
+<li class="flex gap-2"><span class="material-symbols-outlined text-[20px]" data-icon="check_circle">check_circle</span> Equipamento de segurança funcional</li>
+</ul>
+</div>
+<!-- Custos Ocultos -->
+<div class="space-y-unit-md">
+<div class="flex items-center gap-unit-sm">
+<span class="material-symbols-outlined text-secondary-container" data-icon="payments">payments</span>
+<h3 class="font-headline-md text-headline-md">Custos Ocultos</h3>
+</div>
+<div class="space-y-unit-sm text-body-md opacity-90">
+<p><strong>Seguro:</strong> Crucial para novos condutores.</p>
+<p><strong>Manutenção:</strong> Reserve uma parte do orçamento para imprevistos.</p>
+<p><strong>IUC:</strong> Verifique o valor anual do imposto antes de comprar.</p>
+</div>
+</div>
+<!-- Segurança Primeiro -->
+<div class="space-y-unit-md">
+<div class="flex items-center gap-unit-sm">
+<span class="material-symbols-outlined text-secondary-container" data-icon="security">security</span>
+<h3 class="font-headline-md text-headline-md">Segurança Primeiro</h3>
+</div>
+<p class="text-body-md opacity-90">
+                As classificações <strong>Euro NCAP</strong> são fundamentais. Procure veículos com 4 ou 5 estrelas para garantir a máxima proteção estrutural e assistência eletrónica ao condutor, essenciais para quem está a começar.
+            </p>
+</div>
+</div>
+</section><div class="flex justify-between items-center mb-unit-md">
+<span class="font-label-bold text-on-surface-variant" id="resultsCount">3 veículos encontrados</span>
+<div class="flex items-center gap-2">
+<span class="text-label-sm font-label-bold">Ordenar por:</span>
+<select class="bg-transparent border-none text-primary font-label-bold focus:ring-0">
+<option>Relevância</option>
+<option>Preço mais baixo</option>
+<option>Ano mais recente</option>
+</select>
+</div>
+</div>
+<!-- Vehicle Listing Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
+<!-- Vehicle Card 1 -->
+<article class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(16,42,67,0.08)] group hover:shadow-xl transition-shadow border border-outline-variant vehicle-card" data-price="12450" data-safety="5" data-gear="manual">
+<div class="relative h-56">
+<img class="w-full h-full object-cover" data-alt="A clean, metallic blue compact hatchback parked in a bright, modern architectural setting with soft daylight hitting the side. The car looks pristine and reliable, emphasizing a safe and approachable aesthetic for new drivers. High-quality photography with professional lighting in a light-mode corporate showroom environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEzcZzOW-_e9lptPYidLwLAzZsPbo86K7yss8tDwQ983vL25w3_ceNVcCxlpa3Rj7A3WuDuqf9-Urj8AlF_8_gltxEgeyREyxAEaEC31jywRhZh5A1k7YftxzdsIaF3E2PLqvmH39_UihfhnjHlY_9yQXXu6PNalvHxsMK0TFW7K8ZNCTCyURR-ndofZoDhVk86XwOQSnOACbLEtCpC88PjYIhUaHqCS8r_5VvmXX0V5gfvfHYWyesaQai_MDefa2naCUhDzRxNkI"/>
+<div class="absolute top-3 left-3 bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-label-sm font-bold">
+                                Recomendado
+                            </div>
+</div>
+<div class="p-unit-lg">
+<div class="flex justify-between items-start mb-unit-sm">
+<h3 class="font-headline-md text-headline-md text-primary">Volkswagen Polo 1.0</h3>
+<div class="text-primary font-headline-md">12.450 €</div>
+</div>
+<div class="flex items-center gap-unit-md text-on-surface-variant mb-unit-lg">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]" data-icon="calendar_today">calendar_today</span>
+<span class="text-label-sm">2019</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]" data-icon="speed">speed</span>
+<span class="text-label-sm">45.000 km</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]" data-icon="local_gas_station">local_gas_station</span>
+<span class="text-label-sm">Gasolina</span>
+</div>
+</div>
+<div class="flex gap-unit-sm">
+<button class="flex-1 bg-primary text-on-primary py-2 rounded-lg font-label-bold text-label-bold hover:opacity-90 transition-opacity">Ver Detalhes</button>
+<button class="px-3 border border-primary text-primary rounded-lg hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined align-middle" data-icon="favorite_border">favorite_border</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Vehicle Card 2 -->
+<article class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(16,42,67,0.08)] group hover:shadow-xl transition-shadow border border-outline-variant vehicle-card" data-price="14900" data-safety="5" data-gear="automatic">
+<div class="relative h-56">
+<img class="w-full h-full object-cover" data-alt="A silver modern city car with elegant curves and bright headlights, captured in a clean urban environment during a sunny day. The scene is bright and airy, using a soft cool-grey palette to maintain a premium feel. The lighting is diffused, highlighting the vehicle's safety features and compact design suitable for first-time owners." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNv_jU0eOcNMdbBKGqg83Uu_fJjHCOq9Xn1K1rCDm2rBsisHBZwBOPFuX6CmdcuZ7WHlhLXvtAoTPjuHeTmuzPqerJ3bFxOtQtsUwaJdVHYUDmboc7XUzYt8jrYGTgeFKd2LPWn0-lDkniYi6ds1vsPywnjmZF8RZPEI7ulA5g0E2A1N4aCscjUyXr3rqLEdCnoDpGSadAE8XZS-1CaFOa3Io9dfWrDedxc0sO0mPWeWiGe0K3T3hHDNRjv9YrxQNmzM7BUYCkv90"/>
+</div>
+<div class="p-unit-lg">
+<div class="flex justify-between items-start mb-unit-sm">
+<h3 class="font-headline-md text-headline-md text-primary">Toyota Yaris Hybrid</h3>
+<div class="text-primary font-headline-md">14.900 €</div>
+</div>
+<div class="flex items-center gap-unit-md text-on-surface-variant mb-unit-lg">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]" data-icon="calendar_today">calendar_today</span>
+<span class="text-label-sm">2020</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]" data-icon="speed">speed</span>
+<span class="text-label-sm">32.000 km</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]" data-icon="bolt">bolt</span>
+<span class="text-label-sm">Híbrido</span>
+</div>
+</div>
+<div class="flex gap-unit-sm">
+<button class="flex-1 bg-primary text-on-primary py-2 rounded-lg font-label-bold text-label-bold hover:opacity-90 transition-opacity">Ver Detalhes</button>
+<button class="px-3 border border-primary text-primary rounded-lg hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined align-middle" data-icon="favorite_border">favorite_border</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Vehicle Card 3 -->
+<!-- Vehicle Card 4 -->
+<article class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(16,42,67,0.08)] group hover:shadow-xl transition-shadow border border-outline-variant vehicle-card" data-price="11200" data-safety="4" data-gear="manual">
+<div class="relative h-56">
+<img class="w-full h-full object-cover" data-alt="A dark grey Ford Fiesta showcasing its dynamic design in a contemporary urban square. The lighting is crisp, highlighting the sharp lines and build quality of the car. The aesthetic is corporate and reliable, emphasizing the vehicle's popularity and trusted status as a perfect first car for city driving." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDr72Da2BHe314hDbuF3qyi7FmKbmzu9Z4MoVlwPnfhCrWWwJIhsyaoxiPLDzTj8Zqv829wcREcKrCaLMDjGcWilQ_LPWmBHpQwnyL6bA1K7bEMmSpRCULLbL5Y_CaKeZ0hJ8R4tK-KMR5J4VYRseHBbkVb9k2opM1t1cZBGcRvBdBaemxeaRTkS3eq9OujdhWyO2GU8UfTSeFJ8ExTx_nGeQkSYTzngRWV7dXyPJXk_s0In7Cpw-Sg1LDNOpJR-5vXwDCveB_hK7M"/>
+</div>
+<div class="p-unit-lg">
+<div class="flex justify-between items-start mb-unit-sm">
+<h3 class="font-headline-md text-headline-md text-primary">Ford Fiesta 1.1 Trend</h3>
+<div class="text-primary font-headline-md">11.200 €</div>
+</div>
+<div class="flex items-center gap-unit-md text-on-surface-variant mb-unit-lg">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]" data-icon="calendar_today">calendar_today</span>
+<span class="text-label-sm">2019</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]" data-icon="speed">speed</span>
+<span class="text-label-sm">51.000 km</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]" data-icon="local_gas_station">local_gas_station</span>
+<span class="text-label-sm">Gasolina</span>
+</div>
+</div>
+<div class="flex gap-unit-sm">
+<button class="flex-1 bg-primary text-on-primary py-2 rounded-lg font-label-bold text-label-bold hover:opacity-90 transition-opacity">Ver Detalhes</button>
+<button class="px-3 border border-primary text-primary rounded-lg hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined align-middle" data-icon="favorite_border">favorite_border</span>
+</button>
+</div>
+</div>
+</article>
+</div>
+<!-- Pagination -->
+<div class="mt-unit-xl flex justify-center gap-2">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-primary text-on-primary font-label-bold">1</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-low text-primary font-label-bold hover:bg-surface-container transition-colors">2</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-low text-primary font-label-bold hover:bg-surface-container transition-colors">3</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-low text-primary font-label-bold hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar for Mobile -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-unit-xs pb-safe h-16 bg-surface border-t border-outline-variant shadow-lg rounded-t-xl">
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-sm text-label-sm">Início</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant py-1" href="#">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span class="font-label-sm text-label-sm">Pesquisar</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant py-1" href="#">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+<span class="font-label-sm text-label-sm">Favoritos</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant py-1" href="#">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="font-label-sm text-label-sm">Vender</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant py-1" href="#">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+<span class="font-label-sm text-label-sm">Menu</span>
+</a>
+</nav>
+<!-- Footer Content -->
+<footer class="text-on-surface pb-unit-lg pt-unit-lg px-margin-mobile md:px-margin-desktop text-white" style="background-color: #153E4D; color: #FFFFFF;">
+<div class="max-w-container-max mx-auto grid md:grid-cols-4 gap-unit-lg border-b border-outline-variant/10 pb-unit-lg">
+<div class="md:col-span-1">
+<img alt="autenticar" class="h-10 mb-unit-sm w-auto" src="Logo.png"/>
+<p class="font-body-md text-body-md text-white/80">O seu marketplace de confiança para compra e venda de veículos. Qualidade e transparência em cada quilómetro.</p>
+</div>
+<div class="">
+<h4 class="font-label-bold text-label-bold text-primary mb-unit-sm uppercase tracking-widest !text-white">Veículos</h4>
+<ul class="space-y-1 font-label-sm text-label-sm">
+<li><a class="hover:text-primary text-white/80 hover:text-white" href="#">Carros</a></li>
+<li><a class="hover:text-primary text-white/80 hover:text-white" href="#">Motos</a></li>
+<li><a class="hover:text-primary text-white/80 hover:text-white" href="#">Barcos</a></li>
+<li><a class="hover:text-primary text-white/80 hover:text-white" href="#">Pesados</a></li>
+</ul>
+</div>
+<div class="">
+<h4 class="font-label-bold text-label-bold text-primary mb-unit-sm uppercase tracking-widest !text-white">Empresa</h4>
+<ul class="space-y-1 font-label-sm text-label-sm">
+<li><a class="hover:text-primary text-white/80 hover:text-white" href="#">Sobre Nós</a></li>
+<li><a class="hover:text-primary text-white/80 hover:text-white" href="#">Carreiras</a></li>
+<li><a class="hover:text-primary text-white/80 hover:text-white" href="#">Blog</a></li>
+<li><a class="hover:text-primary text-white/80 hover:text-white" href="#">Notícias</a></li>
+</ul>
+</div>
+<div class="">
+<h4 class="font-label-bold text-label-bold text-primary mb-unit-sm uppercase tracking-widest !text-white">Suporte</h4>
+<ul class="space-y-1 font-label-sm text-label-sm">
+<li><a class="hover:text-primary text-white/80 hover:text-white" href="#">Ajuda</a></li>
+<li><a class="hover:text-primary text-white/80 hover:text-white" href="#">Contactos</a></li>
+<li><a class="hover:text-primary text-white/80 hover:text-white" href="#">Segurança</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-container-max mx-auto pt-unit-sm flex flex-col md:flex-row justify-between items-center gap-unit-sm font-label-sm text-label-sm">
+<div class="flex flex-col md:flex-row justify-between items-center w-full gap-unit-sm">
+<div class="flex flex-col md:flex-row items-center gap-unit-md">
+<p class="font-label-sm text-label-sm text-white/80 !text-white/60">© 2024 autenticar. Todos os direitos reservados.</p>
+<div class="flex gap-unit-lg font-label-sm text-label-sm opacity-80">
+<a class="hover:text-primary !text-white/60 hover:text-white text-white/60" href="#">Privacidade</a>
+<a class="hover:text-primary !text-white/60 hover:text-white text-white/60" href="#">Termos</a>
+<a class="hover:text-primary !text-white/60 hover:text-white text-white/60" href="#">Cookies</a>
+</div>
+</div>
+<div class="flex gap-unit-sm">
+<a class="hover:opacity-100 hover:text-primary text-white/60 hover:text-white" href="#"><span class="material-symbols-outlined">facebook</span></a>
+<a class="hover:opacity-100 hover:text-primary text-white/60 hover:text-white" href="#"><span class="material-symbols-outlined">photo_camera</span></a>
+<a class="hover:opacity-100 hover:text-primary text-white/60 hover:text-white" href="#"><span class="material-symbols-outlined">work</span></a>
+</div>
+</div>
+</div>
+</footer>
+<script>
+  (function () {
+    const budgetFilter = document.getElementById("budgetFilter");
+    const applyButton = document.getElementById("applyFilters");
+    const resultsCount = document.getElementById("resultsCount");
+    const cards = Array.from(document.querySelectorAll(".vehicle-card"));
+    const gearButtons = Array.from(document.querySelectorAll("[data-gear]"));
+
+    let selectedGear = "manual";
+
+    function parseBudget(value) {
+      const match = value.match(/(\d[\d.]*)/);
+      if (!match) return Number.POSITIVE_INFINITY;
+      return Number(match[1].replace(/\./g, ""));
+    }
+
+    function updateGearUI() {
+      gearButtons.forEach((btn) => {
+        const isActive = btn.dataset.gear === selectedGear;
+        btn.classList.toggle("bg-primary-container", isActive);
+        btn.classList.toggle("text-on-primary-container", isActive);
+        btn.classList.toggle("bg-surface-variant", !isActive);
+        btn.classList.toggle("text-on-surface-variant", !isActive);
+      });
+    }
+
+    function applyFilters() {
+      const maxBudget = parseBudget(budgetFilter.value);
+      let visible = 0;
+
+      cards.forEach((card) => {
+        const price = Number(card.dataset.price || 0);
+        const safety = Number(card.dataset.safety || 0);
+        const gear = card.dataset.gear || "";
+
+        const budgetMatch = price <= maxBudget;
+        const gearMatch = gear === selectedGear;
+
+        const safetyMatch = true;
+
+        const show = budgetMatch && safetyMatch && gearMatch;
+        card.style.display = show ? "" : "none";
+        if (show) visible += 1;
+      });
+
+      resultsCount.textContent = visible + " veículos encontrados";
+    }
+
+    gearButtons.forEach((btn) => {
+      btn.addEventListener("click", function () {
+        selectedGear = btn.dataset.gear || selectedGear;
+        updateGearUI();
+      });
+    });
+
+    applyButton.addEventListener("click", applyFilters);
+    updateGearUI();
+    applyFilters();
+  })();
+</script>
+</body></html>
+
+
+
+
+

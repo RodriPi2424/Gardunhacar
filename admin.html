@@ -1,0 +1,461 @@
+﻿<!DOCTYPE html>
+<html lang="pt-PT" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel Admin - Autenticar</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Hanken+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#002835",
+            "primary-container": "#153e4d",
+            "on-primary-container": "#83a9bb",
+            surface: "#f8f9ff",
+            "surface-container-low": "#eef4ff",
+            "surface-container-high": "#dbe9ff",
+            "surface-variant": "#d1e4ff",
+            "on-surface": "#011d35",
+            "on-surface-variant": "#41484b",
+            "outline-variant": "#c1c7cb",
+            error: "#ba1a1a"
+          },
+          spacing: {
+            "unit-lg": "24px",
+            "margin-mobile": "16px",
+            "margin-desktop": "48px",
+            "container-max": "1280px"
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    body {
+      font-family: "Manrope", sans-serif;
+      background-color: #f8f9ff;
+      min-height: 100dvh;
+    }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 12px; }
+    .chip-active { background: #153e4d; color: #fff; border-color: #153e4d; }
+  </style>
+</head>
+<body class="text-on-surface">
+  <header class="bg-surface border-b border-outline-variant fixed top-0 z-40 w-full">
+    <div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop h-16 max-w-container-max mx-auto">
+      <a href="index.html" class="flex items-center gap-3">
+        <img src="logo-new-3.png" alt="Autenticar" class="h-9 w-auto" />
+        <span class="font-bold text-primary text-xl">Autenticar</span>
+      </a>
+      <div class="flex items-center gap-4 md:gap-8">
+        <nav class="hidden md:flex items-center gap-4">
+          <a class="text-primary font-bold px-3 py-2 rounded hover:bg-surface-container-high" href="admin.html">Dashboard</a>
+          <a class="text-on-surface-variant px-3 py-2 rounded hover:bg-surface-container-high" href="admin-importar-carro.html">Estoque</a>
+          <a class="text-on-surface-variant px-3 py-2 rounded hover:bg-surface-container-high" href="#suporte">Leads</a>
+        </nav>
+        <button id="notificationsBtn" class="material-symbols-outlined text-primary p-2 rounded-full hover:bg-surface-container-high" aria-label="Notificações">notifications</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="pt-24 pb-24 md:pb-10 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+    <section class="mb-unit-lg flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div>
+        <span class="text-amber-700 font-bold uppercase tracking-wider text-sm">Visão Geral</span>
+        <h1 class="text-4xl font-extrabold tracking-tight text-on-surface">Painel Admin</h1>
+        <p class="mt-2 text-sm font-semibold text-on-surface-variant" id="dbConnectionStatus">A verificar ligação à base de dados...</p>
+      </div>
+      <div class="flex gap-2">
+        <button id="last30DaysBtn" class="flex items-center gap-2 bg-white border border-outline-variant px-4 py-2 rounded-xl text-primary font-bold hover:bg-surface-container-low">
+          <span class="material-symbols-outlined text-[20px]">calendar_today</span>
+          Últimos 30 dias
+        </button>
+        <button id="exportBtn" class="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl font-bold hover:opacity-90 shadow-md">
+          <span class="material-symbols-outlined text-[20px]">download</span>
+          Relatórios
+        </button>
+      </div>
+    </section>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-unit-lg">
+      <article class="bg-white p-unit-lg rounded-xl shadow-[0_4px_20px_rgba(16,42,67,0.08)] border border-outline-variant">
+        <div class="flex justify-between items-start mb-4">
+          <div class="p-3 bg-surface-container-low rounded-lg"><span class="material-symbols-outlined text-primary">directions_car</span></div>
+          <span class="text-green-700 font-bold text-xs flex items-center bg-green-50 px-2 py-1 rounded-full">+12% <span class="material-symbols-outlined text-[14px]">trending_up</span></span>
+        </div>
+        <p class="text-on-surface-variant font-bold text-sm">Listagens Totais</p>
+        <h2 id="statListings" class="text-4xl font-extrabold text-primary">0</h2>
+      </article>
+
+      <article class="bg-white p-unit-lg rounded-xl shadow-[0_4px_20px_rgba(16,42,67,0.08)] border border-outline-variant">
+        <div class="flex justify-between items-start mb-4">
+          <div class="p-3 bg-surface-container-low rounded-lg"><span class="material-symbols-outlined text-primary">person_search</span></div>
+          <span class="text-green-700 font-bold text-xs flex items-center bg-green-50 px-2 py-1 rounded-full">+5% <span class="material-symbols-outlined text-[14px]">trending_up</span></span>
+        </div>
+        <p class="text-on-surface-variant font-bold text-sm">Leads Ativos</p>
+        <h2 id="statLeads" class="text-4xl font-extrabold text-primary">0</h2>
+      </article>
+
+      <article class="bg-white p-unit-lg rounded-xl shadow-[0_4px_20px_rgba(16,42,67,0.08)] border border-outline-variant">
+        <div class="flex justify-between items-start mb-4">
+          <div class="p-3 bg-surface-container-low rounded-lg"><span class="material-symbols-outlined text-primary">payments</span></div>
+          <span class="text-red-700 font-bold text-xs flex items-center bg-red-50 px-2 py-1 rounded-full">-2% <span class="material-symbols-outlined text-[14px]">trending_down</span></span>
+        </div>
+        <p class="text-on-surface-variant font-bold text-sm">Receita (Este Mês)</p>
+        <h2 id="statRevenue" class="text-4xl font-extrabold text-primary">€0</h2>
+      </article>
+    </section>
+
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div class="lg:col-span-8 bg-white rounded-xl shadow-[0_4px_20px_rgba(16,42,67,0.08)] border border-outline-variant overflow-hidden">
+        <div class="p-6 border-b border-outline-variant flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <h3 class="text-2xl font-bold text-primary">Gestão de Anúncios</h3>
+          <div class="flex items-center gap-2">
+            <button class="status-filter chip-active text-xs px-3 py-1.5 rounded-full border border-outline-variant" data-filter="all">Todos</button>
+            <button class="status-filter text-xs px-3 py-1.5 rounded-full border border-outline-variant" data-filter="pending">Pendentes</button>
+            <button class="status-filter text-xs px-3 py-1.5 rounded-full border border-outline-variant" data-filter="approved">Aprovados</button>
+            <button class="status-filter text-xs px-3 py-1.5 rounded-full border border-outline-variant" data-filter="rejected">Rejeitados</button>
+          </div>
+        </div>
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="w-full text-left border-collapse">
+            <thead class="bg-surface-container-low">
+              <tr>
+                <th class="px-6 py-4 font-bold text-on-surface-variant text-sm">Veículo</th>
+                <th class="px-6 py-4 font-bold text-on-surface-variant text-sm">Data</th>
+                <th class="px-6 py-4 font-bold text-on-surface-variant text-sm">Status</th>
+                <th class="px-6 py-4 font-bold text-on-surface-variant text-sm">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="listingTableBody" class="divide-y divide-outline-variant"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="lg:col-span-4 space-y-6">
+        <section id="suporte" class="bg-white rounded-xl shadow-[0_4px_20px_rgba(16,42,67,0.08)] border border-outline-variant overflow-hidden">
+          <div class="p-6 border-b border-outline-variant bg-red-50">
+            <div class="flex items-center gap-2 text-error">
+              <span class="material-symbols-outlined font-bold">priority_high</span>
+              <h3 class="font-bold uppercase tracking-widest">Suporte Urgente</h3>
+            </div>
+          </div>
+          <div class="p-6 space-y-4">
+            <div class="p-4 rounded-lg bg-surface-container-low border-l-4 border-error">
+              <div class="flex justify-between items-start mb-1">
+                <span class="text-sm font-bold text-primary">ID #8432</span>
+                <span class="text-xs text-on-surface-variant">Há 15 min</span>
+              </div>
+              <p class="text-on-surface font-bold">Erro no upload de fotos</p>
+              <p class="text-on-surface-variant text-sm mt-1">Utilizador: Carlos Mendes</p>
+              <button class="support-action mt-3 text-primary text-sm font-bold flex items-center gap-1" data-ticket="8432">Responder agora <span class="material-symbols-outlined text-[16px]">send</span></button>
+            </div>
+            <div class="p-4 rounded-lg bg-surface-container-low border-l-4 border-amber-500">
+              <div class="flex justify-between items-start mb-1">
+                <span class="text-sm font-bold text-primary">ID #8429</span>
+                <span class="text-xs text-on-surface-variant">Há 1 hora</span>
+              </div>
+              <p class="text-on-surface font-bold">Verificação de conta</p>
+              <p class="text-on-surface-variant text-sm mt-1">Empresa: Auto Luxury LDA</p>
+              <button class="support-action mt-3 text-primary text-sm font-bold flex items-center gap-1" data-ticket="8429">Rever documentos <span class="material-symbols-outlined text-[16px]">description</span></button>
+            </div>
+          </div>
+        </section>
+
+        <section class="bg-white rounded-xl shadow-[0_4px_20px_rgba(16,42,67,0.08)] border border-outline-variant p-6">
+          <h3 class="font-bold text-on-surface-variant text-sm uppercase tracking-widest mb-4">Ações Rápidas</h3>
+          <div class="grid grid-cols-2 gap-3">
+            <a href="admin-importar-carro.html" class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-outline-variant hover:border-primary hover:bg-surface-container-low transition-all group">
+              <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">add_circle</span>
+              <span class="text-sm font-bold text-primary">Novo Anúncio</span>
+            </a>
+            <a href="admin-importar-carro.html" class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-outline-variant hover:border-primary hover:bg-surface-container-low transition-all group">
+              <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">upload_file</span>
+              <span class="text-sm font-bold text-primary">Importar Carro</span>
+            </a>
+            <button id="auditBtn" class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-outline-variant hover:border-primary hover:bg-surface-container-low transition-all group">
+              <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">admin_panel_settings</span>
+              <span class="text-sm font-bold text-primary">Auditar Conta</span>
+            </button>
+            <button id="campaignBtn" class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-outline-variant hover:border-primary hover:bg-surface-container-low transition-all group">
+              <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">campaign</span>
+              <span class="text-sm font-bold text-primary">Promoções</span>
+            </button>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <button id="fabAdd" class="hidden md:flex fixed bottom-8 right-8 bg-primary text-white w-14 h-14 rounded-full items-center justify-center shadow-xl hover:scale-110 active:scale-95 transition-all z-50" aria-label="Adicionar anúncio">
+    <span class="material-symbols-outlined">add</span>
+  </button>
+
+  <nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-surface border-t border-outline-variant shadow-lg">
+    <a href="admin.html" class="flex flex-col items-center justify-center bg-primary-container text-white rounded-full px-4 py-1 scale-90">
+      <span class="material-symbols-outlined">dashboard</span>
+      <span class="text-xs">Dashboard</span>
+    </a>
+    <a href="admin-importar-carro.html" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
+      <span class="material-symbols-outlined">directions_car</span>
+      <span class="text-xs">Estoque</span>
+    </a>
+    <a href="#suporte" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
+      <span class="material-symbols-outlined">person_search</span>
+      <span class="text-xs">Leads</span>
+    </a>
+  </nav>
+
+  <script>
+    const STORAGE_KEY = "autenticar_admin_listings_v1";
+    const defaultListings = [
+      {
+        id: 1,
+        title: "BMW 320i M Sport",
+        subtitle: "2023 • 12.000 km",
+        date: "2023-10-12",
+        status: "pending",
+        price: 37900,
+        image: "https://images.unsplash.com/photo-1553440569-bcc63803a83d?auto=format&fit=crop&w=400&q=80"
+      },
+      {
+        id: 2,
+        title: "Toyota Hilux SRX",
+        subtitle: "2022 • 45.000 km",
+        date: "2023-10-11",
+        status: "approved",
+        price: 42900,
+        image: "https://images.unsplash.com/photo-1542282088-fe8426682b8f?auto=format&fit=crop&w=400&q=80"
+      },
+      {
+        id: 3,
+        title: "Porsche 911 Carrera",
+        subtitle: "2021 • 5.000 km",
+        date: "2023-10-10",
+        status: "rejected",
+        price: 128000,
+        image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=400&q=80"
+      }
+    ];
+
+    const state = {
+      filter: "all",
+      listings: loadListings(),
+      leads: 142
+    };
+
+    function loadListings() {
+      const fromStorage = localStorage.getItem(STORAGE_KEY);
+      if (!fromStorage) return [...defaultListings];
+      try {
+        const parsed = JSON.parse(fromStorage);
+        if (!Array.isArray(parsed) || parsed.length === 0) return [...defaultListings];
+        return parsed;
+      } catch {
+        return [...defaultListings];
+      }
+    }
+
+    function saveListings() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.listings));
+    }
+
+    function formatDate(isoDate) {
+      return new Date(isoDate).toLocaleDateString("pt-PT", { day: "2-digit", month: "short", year: "numeric" });
+    }
+
+    function formatMoney(value) {
+      return new Intl.NumberFormat("pt-PT", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value);
+    }
+
+    function statusBadge(status) {
+      if (status === "approved") return '<span class="px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-bold uppercase tracking-wider">Aprovado</span>';
+      if (status === "rejected") return '<span class="px-3 py-1 rounded-full bg-red-100 text-red-800 text-xs font-bold uppercase tracking-wider">Rejeitado</span>';
+      return '<span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 text-xs font-bold uppercase tracking-wider">Pendente</span>';
+    }
+
+    function filteredListings() {
+      if (state.filter === "all") return state.listings;
+      return state.listings.filter((item) => item.status === state.filter);
+    }
+
+    function renderStats() {
+      const approvedRevenue = state.listings
+        .filter((item) => item.status === "approved")
+        .reduce((total, item) => total + Number(item.price || 0), 0);
+
+      document.getElementById("statListings").textContent = state.listings.length.toLocaleString("pt-PT");
+      document.getElementById("statLeads").textContent = state.leads.toLocaleString("pt-PT");
+      document.getElementById("statRevenue").textContent = formatMoney(approvedRevenue);
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById("listingTableBody");
+      const rows = filteredListings();
+
+      if (rows.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" class="px-6 py-10 text-center text-on-surface-variant">Sem anúncios para este filtro.</td>
+          </tr>`;
+        return;
+      }
+
+      tbody.innerHTML = rows.map((item) => `
+        <tr class="hover:bg-surface-container-lowest transition-colors" data-id="${item.id}">
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-9 bg-surface-variant rounded-md overflow-hidden flex-shrink-0">
+                <img alt="${item.title}" class="w-full h-full object-cover" src="${item.image}" />
+              </div>
+              <div>
+                <p class="font-bold text-primary text-sm">${item.title}</p>
+                <p class="text-on-surface-variant text-xs">${item.subtitle}</p>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4 text-sm text-on-surface-variant">${formatDate(item.date)}</td>
+          <td class="px-6 py-4">${statusBadge(item.status)}</td>
+          <td class="px-6 py-4">
+            <div class="flex gap-2">
+              <button class="action-btn p-2 hover:bg-green-50 text-green-700 rounded-lg material-symbols-outlined" data-action="approve" title="Aprovar">check_circle</button>
+              <button class="action-btn p-2 hover:bg-yellow-50 text-amber-700 rounded-lg material-symbols-outlined" data-action="reject" title="Rejeitar">block</button>
+              <button class="action-btn p-2 hover:bg-surface-container-high text-primary rounded-lg material-symbols-outlined" data-action="edit" title="Editar">edit</button>
+              <button class="action-btn p-2 hover:bg-red-50 text-red-700 rounded-lg material-symbols-outlined" data-action="delete" title="Remover">delete</button>
+            </div>
+          </td>
+        </tr>`).join("");
+    }
+
+    function updateListing(id, updater) {
+      const index = state.listings.findIndex((item) => item.id === id);
+      if (index === -1) return;
+      state.listings[index] = updater({ ...state.listings[index] });
+      saveListings();
+      renderAll();
+    }
+
+    function renderAll() {
+      renderStats();
+      renderTable();
+    }
+
+    function downloadJson(filename, data) {
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    document.addEventListener("click", (event) => {
+      const actionBtn = event.target.closest(".action-btn");
+      if (actionBtn) {
+        const row = actionBtn.closest("tr");
+        const id = Number(row?.dataset.id);
+        const action = actionBtn.dataset.action;
+        if (!id || !action) return;
+
+        if (action === "approve") {
+          updateListing(id, (item) => ({ ...item, status: "approved" }));
+        }
+        if (action === "reject") {
+          updateListing(id, (item) => ({ ...item, status: "rejected" }));
+        }
+        if (action === "edit") {
+          const listing = state.listings.find((item) => item.id === id);
+          if (!listing) return;
+          const newTitle = prompt("Novo título do anúncio:", listing.title);
+          if (!newTitle) return;
+          updateListing(id, (item) => ({ ...item, title: newTitle.trim() }));
+        }
+        if (action === "delete") {
+          const confirmDelete = confirm("Queres remover este anúncio?");
+          if (!confirmDelete) return;
+          state.listings = state.listings.filter((item) => item.id !== id);
+          saveListings();
+          renderAll();
+        }
+      }
+
+      const filterBtn = event.target.closest(".status-filter");
+      if (filterBtn) {
+        document.querySelectorAll(".status-filter").forEach((btn) => btn.classList.remove("chip-active"));
+        filterBtn.classList.add("chip-active");
+        state.filter = filterBtn.dataset.filter || "all";
+        renderTable();
+      }
+    });
+
+    document.getElementById("exportBtn").addEventListener("click", () => {
+      downloadJson("autenticar-relatorio-listagens.json", state.listings);
+    });
+
+    document.getElementById("last30DaysBtn").addEventListener("click", () => {
+      alert("Filtro temporal aplicado: últimos 30 dias.");
+    });
+
+    document.getElementById("notificationsBtn").addEventListener("click", () => {
+      alert("Tens 2 notificações novas de suporte.");
+    });
+
+    document.querySelectorAll(".support-action").forEach((button) => {
+      button.addEventListener("click", () => {
+        const ticket = button.dataset.ticket;
+        alert(`Ticket #${ticket} marcado como em atendimento.`);
+      });
+    });
+
+    document.getElementById("auditBtn").addEventListener("click", () => {
+      alert("Módulo de auditoria em preparação.");
+    });
+
+    document.getElementById("campaignBtn").addEventListener("click", () => {
+      alert("Módulo de promoções em preparação.");
+    });
+
+    document.getElementById("fabAdd").addEventListener("click", () => {
+      window.location.href = "admin-importar-carro.html";
+    });
+
+    (async function checkDbHealth() {
+      const statusEl = document.getElementById("dbConnectionStatus");
+      if (!statusEl) return;
+
+      try {
+        const response = await fetch("/api/db/health");
+        const data = await response.json();
+
+        if (!response.ok || !data.ok) {
+          statusEl.textContent = "Base de dados desligada. Verifica o .env e a string de ligação.";
+          statusEl.classList.add("text-error");
+          return;
+        }
+
+        const date = new Date(data.serverTime).toLocaleString("pt-PT");
+        statusEl.textContent = "Base de dados ligada. Último ping: " + date;
+        statusEl.classList.remove("text-on-surface-variant");
+        statusEl.classList.add("text-green-700");
+      } catch {
+        statusEl.textContent = "Base de dados desligada. Inicia o servidor Node para ativar a API.";
+        statusEl.classList.add("text-error");
+      }
+    })();
+
+    renderAll();
+  </script>
+</body>
+</html>
