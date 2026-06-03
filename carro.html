@@ -228,6 +228,8 @@
       }
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-browser.js"></script>
 </head>
 <body class="text-on-surface overflow-x-hidden">
   <header class="site-header px-4 md:px-8 pt-4 md:pt-6">
@@ -556,8 +558,8 @@
       viewMonth: today.getMonth()
     };
 
-    async function apiFetch(path) {
-      return fetch(`${apiBase}${path}`);
+    async function apiFetch(path, options) {
+      return window.AutenticarApi.fetch(`${apiBase}${path}`, options);
     }
 
     function showState(state, message) {
@@ -1078,7 +1080,7 @@
       setTestDriveFeedback();
 
       try {
-        const response = await fetch(`${apiBase}/api/test-drive-requests`, {
+        const response = await window.AutenticarApi.fetch(`${apiBase}/api/test-drive-requests`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
@@ -1118,3 +1120,6 @@
   </script>
 </body>
 </html>
+
+
+

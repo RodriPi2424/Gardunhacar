@@ -116,6 +116,8 @@
       min-height: max(884px, 100dvh);
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-browser.js"></script>
 </head>
 <body class="font-body-md text-on-surface">
 <!-- TopAppBar -->
@@ -319,7 +321,7 @@
 <script>
   const apiBase = window.location.protocol === "file:" ? "http://127.0.0.1:3000" : "";
   async function apiFetch(path, options) {
-    return fetch(`${apiBase}${path}`, options);
+    return window.AutenticarApi.fetch(`${apiBase}${path}`, options);
   }
 
   (function () {
@@ -404,3 +406,6 @@
   })();
 </script>
 </body></html>
+
+
+

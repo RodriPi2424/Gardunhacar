@@ -1,4 +1,4 @@
-Ôªø<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt">
 <head>
   <meta charset="utf-8"/>
@@ -24,7 +24,7 @@
   <script>
     const apiBase = window.location.protocol === "file:" ? "http://127.0.0.1:3000" : "";
     async function apiFetch(path, options) {
-      return fetch(`${apiBase}${path}`, options);
+      return window.AutenticarApi.fetch(`${apiBase}${path}`, options);
     }
 
     tailwind.config = {
@@ -44,6 +44,8 @@
       }
     };
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-browser.js"></script>
 </head>
 <body class="bg-surface text-on-surface overflow-x-hidden">
   <main class="min-h-[100dvh] relative">
@@ -74,12 +76,12 @@
             </div>
             <div>
               <label class="block text-sm font-semibold mb-2" for="loginPassword">Palavra-passe</label>
-              <input id="loginPassword" type="password" placeholder="‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢" required class="w-full h-12 rounded-lg border border-white/40 bg-white/95 text-on-surface px-4 focus:ring-1 focus:ring-primary focus:border-primary outline-none"/>
+              <input id="loginPassword" type="password" placeholder="ïïïïïïïï" required class="w-full h-12 rounded-lg border border-white/40 bg-white/95 text-on-surface px-4 focus:ring-1 focus:ring-primary focus:border-primary outline-none"/>
             </div>
             <div class="flex items-center justify-between text-sm">
               <label class="flex items-center gap-2 cursor-pointer text-white/85">
                 <input type="checkbox" class="rounded border-white/50 text-primary focus:ring-primary"/>
-                <span>Lembrar sess√£o</span>
+                <span>Lembrar sess„o</span>
               </label>
               <a href="#" class="font-semibold text-white hover:underline">Esqueceu-se?</a>
             </div>
@@ -99,7 +101,7 @@
             </div>
             <div>
               <label class="block text-sm font-semibold mb-2" for="registerPassword">Palavra-passe</label>
-              <input id="registerPassword" type="password" placeholder="m√≠nimo 8 caracteres" class="w-full h-12 rounded-lg border border-white/40 bg-white/95 text-on-surface px-4 focus:ring-1 focus:ring-primary focus:border-primary outline-none"/>
+              <input id="registerPassword" type="password" placeholder="mÌnimo 8 caracteres" class="w-full h-12 rounded-lg border border-white/40 bg-white/95 text-on-surface px-4 focus:ring-1 focus:ring-primary focus:border-primary outline-none"/>
             </div>
             <button type="submit" class="w-full h-12 rounded-lg bg-white text-primary font-extrabold hover:bg-white/90 transition-colors">
               Criar conta
@@ -109,7 +111,7 @@
           <p id="statusMessage" class="text-sm mt-4"></p>
 
             <p class="text-sm text-white/85 mt-5">
-              Ainda n√£o tem conta?
+              Ainda n„o tem conta?
               <a href="#" id="showRegister" class="text-white font-bold hover:underline">Criar conta</a>
             </p>
           </div>
@@ -209,7 +211,7 @@
       const email = document.getElementById("loginEmail").value.trim();
       const password = document.getElementById("loginPassword").value;
 
-      setMessage("A iniciar sess√£o...");
+      setMessage("A iniciar sess„o...");
 
       try {
         const response = await apiFetch("/api/auth/login", {
@@ -221,7 +223,7 @@
         const data = await response.json();
 
         if (!response.ok || !data.ok) {
-          setMessage(data.message || "N√£o foi poss√≠vel iniciar sess√£o.", "error");
+          setMessage(data.message || "N„o foi possÌvel iniciar sess„o.", "error");
           return;
         }
 
@@ -232,14 +234,14 @@
           localStorage.setItem("autenticar_user_v1", JSON.stringify(data.user));
         }
 
-        setMessage("Sess√£o iniciada com sucesso. A redirecionar...", "success");
+        setMessage("Sess„o iniciada com sucesso. A redirecionar...", "success");
         setTimeout(async () => {
           const params = new URLSearchParams(window.location.search);
           const next = params.get("next");
           await routeBySession(data.session, next);
         }, 700);
       } catch (_err) {
-        setMessage("Erro de liga√ß√£o ao servidor.", "error");
+        setMessage("Erro de ligaÁ„o ao servidor.", "error");
       }
     });
 
@@ -262,14 +264,14 @@
         const data = await response.json();
 
         if (!response.ok || !data.ok) {
-          setMessage(data.message || "N√£o foi poss√≠vel criar conta.", "error");
+          setMessage(data.message || "N„o foi possÌvel criar conta.", "error");
           return;
         }
 
         registerForm.reset();
-        setMessage(data.message || "Conta criada com sucesso. J√° pode entrar.", "success");
+        setMessage(data.message || "Conta criada com sucesso. J· pode entrar.", "success");
       } catch (_err) {
-        setMessage("Erro de liga√ß√£o ao servidor.", "error");
+        setMessage("Erro de ligaÁ„o ao servidor.", "error");
       }
     });
 
@@ -277,3 +279,6 @@
   </script>
 </body>
 </html>
+
+
+

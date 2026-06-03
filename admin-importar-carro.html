@@ -11,6 +11,8 @@
   <style>
     body { font-family: "Manrope", sans-serif; }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-browser.js"></script>
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen">
   <header class="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-slate-200">
@@ -233,7 +235,7 @@
   <script>
     const apiBase = window.location.protocol === "file:" ? "http://127.0.0.1:3000" : "";
     async function apiFetch(path, options) {
-      return fetch(`${apiBase}${path}`, options);
+      return window.AutenticarApi.fetch(`${apiBase}${path}`, options);
     }
 
     const pageTitle = document.getElementById("pageTitle");
@@ -697,3 +699,6 @@
   </script>
 </body>
 </html>
+
+
+
