@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 
 <html lang="pt"><head>
 <meta charset="utf-8"/>
@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Hanken+Grotesk:wght@500;700&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script defer src="global-header.js"></script>
 <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -118,27 +119,15 @@
 </head>
 <body class="font-body-md text-on-surface">
 <!-- TopAppBar -->
-<header class="bg-surface dark:bg-on-background border-b border-outline-variant dark:border-on-surface-variant w-full h-16 z-50 sticky top-0" style="background-color: rgb(21, 62, 77); border-color: rgba(255, 255, 255, 0.1);">
-<div class="max-w-container-max mx-auto h-full px-margin-mobile md:px-margin-desktop flex justify-between items-center">
-<div class="flex items-center">
-<a href="index.html">
-<img alt="autenticar" class="h-8 md:h-10 w-auto" src="Logo.png"/>
+<header class="sticky top-0 z-50 border-b border-white/10 bg-[#153e4d]">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-3 flex items-center justify-between gap-3">
+<a href="index.html" aria-label="Voltar ao inicio" class="inline-flex items-center">
+<img alt="autenticar" class="h-8 md:h-10 w-auto" src="logo-new-3.png"/>
 </a>
-</div>
-<div class="hidden md:flex items-center gap-unit-xl">
-<nav class="flex gap-unit-lg">
-<a class="transition-colors px-2 py-1 rounded-lg font-label-bold text-label-bold text-white hover:bg-white/10" href="#">Início</a>
-<a class="transition-colors px-2 py-1 rounded-lg font-label-bold text-label-bold text-white hover:bg-white/10" href="#">Comprar</a>
-<a class="transition-colors px-2 py-1 rounded-lg font-label-bold text-label-bold text-white hover:bg-white/10" href="#">Vender</a>
-<a class="transition-colors px-2 py-1 rounded-lg font-label-bold text-label-bold text-white hover:bg-white/10" href="#">Notícias</a>
-</nav>
-<a href="login.html" class="flex items-center gap-unit-sm bg-primary-container text-on-primary-container px-4 py-2 rounded-full cursor-pointer hover:opacity-80 transition-opacity">
-<span class="material-symbols-outlined text-[20px]" data-icon="person">person</span>
-<span class="font-label-bold text-label-bold">Entrar / Registar</span>
-</a>
-</div>
-<div class="md:hidden">
-<span class="material-symbols-outlined text-white" data-icon="person">person</span>
+<div class="hidden md:flex items-center gap-7 text-white/95 text-xs font-semibold">
+<a class="py-1 transition-colors hover:text-white" href="index.html">Inicio</a>
+<a class="py-1 transition-colors hover:text-white" href="index.html#stock">Stock</a>
+<a class="py-1 transition-colors hover:text-white" href="about-us.html">Quem somos</a>
 </div>
 </div>
 </header>
@@ -227,7 +216,7 @@
 </div>
 </div>
 </section><div class="flex justify-between items-center mb-unit-md">
-<span class="font-label-bold text-on-surface-variant" id="resultsCount">3 veículos encontrados</span>
+<span class="font-label-bold text-on-surface-variant" id="resultsCount">0 veículos encontrados</span>
 <div class="flex items-center gap-2">
 <span class="text-label-sm font-label-bold">Ordenar por:</span>
 <select class="bg-transparent border-none text-primary font-label-bold focus:ring-0">
@@ -240,115 +229,14 @@
 <!-- Vehicle Listing Grid -->
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
 <!-- Vehicle Card 1 -->
-<article class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(16,42,67,0.08)] group hover:shadow-xl transition-shadow border border-outline-variant vehicle-card" data-price="12450" data-safety="5" data-gear="manual">
-<div class="relative h-56">
-<img class="w-full h-full object-cover" data-alt="A clean, metallic blue compact hatchback parked in a bright, modern architectural setting with soft daylight hitting the side. The car looks pristine and reliable, emphasizing a safe and approachable aesthetic for new drivers. High-quality photography with professional lighting in a light-mode corporate showroom environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEzcZzOW-_e9lptPYidLwLAzZsPbo86K7yss8tDwQ983vL25w3_ceNVcCxlpa3Rj7A3WuDuqf9-Urj8AlF_8_gltxEgeyREyxAEaEC31jywRhZh5A1k7YftxzdsIaF3E2PLqvmH39_UihfhnjHlY_9yQXXu6PNalvHxsMK0TFW7K8ZNCTCyURR-ndofZoDhVk86XwOQSnOACbLEtCpC88PjYIhUaHqCS8r_5VvmXX0V5gfvfHYWyesaQai_MDefa2naCUhDzRxNkI"/>
-<div class="absolute top-3 left-3 bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-label-sm font-bold">
-                                Recomendado
-                            </div>
-</div>
-<div class="p-unit-lg">
-<div class="flex justify-between items-start mb-unit-sm">
-<h3 class="font-headline-md text-headline-md text-primary">Volkswagen Polo 1.0</h3>
-<div class="text-primary font-headline-md">12.450 €</div>
-</div>
-<div class="flex items-center gap-unit-md text-on-surface-variant mb-unit-lg">
-<div class="flex items-center gap-1">
-<span class="material-symbols-outlined text-[18px]" data-icon="calendar_today">calendar_today</span>
-<span class="text-label-sm">2019</span>
-</div>
-<div class="flex items-center gap-1">
-<span class="material-symbols-outlined text-[18px]" data-icon="speed">speed</span>
-<span class="text-label-sm">45.000 km</span>
-</div>
-<div class="flex items-center gap-1">
-<span class="material-symbols-outlined text-[18px]" data-icon="local_gas_station">local_gas_station</span>
-<span class="text-label-sm">Gasolina</span>
-</div>
-</div>
-<div class="flex gap-unit-sm">
-<button class="flex-1 bg-primary text-on-primary py-2 rounded-lg font-label-bold text-label-bold hover:opacity-90 transition-opacity">Ver Detalhes</button>
-<button class="px-3 border border-primary text-primary rounded-lg hover:bg-surface-container transition-colors">
-<span class="material-symbols-outlined align-middle" data-icon="favorite_border">favorite_border</span>
-</button>
-</div>
-</div>
-</article>
+
 <!-- Vehicle Card 2 -->
-<article class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(16,42,67,0.08)] group hover:shadow-xl transition-shadow border border-outline-variant vehicle-card" data-price="14900" data-safety="5" data-gear="automatic">
-<div class="relative h-56">
-<img class="w-full h-full object-cover" data-alt="A silver modern city car with elegant curves and bright headlights, captured in a clean urban environment during a sunny day. The scene is bright and airy, using a soft cool-grey palette to maintain a premium feel. The lighting is diffused, highlighting the vehicle's safety features and compact design suitable for first-time owners." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNv_jU0eOcNMdbBKGqg83Uu_fJjHCOq9Xn1K1rCDm2rBsisHBZwBOPFuX6CmdcuZ7WHlhLXvtAoTPjuHeTmuzPqerJ3bFxOtQtsUwaJdVHYUDmboc7XUzYt8jrYGTgeFKd2LPWn0-lDkniYi6ds1vsPywnjmZF8RZPEI7ulA5g0E2A1N4aCscjUyXr3rqLEdCnoDpGSadAE8XZS-1CaFOa3Io9dfWrDedxc0sO0mPWeWiGe0K3T3hHDNRjv9YrxQNmzM7BUYCkv90"/>
-</div>
-<div class="p-unit-lg">
-<div class="flex justify-between items-start mb-unit-sm">
-<h3 class="font-headline-md text-headline-md text-primary">Toyota Yaris Hybrid</h3>
-<div class="text-primary font-headline-md">14.900 €</div>
-</div>
-<div class="flex items-center gap-unit-md text-on-surface-variant mb-unit-lg">
-<div class="flex items-center gap-1">
-<span class="material-symbols-outlined text-[18px]" data-icon="calendar_today">calendar_today</span>
-<span class="text-label-sm">2020</span>
-</div>
-<div class="flex items-center gap-1">
-<span class="material-symbols-outlined text-[18px]" data-icon="speed">speed</span>
-<span class="text-label-sm">32.000 km</span>
-</div>
-<div class="flex items-center gap-1">
-<span class="material-symbols-outlined text-[18px]" data-icon="bolt">bolt</span>
-<span class="text-label-sm">Híbrido</span>
-</div>
-</div>
-<div class="flex gap-unit-sm">
-<button class="flex-1 bg-primary text-on-primary py-2 rounded-lg font-label-bold text-label-bold hover:opacity-90 transition-opacity">Ver Detalhes</button>
-<button class="px-3 border border-primary text-primary rounded-lg hover:bg-surface-container transition-colors">
-<span class="material-symbols-outlined align-middle" data-icon="favorite_border">favorite_border</span>
-</button>
-</div>
-</div>
-</article>
+
 <!-- Vehicle Card 3 -->
 <!-- Vehicle Card 4 -->
-<article class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(16,42,67,0.08)] group hover:shadow-xl transition-shadow border border-outline-variant vehicle-card" data-price="11200" data-safety="4" data-gear="manual">
-<div class="relative h-56">
-<img class="w-full h-full object-cover" data-alt="A dark grey Ford Fiesta showcasing its dynamic design in a contemporary urban square. The lighting is crisp, highlighting the sharp lines and build quality of the car. The aesthetic is corporate and reliable, emphasizing the vehicle's popularity and trusted status as a perfect first car for city driving." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDr72Da2BHe314hDbuF3qyi7FmKbmzu9Z4MoVlwPnfhCrWWwJIhsyaoxiPLDzTj8Zqv829wcREcKrCaLMDjGcWilQ_LPWmBHpQwnyL6bA1K7bEMmSpRCULLbL5Y_CaKeZ0hJ8R4tK-KMR5J4VYRseHBbkVb9k2opM1t1cZBGcRvBdBaemxeaRTkS3eq9OujdhWyO2GU8UfTSeFJ8ExTx_nGeQkSYTzngRWV7dXyPJXk_s0In7Cpw-Sg1LDNOpJR-5vXwDCveB_hK7M"/>
+
 </div>
-<div class="p-unit-lg">
-<div class="flex justify-between items-start mb-unit-sm">
-<h3 class="font-headline-md text-headline-md text-primary">Ford Fiesta 1.1 Trend</h3>
-<div class="text-primary font-headline-md">11.200 €</div>
-</div>
-<div class="flex items-center gap-unit-md text-on-surface-variant mb-unit-lg">
-<div class="flex items-center gap-1">
-<span class="material-symbols-outlined text-[18px]" data-icon="calendar_today">calendar_today</span>
-<span class="text-label-sm">2019</span>
-</div>
-<div class="flex items-center gap-1">
-<span class="material-symbols-outlined text-[18px]" data-icon="speed">speed</span>
-<span class="text-label-sm">51.000 km</span>
-</div>
-<div class="flex items-center gap-1">
-<span class="material-symbols-outlined text-[18px]" data-icon="local_gas_station">local_gas_station</span>
-<span class="text-label-sm">Gasolina</span>
-</div>
-</div>
-<div class="flex gap-unit-sm">
-<button class="flex-1 bg-primary text-on-primary py-2 rounded-lg font-label-bold text-label-bold hover:opacity-90 transition-opacity">Ver Detalhes</button>
-<button class="px-3 border border-primary text-primary rounded-lg hover:bg-surface-container transition-colors">
-<span class="material-symbols-outlined align-middle" data-icon="favorite_border">favorite_border</span>
-</button>
-</div>
-</div>
-</article>
-</div>
-<!-- Pagination -->
-<div class="mt-unit-xl flex justify-center gap-2">
-<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-primary text-on-primary font-label-bold">1</button>
-<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-low text-primary font-label-bold hover:bg-surface-container transition-colors">2</button>
-<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-low text-primary font-label-bold hover:bg-surface-container transition-colors">3</button>
-<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-low text-primary font-label-bold hover:bg-surface-container transition-colors">
-<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
-</button>
-</div>
+
 </div>
 </div>
 </main>
@@ -412,7 +300,7 @@
 <div class="max-w-container-max mx-auto pt-unit-sm flex flex-col md:flex-row justify-between items-center gap-unit-sm font-label-sm text-label-sm">
 <div class="flex flex-col md:flex-row justify-between items-center w-full gap-unit-sm">
 <div class="flex flex-col md:flex-row items-center gap-unit-md">
-<p class="font-label-sm text-label-sm text-white/80 !text-white/60">© 2024 autenticar. Todos os direitos reservados.</p>
+<p class="font-label-sm text-label-sm text-white/80 !text-white/60">é 2024 autenticar. Todos os direitos reservados.</p>
 <div class="flex gap-unit-lg font-label-sm text-label-sm opacity-80">
 <a class="hover:text-primary !text-white/60 hover:text-white text-white/60" href="#">Privacidade</a>
 <a class="hover:text-primary !text-white/60 hover:text-white text-white/60" href="#">Termos</a>
@@ -429,67 +317,85 @@
 </footer>
 <script>
   (function () {
-    const budgetFilter = document.getElementById("budgetFilter");
-    const applyButton = document.getElementById("applyFilters");
+    const categoryMap = {
+      "primeiro-carro.html": "primeiro-carro",
+      "carros-economicos.html": "carros-economicos",
+      "carros-familiares.html": "carros-familiares",
+      "carros-cidade.html": "carros-cidade",
+      "carros-automaticos.html": "carros-automaticos",
+      "carros-viagens.html": "carros-viagens",
+      "suvs.html": "suvs",
+      "baixo-consumo.html": "baixo-consumo",
+      "ate-10000.html": "ate-10000",
+      "ate-15000.html": "ate-15000",
+      "destaque.html": "destaque"
+    };
+
+    const page = (location.pathname.split("/").pop() || "").toLowerCase();
+    const category = categoryMap[page];
     const resultsCount = document.getElementById("resultsCount");
-    const cards = Array.from(document.querySelectorAll(".vehicle-card"));
-    const gearButtons = Array.from(document.querySelectorAll("[data-gear]"));
+    const container = document.querySelector(".grid.grid-cols-1.lg\\:grid-cols-2.gap-gutter");
 
-    let selectedGear = "manual";
+    if (!category || !container) return;
 
-    function parseBudget(value) {
-      const match = value.match(/(\d[\d.]*)/);
-      if (!match) return Number.POSITIVE_INFINITY;
-      return Number(match[1].replace(/\./g, ""));
+    function renderEmpty() {
+      container.innerHTML = `
+        <article class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(16,42,67,0.08)] border border-outline-variant p-unit-lg">
+          <p class="font-body-md text-body-md text-on-surface-variant">Sem veículos disponíveis nesta categoria neste momento.</p>
+        </article>
+      `;
+      if (resultsCount) resultsCount.textContent = "0 veículos encontrados";
     }
 
-    function updateGearUI() {
-      gearButtons.forEach((btn) => {
-        const isActive = btn.dataset.gear === selectedGear;
-        btn.classList.toggle("bg-primary-container", isActive);
-        btn.classList.toggle("text-on-primary-container", isActive);
-        btn.classList.toggle("bg-surface-variant", !isActive);
-        btn.classList.toggle("text-on-surface-variant", !isActive);
-      });
+    async function loadCategoryCars() {
+      try {
+        const response = await fetch(`/api/cars?category=${encodeURIComponent(category)}&limit=100`);
+        const data = await response.json();
+        if (!response.ok || !data.ok || !Array.isArray(data.cars) || data.cars.length === 0) {
+          renderEmpty();
+          return;
+        }
+
+        container.innerHTML = data.cars.map((car) => {
+          const image = Array.isArray(car.image_urls) && car.image_urls.length ? car.image_urls[0] : "";
+          const title = car.title || `${car.brand || ""} ${car.model || ""}`.trim() || "Viatura";
+          const price = Number(car.price_eur || 0).toLocaleString("pt-PT", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+          const reg = car.registration_date || "N/D";
+          const km = Number(car.mileage || 0).toLocaleString("pt-PT");
+          const fuel = car.fuel || "N/D";
+          return `
+            <article class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(16,42,67,0.08)] group hover:shadow-xl transition-shadow border border-outline-variant">
+              <div class="relative h-56">
+                ${image ? `<img class="w-full h-full object-cover" src="${image}" alt="${title}">` : `<div class="w-full h-full bg-surface-container flex items-center justify-center text-on-surface-variant text-sm">Sem imagem</div>`}
+              </div>
+              <div class="p-unit-lg">
+                <div class="flex justify-between items-start mb-unit-sm">
+                  <h3 class="font-headline-md text-headline-md text-primary">${title}</h3>
+                  <div class="text-primary font-headline-md">${price} </div>
+                </div>
+                <div class="flex items-center gap-unit-md text-on-surface-variant mb-unit-lg">
+                  <div class="flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">calendar_today</span><span class="text-label-sm">${reg}</span></div>
+                  <div class="flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">speed</span><span class="text-label-sm">${km} km</span></div>
+                  <div class="flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">local_gas_station</span><span class="text-label-sm">${fuel}</span></div>
+                </div>
+                <div class="flex gap-unit-sm">
+                  <a href="carro.html?id=${encodeURIComponent(car.id)}" class="flex-1 bg-primary text-on-primary py-2 rounded-lg font-label-bold text-label-bold hover:opacity-90 transition-opacity text-center">Ver Detalhes</a>
+                </div>
+              </div>
+            </article>
+          `;
+        }).join("");
+
+        if (resultsCount) {
+          resultsCount.textContent = `${data.cars.length} veículos encontrados`;
+        }
+      } catch {
+        renderEmpty();
+      }
     }
 
-    function applyFilters() {
-      const maxBudget = parseBudget(budgetFilter.value);
-      let visible = 0;
-
-      cards.forEach((card) => {
-        const price = Number(card.dataset.price || 0);
-        const safety = Number(card.dataset.safety || 0);
-        const gear = card.dataset.gear || "";
-
-        const budgetMatch = price <= maxBudget;
-        const gearMatch = gear === selectedGear;
-
-        const safetyMatch = true;
-
-        const show = budgetMatch && safetyMatch && gearMatch;
-        card.style.display = show ? "" : "none";
-        if (show) visible += 1;
-      });
-
-      resultsCount.textContent = visible + " veículos encontrados";
-    }
-
-    gearButtons.forEach((btn) => {
-      btn.addEventListener("click", function () {
-        selectedGear = btn.dataset.gear || selectedGear;
-        updateGearUI();
-      });
-    });
-
-    applyButton.addEventListener("click", applyFilters);
-    updateGearUI();
-    applyFilters();
+    loadCategoryCars();
   })();
 </script>
 </body></html>
-
-
-
-
 

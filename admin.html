@@ -53,7 +53,7 @@
   <header class="bg-surface border-b border-outline-variant fixed top-0 z-40 w-full">
     <div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop h-16 max-w-container-max mx-auto">
       <a href="index.html" class="flex items-center gap-3">
-        <img src="logo-new-3.png" alt="Autenticar" class="h-9 w-auto" />
+        <img src="logo-new-3.png" alt="Autenticar" class="h-9 w-auto" style="filter: brightness(0);" />
         <span class="font-bold text-primary text-xl">Autenticar</span>
       </a>
       <div class="flex items-center gap-4 md:gap-8">
@@ -149,25 +149,8 @@
               <h3 class="font-bold uppercase tracking-widest">Suporte Urgente</h3>
             </div>
           </div>
-          <div class="p-6 space-y-4">
-            <div class="p-4 rounded-lg bg-surface-container-low border-l-4 border-error">
-              <div class="flex justify-between items-start mb-1">
-                <span class="text-sm font-bold text-primary">ID #8432</span>
-                <span class="text-xs text-on-surface-variant">Há 15 min</span>
-              </div>
-              <p class="text-on-surface font-bold">Erro no upload de fotos</p>
-              <p class="text-on-surface-variant text-sm mt-1">Utilizador: Carlos Mendes</p>
-              <button class="support-action mt-3 text-primary text-sm font-bold flex items-center gap-1" data-ticket="8432">Responder agora <span class="material-symbols-outlined text-[16px]">send</span></button>
-            </div>
-            <div class="p-4 rounded-lg bg-surface-container-low border-l-4 border-amber-500">
-              <div class="flex justify-between items-start mb-1">
-                <span class="text-sm font-bold text-primary">ID #8429</span>
-                <span class="text-xs text-on-surface-variant">Há 1 hora</span>
-              </div>
-              <p class="text-on-surface font-bold">Verificação de conta</p>
-              <p class="text-on-surface-variant text-sm mt-1">Empresa: Auto Luxury LDA</p>
-              <button class="support-action mt-3 text-primary text-sm font-bold flex items-center gap-1" data-ticket="8429">Rever documentos <span class="material-symbols-outlined text-[16px]">description</span></button>
-            </div>
+          <div class="p-6">
+            <p class="text-sm text-on-surface-variant">Sem tickets de suporte para mostrar.</p>
           </div>
         </section>
 
@@ -216,61 +199,82 @@
   </nav>
 
   <script>
-    const STORAGE_KEY = "autenticar_admin_listings_v1";
-    const defaultListings = [
-      {
-        id: 1,
-        title: "BMW 320i M Sport",
-        subtitle: "2023 • 12.000 km",
-        date: "2023-10-12",
-        status: "pending",
-        price: 37900,
-        image: "https://images.unsplash.com/photo-1553440569-bcc63803a83d?auto=format&fit=crop&w=400&q=80"
-      },
-      {
-        id: 2,
-        title: "Toyota Hilux SRX",
-        subtitle: "2022 • 45.000 km",
-        date: "2023-10-11",
-        status: "approved",
-        price: 42900,
-        image: "https://images.unsplash.com/photo-1542282088-fe8426682b8f?auto=format&fit=crop&w=400&q=80"
-      },
-      {
-        id: 3,
-        title: "Porsche 911 Carrera",
-        subtitle: "2021 • 5.000 km",
-        date: "2023-10-10",
-        status: "rejected",
-        price: 128000,
-        image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=400&q=80"
+    async function requireAdminAccess() {
+      const sessionRaw = localStorage.getItem("autenticar_session_v1");
+      if (!sessionRaw) {
+        window.location.href = "login.html?next=admin.html";
+        return false;
       }
-    ];
+      let session;
+      try {
+        session = JSON.parse(sessionRaw);
+      } catch {
+        window.location.href = "login.html?next=admin.html";
+        return false;
+      }
+      if (!session?.access_token) {
+        window.location.href = "login.html?next=admin.html";
+        return false;
+      }
+      try {
+        const response = await fetch("/api/auth/session-info", {
+          headers: { Authorization: `Bearer ${session.access_token}` }
+        });
+        const data = await response.json();
+        if (!response.ok || !data.ok || !data.user?.is_admin) {
+          localStorage.removeItem("autenticar_session_v1");
+          localStorage.removeItem("autenticar_user_v1");
+          window.location.href = "login.html?next=admin.html";
+          return false;
+        }
+        return true;
+      } catch {
+        window.location.href = "login.html?next=admin.html";
+        return false;
+      }
+    }
 
     const state = {
       filter: "all",
-      listings: loadListings(),
+      listings: [],
       leads: 142
     };
 
-    function loadListings() {
-      const fromStorage = localStorage.getItem(STORAGE_KEY);
-      if (!fromStorage) return [...defaultListings];
+    function getSession() {
       try {
-        const parsed = JSON.parse(fromStorage);
-        if (!Array.isArray(parsed) || parsed.length === 0) return [...defaultListings];
-        return parsed;
+        return JSON.parse(localStorage.getItem("autenticar_session_v1") || "{}");
       } catch {
-        return [...defaultListings];
+        return {};
       }
     }
 
-    function saveListings() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.listings));
+    function mapCarToListing(car) {
+      const title = String(car?.title || `${car?.brand || ""} ${car?.model || ""}`).trim() || "Viatura sem título";
+      const subtitleParts = [car?.brand, car?.model, car?.fuel].filter(Boolean);
+      return {
+        id: String(car?.id || ""),
+        title,
+        subtitle: subtitleParts.join(" • "),
+        image: Array.isArray(car?.image_urls) && car.image_urls[0] ? car.image_urls[0] : "https://placehold.co/160x120/e2e8f0/64748b?text=Carro",
+        date: car?.created_at || new Date().toISOString(),
+        status: car?.status || "approved",
+        price: Number(car?.price_eur || 0)
+      };
+    }
+
+    async function loadListingsFromServer() {
+      const response = await fetch("/api/cars?limit=100");
+      const result = await response.json();
+      if (!response.ok || !result.ok) {
+        throw new Error(result.message || "Não foi possível carregar os carros.");
+      }
+      state.listings = Array.isArray(result.cars) ? result.cars.map(mapCarToListing) : [];
     }
 
     function formatDate(isoDate) {
-      return new Date(isoDate).toLocaleDateString("pt-PT", { day: "2-digit", month: "short", year: "numeric" });
+      const parsed = new Date(isoDate);
+      if (Number.isNaN(parsed.getTime())) return "Sem data";
+      return parsed.toLocaleDateString("pt-PT", { day: "2-digit", month: "short", year: "numeric" });
     }
 
     function formatMoney(value) {
@@ -336,14 +340,6 @@
         </tr>`).join("");
     }
 
-    function updateListing(id, updater) {
-      const index = state.listings.findIndex((item) => item.id === id);
-      if (index === -1) return;
-      state.listings[index] = updater({ ...state.listings[index] });
-      saveListings();
-      renderAll();
-    }
-
     function renderAll() {
       renderStats();
       renderTable();
@@ -365,29 +361,20 @@
       const actionBtn = event.target.closest(".action-btn");
       if (actionBtn) {
         const row = actionBtn.closest("tr");
-        const id = Number(row?.dataset.id);
+        const id = String(row?.dataset.id || "");
         const action = actionBtn.dataset.action;
         if (!id || !action) return;
 
-        if (action === "approve") {
-          updateListing(id, (item) => ({ ...item, status: "approved" }));
-        }
-        if (action === "reject") {
-          updateListing(id, (item) => ({ ...item, status: "rejected" }));
-        }
         if (action === "edit") {
-          const listing = state.listings.find((item) => item.id === id);
-          if (!listing) return;
-          const newTitle = prompt("Novo título do anúncio:", listing.title);
-          if (!newTitle) return;
-          updateListing(id, (item) => ({ ...item, title: newTitle.trim() }));
+          window.location.href = `admin-importar-carro.html?id=${encodeURIComponent(id)}`;
+        }
+        if (action === "approve" || action === "reject") {
+          alert("Os filtros de estado ainda não estão ligados à base de dados. Já podes editar e remover carros reais.");
         }
         if (action === "delete") {
           const confirmDelete = confirm("Queres remover este anúncio?");
           if (!confirmDelete) return;
-          state.listings = state.listings.filter((item) => item.id !== id);
-          saveListings();
-          renderAll();
+          deleteListing(id);
         }
       }
 
@@ -409,14 +396,7 @@
     });
 
     document.getElementById("notificationsBtn").addEventListener("click", () => {
-      alert("Tens 2 notificações novas de suporte.");
-    });
-
-    document.querySelectorAll(".support-action").forEach((button) => {
-      button.addEventListener("click", () => {
-        const ticket = button.dataset.ticket;
-        alert(`Ticket #${ticket} marcado como em atendimento.`);
-      });
+      alert("Sem notificações novas.");
     });
 
     document.getElementById("auditBtn").addEventListener("click", () => {
@@ -430,6 +410,33 @@
     document.getElementById("fabAdd").addEventListener("click", () => {
       window.location.href = "admin-importar-carro.html";
     });
+
+    async function deleteListing(id) {
+      const session = getSession();
+      if (!session?.access_token) {
+        window.location.href = "login.html?next=admin.html";
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/admin/cars/${encodeURIComponent(id)}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${session.access_token}`
+          }
+        });
+        const result = await response.json();
+        if (!response.ok || !result.ok) {
+          alert(result.message || "Não foi possível remover o carro.");
+          return;
+        }
+
+        state.listings = state.listings.filter((item) => item.id !== id);
+        renderAll();
+      } catch {
+        alert("Erro de ligação ao servidor.");
+      }
+    }
 
     (async function checkDbHealth() {
       const statusEl = document.getElementById("dbConnectionStatus");
@@ -455,7 +462,18 @@
       }
     })();
 
-    renderAll();
+    requireAdminAccess().then(async (allowed) => {
+      if (!allowed) return;
+      try {
+        await loadListingsFromServer();
+        renderAll();
+      } catch (error) {
+        document.getElementById("listingTableBody").innerHTML = `
+          <tr>
+            <td colspan="4" class="px-6 py-10 text-center text-red-700">${error.message || "Erro ao carregar carros do servidor."}</td>
+          </tr>`;
+      }
+    });
   </script>
 </body>
 </html>

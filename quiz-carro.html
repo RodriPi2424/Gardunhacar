@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Quiz de Recomendação | Autenticar</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="global-header.js"></script>
   <style>
     body { font-family: Montserrat, sans-serif; }
     .fade-enter { opacity: 0; transform: translateX(20px); }
@@ -20,10 +21,16 @@
     <div class="absolute inset-0 bg-black/60"></div>
 
     <div class="relative z-10 max-w-4xl mx-auto px-4 py-6">
-      <div class="flex items-center justify-between mb-8">
-        <a href="index.html"><img src="logo-new-3.png" alt="autenticar" class="h-10 md:h-12 w-auto"/></a>
-        <a href="index.html" class="glass rounded-full px-4 py-2 text-sm font-semibold">Voltar</a>
-      </div>
+      <header class="flex items-center justify-between gap-3 mb-8">
+        <a href="index.html" aria-label="Voltar ao inicio" class="inline-flex items-center">
+          <img src="logo-new-3.png" alt="autenticar" class="h-10 md:h-12 w-auto"/>
+        </a>
+        <div class="hidden md:flex items-center gap-7 text-white/95 text-xs font-semibold">
+          <a class="py-1 transition-colors hover:text-white" href="index.html">Inicio</a>
+          <a class="py-1 transition-colors hover:text-white" href="index.html#stock">Stock</a>
+          <a class="py-1 transition-colors hover:text-white" href="about-us.html">Quem somos</a>
+        </div>
+      </header>
 
       <section class="glass rounded-3xl p-5 md:p-8 shadow-2xl">
         <div class="mb-4">

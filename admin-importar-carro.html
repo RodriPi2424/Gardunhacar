@@ -17,7 +17,7 @@
     <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
       <div>
         <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Autenticar Admin</p>
-        <h1 class="text-xl md:text-2xl font-extrabold">Importar Carro</h1>
+        <h1 id="pageTitle" class="text-xl md:text-2xl font-extrabold">Importar Carro</h1>
       </div>
       <a href="admin.html" class="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold hover:bg-slate-100">
         Voltar ao painel
@@ -26,29 +26,167 @@
   </header>
 
   <main class="max-w-5xl mx-auto p-4 md:p-6">
-    <form id="carImportForm" class="space-y-6">
+    <form id="carImportForm" class="space-y-6" novalidate>
+      <section class="bg-white rounded-2xl border border-slate-200 p-5 md:p-6">
+        <h2 class="text-lg font-bold mb-4">Importar por link Autenticar</h2>
+        <p class="text-sm text-slate-500 mb-3">Cola o URL da viatura em <strong>autenticar.pt</strong> para importar automaticamente os dados e imagens.</p>
+        <div class="flex flex-col md:flex-row gap-3">
+          <input id="sourceUrlInput" type="url" class="flex-1 rounded-xl border-slate-300" placeholder="https://www.autenticar.pt/viaturas/..." />
+        </div>
+        <p class="mt-2 text-xs text-slate-500">A importação começa automaticamente ao carregar Enter no campo do link.</p>
+      </section>
+
       <section class="bg-white rounded-2xl border border-slate-200 p-5 md:p-6">
         <h2 class="text-lg font-bold mb-4">Dados principais</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <label class="block md:col-span-2">
+            <span class="text-sm font-semibold text-slate-600">Título</span>
+            <input data-manual-required="true" type="text" name="title" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="Ex: BMW Série 3 320d Pack M" />
+          </label>
           <label class="block">
             <span class="text-sm font-semibold text-slate-600">Marca</span>
-            <input required type="text" name="brand" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="Ex: BMW" />
+            <input data-manual-required="true" type="text" name="brand" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="Ex: BMW" />
           </label>
           <label class="block">
             <span class="text-sm font-semibold text-slate-600">Modelo</span>
-            <input required type="text" name="model" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="Ex: Série 3" />
+            <input data-manual-required="true" type="text" name="model" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="Ex: Série 3" />
           </label>
           <label class="block">
-            <span class="text-sm font-semibold text-slate-600">Ano</span>
-            <input required type="number" name="year" min="1950" max="2100" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="2023" />
+            <span class="text-sm font-semibold text-slate-600">Registo</span>
+            <input data-manual-required="true" type="text" name="registrationDate" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="Ex: Fev. 2022" />
+          </label>
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">Quilómetros</span>
+            <input data-manual-required="true" type="number" name="mileage" min="0" step="1" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="78622" />
+          </label>
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">Combustível</span>
+            <select data-manual-required="true" name="fuel" class="mt-1 block w-full rounded-xl border-slate-300">
+              <option value="">Selecionar</option>
+              <option>Gasóleo</option>
+              <option>Gasolina</option>
+              <option>Híbrido</option>
+              <option>Híbrido Plug-in</option>
+              <option>Elétrico</option>
+              <option>GPL</option>
+            </select>
           </label>
           <label class="block">
             <span class="text-sm font-semibold text-slate-600">Preço (EUR)</span>
-            <input required type="number" name="price" step="0.01" min="0" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="19990.00" />
+            <input data-manual-required="true" type="number" name="price" step="0.01" min="0" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="19990.00" />
           </label>
           <label class="block md:col-span-2">
-            <span class="text-sm font-semibold text-slate-600">Descrição</span>
-            <textarea name="description" rows="4" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="Condição, histórico, observações..."></textarea>
+            <span class="text-sm font-semibold text-slate-600">Observações</span>
+            <textarea data-manual-required="true" name="observations" rows="4" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="Condição, histórico, observações..."></textarea>
+          </label>
+        </div>
+      </section>
+
+      <section class="bg-white rounded-2xl border border-slate-200 p-5 md:p-6">
+        <h2 class="text-lg font-bold mb-4">Características (imagem 2)</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">Lugares</span>
+            <input data-manual-required="true" type="number" name="seats" min="1" step="1" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="5" />
+          </label>
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">Segmento</span>
+            <input data-manual-required="true" type="text" name="segment" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="Ex: Utilitário" />
+          </label>
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">Potência</span>
+            <input data-manual-required="true" type="text" name="power" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="Ex: 110 Cv" />
+          </label>
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">Origem</span>
+            <select data-manual-required="true" name="origin" class="mt-1 block w-full rounded-xl border-slate-300">
+              <option value="">Selecionar</option>
+              <option>Nacional</option>
+              <option>Importado</option>
+            </select>
+          </label>
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">Cilindrada</span>
+            <input data-manual-required="true" type="text" name="engineDisplacement" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="Ex: 1499 Cc" />
+          </label>
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">Transmissão</span>
+            <input data-manual-required="true" type="text" name="transmission" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="Ex: Manual de 6 velocidades" />
+          </label>
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">Cor</span>
+            <input data-manual-required="true" type="text" name="color" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="Ex: Branco" />
+          </label>
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">Portas</span>
+            <input data-manual-required="true" type="number" name="doors" min="1" step="1" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="5" />
+          </label>
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">Estado</span>
+            <select data-manual-required="true" name="condition" class="mt-1 block w-full rounded-xl border-slate-300">
+              <option value="">Selecionar</option>
+              <option>Novo</option>
+              <option>Usado</option>
+            </select>
+          </label>
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">Garantia</span>
+            <select data-manual-required="true" name="warranty" class="mt-1 block w-full rounded-xl border-slate-300">
+              <option value="">Selecionar</option>
+              <option>Sim</option>
+              <option>Não</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="bg-white rounded-2xl border border-slate-200 p-5 md:p-6">
+        <h2 class="text-lg font-bold mb-4">Listar em categorias</h2>
+        <p class="text-sm text-slate-500 mb-3">Seleciona onde este carro deve aparecer no website.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+          <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3">
+            <input type="checkbox" name="listingCategory" value="destaque" class="rounded border-slate-300" />
+            <span class="text-sm font-semibold text-slate-700">Destaque</span>
+          </label>
+          <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3">
+            <input type="checkbox" name="listingCategory" value="primeiro-carro" class="rounded border-slate-300" />
+            <span class="text-sm font-semibold text-slate-700">Primeiro carro</span>
+          </label>
+          <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3">
+            <input type="checkbox" name="listingCategory" value="carros-economicos" class="rounded border-slate-300" />
+            <span class="text-sm font-semibold text-slate-700">Carros económicos</span>
+          </label>
+          <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3">
+            <input type="checkbox" name="listingCategory" value="carros-familiares" class="rounded border-slate-300" />
+            <span class="text-sm font-semibold text-slate-700">Carros familiares</span>
+          </label>
+          <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3">
+            <input type="checkbox" name="listingCategory" value="carros-cidade" class="rounded border-slate-300" />
+            <span class="text-sm font-semibold text-slate-700">Carros para cidade</span>
+          </label>
+          <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3">
+            <input type="checkbox" name="listingCategory" value="carros-automaticos" class="rounded border-slate-300" />
+            <span class="text-sm font-semibold text-slate-700">Carros automáticos</span>
+          </label>
+          <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3">
+            <input type="checkbox" name="listingCategory" value="carros-viagens" class="rounded border-slate-300" />
+            <span class="text-sm font-semibold text-slate-700">Carros para viagens</span>
+          </label>
+          <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3">
+            <input type="checkbox" name="listingCategory" value="suvs" class="rounded border-slate-300" />
+            <span class="text-sm font-semibold text-slate-700">SUVs</span>
+          </label>
+          <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3">
+            <input type="checkbox" name="listingCategory" value="baixo-consumo" class="rounded border-slate-300" />
+            <span class="text-sm font-semibold text-slate-700">Baixo consumo</span>
+          </label>
+          <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3">
+            <input type="checkbox" name="listingCategory" value="ate-10000" class="rounded border-slate-300" />
+            <span class="text-sm font-semibold text-slate-700">Até 10.000€</span>
+          </label>
+          <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3">
+            <input type="checkbox" name="listingCategory" value="ate-15000" class="rounded border-slate-300" />
+            <span class="text-sm font-semibold text-slate-700">Até 15.000€</span>
           </label>
         </div>
       </section>
@@ -68,24 +206,33 @@
         <h2 class="text-lg font-bold mb-4">Upload de imagens</h2>
         <label class="block">
           <span class="text-sm font-semibold text-slate-600">Imagens do carro</span>
-          <input id="imageInput" type="file" name="images" accept="image/*" multiple class="mt-2 block w-full text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:font-semibold hover:file:bg-slate-200" />
+          <div class="mt-2 flex items-center gap-3">
+            <button id="chooseImagesBtn" type="button" class="rounded-lg border border-slate-300 bg-slate-100 px-3 py-2 text-sm font-semibold hover:bg-slate-200">
+              Escolher ficheiros
+            </button>
+            <span id="selectedImagesLabel" class="text-sm text-slate-600">Nenhum ficheiro selecionado</span>
+          </div>
+          <input id="imageInput" type="file" name="images" accept="image/*" multiple class="sr-only" />
         </label>
         <p class="mt-2 text-xs text-slate-500">Podes selecionar várias imagens.</p>
         <div id="previewGrid" class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3"></div>
       </section>
 
       <div class="flex items-center gap-3">
-        <button type="submit" class="rounded-xl bg-emerald-600 text-white font-bold px-5 py-3 hover:bg-emerald-700">
+        <button id="submitButton" type="submit" class="rounded-xl bg-emerald-600 text-white font-bold px-5 py-3 hover:bg-emerald-700">
           Importar carro
         </button>
         <button type="reset" class="rounded-xl border border-slate-300 font-semibold px-5 py-3 hover:bg-slate-100">
           Limpar
         </button>
       </div>
+      <p id="formStatus" class="text-sm font-semibold text-slate-600"></p>
     </form>
   </main>
 
   <script>
+    const pageTitle = document.getElementById("pageTitle");
+    const submitButton = document.getElementById("submitButton");
     const extraInput = document.getElementById("extraInput");
     const addExtraBtn = document.getElementById("addExtraBtn");
     const extrasList = document.getElementById("extrasList");
@@ -93,7 +240,82 @@
     const imageInput = document.getElementById("imageInput");
     const previewGrid = document.getElementById("previewGrid");
     const form = document.getElementById("carImportForm");
+    const formStatus = document.getElementById("formStatus");
+    const sourceUrlInput = document.getElementById("sourceUrlInput");
+    const chooseImagesBtn = document.getElementById("chooseImagesBtn");
+    const selectedImagesLabel = document.getElementById("selectedImagesLabel");
+    const searchParams = new URLSearchParams(window.location.search);
+    const editingCarId = searchParams.get("id");
+    const isEditing = Boolean(editingCarId);
     const extras = [];
+
+    if (isEditing) {
+      document.title = "Admin - Editar Carro";
+      pageTitle.textContent = "Editar Carro";
+      submitButton.textContent = "Guardar alterações";
+      sourceUrlInput.closest("section")?.classList.add("hidden");
+    }
+
+    function nextAdminTarget() {
+      return `admin-importar-carro.html${window.location.search || ""}`;
+    }
+
+    async function requireAdminAccess() {
+      const sessionRaw = localStorage.getItem("autenticar_session_v1");
+      if (!sessionRaw) {
+        window.location.href = `login.html?next=${encodeURIComponent(nextAdminTarget())}`;
+        return false;
+      }
+
+      let session;
+      try {
+        session = JSON.parse(sessionRaw);
+      } catch {
+        window.location.href = `login.html?next=${encodeURIComponent(nextAdminTarget())}`;
+        return false;
+      }
+
+      if (!session?.access_token) {
+        window.location.href = `login.html?next=${encodeURIComponent(nextAdminTarget())}`;
+        return false;
+      }
+
+      try {
+        const response = await fetch("/api/auth/session-info", {
+          headers: { Authorization: `Bearer ${session.access_token}` }
+        });
+        const data = await response.json();
+        if (!response.ok || !data.ok || !data.user?.is_admin) {
+          localStorage.removeItem("autenticar_session_v1");
+          localStorage.removeItem("autenticar_user_v1");
+          window.location.href = `login.html?next=${encodeURIComponent(nextAdminTarget())}`;
+          return false;
+        }
+        return true;
+      } catch {
+        window.location.href = `login.html?next=${encodeURIComponent(nextAdminTarget())}`;
+        return false;
+      }
+    }
+
+    function setFormStatus(text, type = "neutral") {
+      const classes = {
+        neutral: "text-slate-600",
+        success: "text-emerald-700",
+        error: "text-red-700"
+      };
+      formStatus.className = `text-sm font-semibold ${classes[type] || classes.neutral}`;
+      formStatus.textContent = text;
+    }
+
+    function fileToDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error("Erro ao ler imagem."));
+        reader.readAsDataURL(file);
+      });
+    }
 
     function renderExtras() {
       extrasList.innerHTML = "";
@@ -119,6 +341,120 @@
       renderExtras();
     }
 
+    function syncExtras(values) {
+      extras.length = 0;
+      (Array.isArray(values) ? values : []).forEach((value) => {
+        const cleaned = String(value || "").trim();
+        if (cleaned && !extras.includes(cleaned)) extras.push(cleaned);
+      });
+      renderExtras();
+    }
+
+    function renderExistingImages(urls) {
+      previewGrid.innerHTML = "";
+      const safeUrls = Array.isArray(urls) ? urls.filter(Boolean) : [];
+
+      if (safeUrls.length === 0) {
+        selectedImagesLabel.textContent = "Nenhuma imagem atual";
+        return;
+      }
+
+      selectedImagesLabel.textContent = `${safeUrls.length} imagem(ns) atual(is)`;
+      safeUrls.forEach((url, index) => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "overflow-hidden rounded-xl border border-slate-200 bg-white";
+
+        const img = document.createElement("img");
+        img.className = "h-28 w-full object-cover";
+        img.src = url;
+        img.alt = `Imagem atual ${index + 1}`;
+
+        const label = document.createElement("p");
+        label.className = "p-2 text-xs text-slate-600 truncate";
+        label.textContent = `Imagem atual ${index + 1}`;
+
+        wrapper.appendChild(img);
+        wrapper.appendChild(label);
+        previewGrid.appendChild(wrapper);
+      });
+    }
+
+    function populateForm(car) {
+      form.elements.title.value = car.title || "";
+      form.elements.brand.value = car.brand || "";
+      form.elements.model.value = car.model || "";
+      form.elements.registrationDate.value = car.registration_date || "";
+      form.elements.mileage.value = car.mileage ?? "";
+      form.elements.fuel.value = car.fuel || "";
+      form.elements.price.value = car.price_eur ?? "";
+      form.elements.observations.value = car.observations || "";
+      form.elements.seats.value = Number(car.seats) > 0 ? car.seats : "";
+      form.elements.segment.value = car.segment || "";
+      form.elements.power.value = car.power || "";
+      form.elements.origin.value = car.origin || "";
+      form.elements.engineDisplacement.value = car.engine_displacement || "";
+      form.elements.transmission.value = car.transmission || "";
+      form.elements.color.value = car.color || "";
+      form.elements.doors.value = Number(car.doors) > 0 ? car.doors : "";
+      form.elements.condition.value = car.condition || "";
+      form.elements.warranty.value = car.warranty || "";
+
+      syncExtras(car.extras);
+      Array.from(form.querySelectorAll('input[name="listingCategory"]')).forEach((input) => {
+        input.checked = Array.isArray(car.categories) && car.categories.includes(input.value);
+      });
+      renderExistingImages(car.image_urls);
+    }
+
+    function populateFromPreview(car) {
+      const currentTitle = String(form.elements.title.value || "").trim();
+      populateForm(car);
+      if (currentTitle) {
+        form.elements.title.value = currentTitle;
+      }
+    }
+
+    async function buildFormPayload() {
+      const data = Object.fromEntries(new FormData(form).entries());
+      const files = Array.from(imageInput.files || []);
+      const selectedCategories = Array.from(
+        form.querySelectorAll('input[name="listingCategory"]:checked')
+      ).map((item) => item.value);
+      const mergedExtras = [...extras];
+      const images = await Promise.all(
+        files.map(async (file) => ({
+          fileName: file.name,
+          base64DataUrl: await fileToDataUrl(file)
+        }))
+      );
+
+      return {
+        car: {
+          title: data.title,
+          brand: data.brand,
+          model: data.model,
+          registration_date: data.registrationDate,
+          mileage: Number(data.mileage),
+          fuel: data.fuel,
+          price_eur: Number(data.price),
+          observations: data.observations || null,
+          seats: Number(data.seats) > 0 ? Number(data.seats) : null,
+          segment: data.segment || null,
+          power: data.power || null,
+          origin: data.origin || null,
+          engine_displacement: data.engineDisplacement || null,
+          transmission: data.transmission || null,
+          color: data.color || null,
+          doors: Number(data.doors) > 0 ? Number(data.doors) : null,
+          condition: data.condition || null,
+          warranty: data.warranty || null,
+          extras: mergedExtras
+        },
+        categories: selectedCategories,
+        images
+      };
+    }
+
     addExtraBtn.addEventListener("click", addExtra);
     extraInput.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
@@ -127,9 +463,22 @@
       }
     });
 
+    chooseImagesBtn.addEventListener("click", () => {
+      imageInput.click();
+    });
+
     imageInput.addEventListener("change", () => {
       previewGrid.innerHTML = "";
-      Array.from(imageInput.files || []).forEach((file) => {
+      const files = Array.from(imageInput.files || []);
+      if (files.length === 0) {
+        selectedImagesLabel.textContent = "Nenhum ficheiro selecionado";
+      } else if (files.length === 1) {
+        selectedImagesLabel.textContent = files[0].name;
+      } else {
+        selectedImagesLabel.textContent = `${files.length} ficheiros selecionados`;
+      }
+
+      files.forEach((file) => {
         const wrapper = document.createElement("div");
         wrapper.className = "overflow-hidden rounded-xl border border-slate-200 bg-white";
 
@@ -153,13 +502,192 @@
       extras.length = 0;
       renderExtras();
       previewGrid.innerHTML = "";
+      selectedImagesLabel.textContent = isEditing ? "Mantém as imagens atuais até gravares novas" : "Nenhum ficheiro selecionado";
+      setFormStatus("");
     });
 
-    form.addEventListener("submit", (event) => {
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
-      const data = Object.fromEntries(new FormData(form).entries());
-      const imageCount = (imageInput.files || []).length;
-      alert(`Carro pronto para importação.\n\n${data.brand} ${data.model} (${data.year})\nPreço: €${data.price}\nExtras: ${extras.length}\nImagens: ${imageCount}`);
+      const linkValue = sourceUrlInput.value.trim();
+      if (linkValue && !isEditing && sourceUrlInput.dataset.previewLoaded !== "1") {
+        await importFromUrl();
+        return;
+      }
+
+      const requiredFields = Array.from(form.querySelectorAll("[data-manual-required='true']"));
+      for (const field of requiredFields) {
+        const value = String(field.value || "").trim();
+        if (!value) {
+          setFormStatus("Preenche os campos obrigatórios ou usa um link para importação automática.", "error");
+          field.focus();
+          return;
+        }
+      }
+
+      const selectedCategoriesForValidation = Array.from(
+        form.querySelectorAll('input[name="listingCategory"]:checked')
+      ).map((item) => item.value);
+      if (selectedCategoriesForValidation.length === 0) {
+        setFormStatus("Seleciona pelo menos uma categoria.", "error");
+        return;
+      }
+
+      if (extras.length === 0) {
+        setFormStatus("Adiciona pelo menos um extra.", "error");
+        extraInput.focus();
+        return;
+      }
+
+      const hasSelectedImages = Array.from(imageInput.files || []).length > 0;
+      const hasImportedPreviewImages = Boolean(linkValue && sourceUrlInput.dataset.previewLoaded === "1");
+      if (!hasSelectedImages && !hasImportedPreviewImages && !isEditing) {
+        setFormStatus("Adiciona pelo menos uma imagem.", "error");
+        return;
+      }
+
+      setFormStatus(isEditing ? "A guardar alterações..." : "A importar carro...");
+
+      const allowed = await requireAdminAccess();
+      if (!allowed) return;
+
+      const sessionRaw = localStorage.getItem("autenticar_session_v1");
+      if (!sessionRaw) {
+        setFormStatus("Sessão não encontrada. Faz login primeiro.", "error");
+        return;
+      }
+
+      let session;
+      try {
+        session = JSON.parse(sessionRaw);
+      } catch {
+        setFormStatus("Sessão inválida. Faz login novamente.", "error");
+        return;
+      }
+
+      if (!session?.access_token) {
+        setFormStatus("Sessão inválida. Faz login novamente.", "error");
+        return;
+      }
+
+      try {
+        const payload = await buildFormPayload();
+        const selectedCategories = payload.categories;
+        const endpoint = isEditing
+          ? `/api/admin/cars/${encodeURIComponent(editingCarId)}`
+          : (linkValue ? "/api/admin/import-from-url" : "/api/admin/import-car");
+        const response = await fetch(endpoint, {
+          method: isEditing ? "PUT" : "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`
+          },
+          body: JSON.stringify(linkValue && !isEditing ? { url: linkValue, ...payload } : payload)
+        });
+
+        const result = await response.json();
+        if (!response.ok || !result.ok) {
+          setFormStatus(result.message || (isEditing ? "Erro ao guardar carro." : "Erro ao importar carro."), "error");
+          return;
+        }
+
+        setFormStatus(isEditing ? "Carro atualizado com sucesso." : "Carro importado com sucesso.", "success");
+        if (isEditing) {
+          populateForm({ ...payload.car, categories: selectedCategories, image_urls: result.car?.image_urls || [] });
+          imageInput.value = "";
+        } else {
+          form.reset();
+        }
+      } catch (_error) {
+        setFormStatus("Erro de ligação ao servidor.", "error");
+      }
+    });
+
+    async function importFromUrl() {
+      const url = sourceUrlInput.value.trim();
+      if (!url) return;
+      if (sourceUrlInput.dataset.loading === "1") return;
+      sourceUrlInput.dataset.loading = "1";
+
+      if (!url.includes("autenticar.pt/viaturas/")) {
+        setFormStatus("URL inválido. Usa um link de viatura da autenticar.pt.", "error");
+        sourceUrlInput.dataset.previewLoaded = "0";
+        sourceUrlInput.dataset.loading = "0";
+        return;
+      }
+
+      setFormStatus("A ler dados do link...");
+      const allowed = await requireAdminAccess();
+      if (!allowed) {
+        sourceUrlInput.dataset.loading = "0";
+        return;
+      }
+
+      const sessionRaw = localStorage.getItem("autenticar_session_v1");
+      const session = JSON.parse(sessionRaw || "{}");
+
+      try {
+        const response = await fetch("/api/admin/preview-import-from-url", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`
+          },
+          body: JSON.stringify({ url })
+        });
+        const result = await response.json();
+        if (!response.ok || !result.ok || !result.car) {
+          setFormStatus(result.message || "Falha ao ler o link.", "error");
+          sourceUrlInput.dataset.previewLoaded = "0";
+          sourceUrlInput.dataset.loading = "0";
+          return;
+        }
+        populateFromPreview(result.car);
+        sourceUrlInput.dataset.previewLoaded = "1";
+        setFormStatus("Dados carregados do link. Revê o formulário e grava quando estiver tudo certo.", "success");
+        sourceUrlInput.dataset.loading = "0";
+      } catch {
+        setFormStatus("Erro de ligação ao servidor.", "error");
+        sourceUrlInput.dataset.previewLoaded = "0";
+        sourceUrlInput.dataset.loading = "0";
+      }
+    }
+
+    async function loadCarForEditing() {
+      if (!isEditing) return;
+
+      setFormStatus("A carregar dados do carro...");
+      try {
+        const response = await fetch(`/api/cars/${encodeURIComponent(editingCarId)}`);
+        const result = await response.json();
+        if (!response.ok || !result.ok || !result.car) {
+          setFormStatus(result.message || "Não foi possível carregar o carro.", "error");
+          return;
+        }
+
+        populateForm(result.car);
+        setFormStatus("Podes editar os dados e guardar.", "neutral");
+      } catch {
+        setFormStatus("Erro de ligação ao servidor.", "error");
+      }
+    }
+
+    sourceUrlInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        importFromUrl();
+      }
+    });
+
+    sourceUrlInput.addEventListener("input", () => {
+      sourceUrlInput.dataset.previewLoaded = "0";
+    });
+
+    requireAdminAccess().then((allowed) => {
+      if (!allowed) return;
+      renderExtras();
+      if (isEditing) {
+        loadCarForEditing();
+      }
     });
   </script>
 </body>
