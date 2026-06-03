@@ -317,6 +317,11 @@
 </div>
 </footer>
 <script>
+  const apiBase = window.location.protocol === "file:" ? "http://127.0.0.1:3000" : "";
+  async function apiFetch(path, options) {
+    return fetch(`${apiBase}${path}`, options);
+  }
+
   (function () {
     const categoryMap = {
       "primeiro-carro.html": "primeiro-carro",
@@ -350,7 +355,7 @@
 
     async function loadCategoryCars() {
       try {
-        const response = await fetch(`/api/cars?category=${encodeURIComponent(category)}&limit=100`);
+        const response = await apiFetch(`/api/cars?category=${encodeURIComponent(category)}&limit=100`);
         const data = await response.json();
         if (!response.ok || !data.ok || !Array.isArray(data.cars) || data.cars.length === 0) {
           renderEmpty();

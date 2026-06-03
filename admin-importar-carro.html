@@ -231,6 +231,11 @@
   </main>
 
   <script>
+    const apiBase = window.location.protocol === "file:" ? "http://127.0.0.1:3000" : "";
+    async function apiFetch(path, options) {
+      return fetch(`${apiBase}${path}`, options);
+    }
+
     const pageTitle = document.getElementById("pageTitle");
     const submitButton = document.getElementById("submitButton");
     const extraInput = document.getElementById("extraInput");
@@ -281,7 +286,7 @@
       }
 
       try {
-        const response = await fetch("/api/auth/session-info", {
+        const response = await apiFetch("/api/auth/session-info", {
           headers: { Authorization: `Bearer ${session.access_token}` }
         });
         const data = await response.json();
@@ -575,7 +580,7 @@
         const endpoint = isEditing
           ? `/api/admin/cars/${encodeURIComponent(editingCarId)}`
           : (linkValue ? "/api/admin/import-from-url" : "/api/admin/import-car");
-        const response = await fetch(endpoint, {
+        const response = await apiFetch(endpoint, {
           method: isEditing ? "PUT" : "POST",
           headers: {
             "Content-Type": "application/json",
@@ -626,7 +631,7 @@
       const session = JSON.parse(sessionRaw || "{}");
 
       try {
-        const response = await fetch("/api/admin/preview-import-from-url", {
+        const response = await apiFetch("/api/admin/preview-import-from-url", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -657,7 +662,7 @@
 
       setFormStatus("A carregar dados do carro...");
       try {
-        const response = await fetch(`/api/cars/${encodeURIComponent(editingCarId)}`);
+        const response = await apiFetch(`/api/cars/${encodeURIComponent(editingCarId)}`);
         const result = await response.json();
         if (!response.ok || !result.ok || !result.car) {
           setFormStatus(result.message || "Não foi possível carregar o carro.", "error");

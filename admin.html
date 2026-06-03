@@ -199,6 +199,11 @@
   </nav>
 
   <script>
+    const apiBase = window.location.protocol === "file:" ? "http://127.0.0.1:3000" : "";
+    async function apiFetch(path, options) {
+      return fetch(`${apiBase}${path}`, options);
+    }
+
     async function requireAdminAccess() {
       const sessionRaw = localStorage.getItem("autenticar_session_v1");
       if (!sessionRaw) {
@@ -217,7 +222,7 @@
         return false;
       }
       try {
-        const response = await fetch("/api/auth/session-info", {
+        const response = await apiFetch("/api/auth/session-info", {
           headers: { Authorization: `Bearer ${session.access_token}` }
         });
         const data = await response.json();
@@ -263,7 +268,7 @@
     }
 
     async function loadListingsFromServer() {
-      const response = await fetch("/api/cars?limit=100");
+      const response = await apiFetch("/api/cars?limit=100");
       const result = await response.json();
       if (!response.ok || !result.ok) {
         throw new Error(result.message || "Não foi possível carregar os carros.");
@@ -419,7 +424,7 @@
       }
 
       try {
-        const response = await fetch(`/api/admin/cars/${encodeURIComponent(id)}`, {
+        const response = await apiFetch(`/api/admin/cars/${encodeURIComponent(id)}`, {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${session.access_token}`
@@ -443,7 +448,7 @@
       if (!statusEl) return;
 
       try {
-        const response = await fetch("/api/db/health");
+        const response = await apiFetch("/api/db/health");
         const data = await response.json();
 
         if (!response.ok || !data.ok) {

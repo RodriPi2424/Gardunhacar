@@ -370,11 +370,16 @@ Voltar às categorias
 </a>
 </nav>
 <script>
+  const apiBase = window.location.protocol === "file:" ? "http://127.0.0.1:3000" : "";
+  async function apiFetch(path, options) {
+    return fetch(`${apiBase}${path}`, options);
+  }
+
   async function loadFeaturedCars() {
     const container = document.getElementById("featuredCarsGrid");
     if (!container) return;
     try {
-      const response = await fetch("/api/cars?category=destaque&limit=8");
+      const response = await apiFetch("/api/cars?category=destaque&limit=8");
       const data = await response.json();
       if (!response.ok || !data.ok || !Array.isArray(data.cars) || data.cars.length === 0) {
         return;
