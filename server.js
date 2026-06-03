@@ -672,12 +672,24 @@ app.get("/api/auth/session-info", async (req, res) => {
 });
 
 app.get("/api/db/health", (_req, res) => {
-  try {
-    assertSupabaseConfigured();
-    return res.json({ ok: true, serverTime: new Date().toISOString() });
-  } catch (error) {
-    return res.status(500).json({ ok: false, message: error.message });
-  }
+  (async () => {
+    try {
+      assertSupabaseConfigured();
+
+      const { error } = await supabase
+        .from("cars")
+        .select("id", { head: true, count: "exact" })
+        .limit(1);
+
+      if (error) {
+        return res.status(500).json({ ok: false, message: error.message });
+      }
+
+      return res.json({ ok: true, serverTime: new Date().toISOString() });
+    } catch (error) {
+      return res.status(500).json({ ok: false, message: error.message });
+    }
+  })();
 });
 
 app.get("/api/cars", async (req, res) => {
@@ -706,7 +718,8 @@ app.get("/api/cars", async (req, res) => {
       const legacy = await supabase
         .from("cars")
         .select("id,title,brand,model,registration_date,mileage,fuel,price_eur,image_urls,extras,categories,created_at")
-        .contains("extras", [`categoria:${category}`])
+        // `extras` is jsonb, so the contains filter must use a JSON literal.
+        .filter("extras", "cs", JSON.stringify([`categoria:${category}`]))
         .order("created_at", { ascending: false })
         .limit(limit);
       if (!legacy.error && Array.isArray(legacy.data)) {
