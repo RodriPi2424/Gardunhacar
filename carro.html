@@ -253,6 +253,21 @@
         width: 100%;
         max-width: none;
       }
+      .test-drive-backdrop {
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      .test-drive-backdrop > .mx-auto {
+        min-height: 100%;
+        align-items: flex-start;
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+      .test-drive-card {
+        margin-top: auto;
+        margin-bottom: auto;
+        border-radius: 28px;
+      }
       #carTitle {
         font-size: clamp(2.5rem, 12vw, 4rem);
         line-height: 0.94;
@@ -285,6 +300,19 @@
       }
       .hero-price-card .rounded-2xl {
         padding: 0.875rem;
+      }
+      .test-drive-backdrop {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+      }
+      .test-drive-backdrop > .mx-auto {
+        align-items: flex-start;
+      }
+      .test-drive-card {
+        padding: 1.25rem;
+        border-radius: 26px;
       }
       .gallery-modal-stage {
         max-height: calc(100vh - 176px);
@@ -831,11 +859,13 @@
       showTestDriveStep("date");
       testDriveModal.classList.remove("hidden");
       document.body.classList.add("overflow-hidden");
+      testDriveModal.scrollTop = 0;
       renderCalendar();
     }
 
     function closeTestDrive() {
       testDriveModal.classList.add("hidden");
+      testDriveModal.scrollTop = 0;
       document.body.classList.remove("overflow-hidden");
       setTestDriveFeedback();
       showTestDriveStep("date");
