@@ -154,7 +154,8 @@
       background: rgba(21, 62, 77, 0.78);
       border: 1px solid rgba(255, 255, 255, 0.14);
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.26);
-      width: min(100%, 430px);
+      width: 100%;
+      max-width: 430px;
     }
     .gallery-modal-backdrop {
       background: rgba(1, 15, 22, 0.9);
@@ -210,11 +211,86 @@
       box-shadow: none;
     }
     @media (max-width: 767px) {
+      .hero-media {
+        height: auto !important;
+        min-height: 0 !important;
+      }
+      .hero-media::after {
+        background:
+          linear-gradient(180deg, rgba(0, 22, 31, 0.28) 0%, rgba(0, 22, 31, 0.42) 34%, rgba(0, 22, 31, 0.9) 100%),
+          linear-gradient(180deg, rgba(0, 22, 31, 0.48) 0%, rgba(0, 22, 31, 0.08) 24%, rgba(0, 22, 31, 0.52) 100%);
+      }
+      .hero-media > .relative.z-20 {
+        height: auto !important;
+        min-height: 0 !important;
+        justify-content: flex-end;
+        padding-top: 6.5rem;
+        padding-bottom: 2rem;
+      }
+      .hero-media > .relative.z-20 > .grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1.5rem;
+      }
+      .hero-copy {
+        max-width: none;
+        min-width: 0;
+        min-height: 0 !important;
+      }
+      .gallery-rail {
+        display: block;
+        width: 100%;
+        max-width: none;
+        padding: 10px;
+        border-radius: 24px;
+      }
+      .gallery-scroll {
+        padding-bottom: 4px;
+        mask-image: none;
+        -webkit-mask-image: none;
+      }
+      .hero-price-card {
+        min-width: 0;
+        width: 100%;
+        max-width: none;
+      }
+      #carTitle {
+        font-size: clamp(2.5rem, 12vw, 4rem);
+        line-height: 0.94;
+      }
+      #priceLabel {
+        font-size: clamp(2.75rem, 13vw, 4rem);
+        line-height: 0.92;
+      }
       .gallery-modal-stage {
         max-height: calc(100vh - 190px);
       }
       .gallery-modal-stage img {
         max-height: calc(100vh - 220px);
+      }
+    }
+    @media (max-width: 479px) {
+      .hero-media > .relative.z-20 {
+        padding-top: 6rem;
+        padding-bottom: 1.5rem;
+      }
+      .hero-copy .gallery-rail {
+        margin-top: 1.75rem;
+      }
+      .hero-price-card {
+        padding: 1.25rem;
+        border-radius: 26px;
+      }
+      .hero-price-card .grid {
+        gap: 0.625rem;
+      }
+      .hero-price-card .rounded-2xl {
+        padding: 0.875rem;
+      }
+      .gallery-modal-stage {
+        max-height: calc(100vh - 176px);
+      }
+      .gallery-modal-stage img {
+        max-height: calc(100vh - 206px);
       }
     }
     @media (min-width: 1024px) {
@@ -224,6 +300,7 @@
       }
       .hero-price-card {
         width: 400px;
+        max-width: 400px;
         min-height: 500px;
       }
     }

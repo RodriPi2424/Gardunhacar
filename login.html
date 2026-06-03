@@ -76,12 +76,12 @@
             </div>
             <div>
               <label class="block text-sm font-semibold mb-2" for="loginPassword">Palavra-passe</label>
-              <input id="loginPassword" type="password" placeholder="••••••••" required class="w-full h-12 rounded-lg border border-white/40 bg-white/95 text-on-surface px-4 focus:ring-1 focus:ring-primary focus:border-primary outline-none"/>
+              <input id="loginPassword" type="password" placeholder="????????" required class="w-full h-12 rounded-lg border border-white/40 bg-white/95 text-on-surface px-4 focus:ring-1 focus:ring-primary focus:border-primary outline-none"/>
             </div>
             <div class="flex items-center justify-between text-sm">
               <label class="flex items-center gap-2 cursor-pointer text-white/85">
                 <input type="checkbox" class="rounded border-white/50 text-primary focus:ring-primary"/>
-                <span>Lembrar sessão</span>
+                <span>Lembrar sessÃ£o</span>
               </label>
               <a href="#" class="font-semibold text-white hover:underline">Esqueceu-se?</a>
             </div>
@@ -101,7 +101,7 @@
             </div>
             <div>
               <label class="block text-sm font-semibold mb-2" for="registerPassword">Palavra-passe</label>
-              <input id="registerPassword" type="password" placeholder="mínimo 8 caracteres" class="w-full h-12 rounded-lg border border-white/40 bg-white/95 text-on-surface px-4 focus:ring-1 focus:ring-primary focus:border-primary outline-none"/>
+              <input id="registerPassword" type="password" placeholder="m?nimo 8 caracteres" class="w-full h-12 rounded-lg border border-white/40 bg-white/95 text-on-surface px-4 focus:ring-1 focus:ring-primary focus:border-primary outline-none"/>
             </div>
             <button type="submit" class="w-full h-12 rounded-lg bg-white text-primary font-extrabold hover:bg-white/90 transition-colors">
               Criar conta
@@ -111,7 +111,7 @@
           <p id="statusMessage" class="text-sm mt-4"></p>
 
             <p class="text-sm text-white/85 mt-5">
-              Ainda não tem conta?
+              Ainda nÃ£o tem conta?
               <a href="#" id="showRegister" class="text-white font-bold hover:underline">Criar conta</a>
             </p>
           </div>
@@ -211,7 +211,7 @@
       const email = document.getElementById("loginEmail").value.trim();
       const password = document.getElementById("loginPassword").value;
 
-      setMessage("A iniciar sessão...");
+      setMessage("A iniciar sess?o...");
 
       try {
         const response = await apiFetch("/api/auth/login", {
@@ -223,7 +223,7 @@
         const data = await response.json();
 
         if (!response.ok || !data.ok) {
-          setMessage(data.message || "Não foi possível iniciar sessão.", "error");
+          setMessage(data.message || "NÃ£o foi possÃ­vel iniciar sessÃ£o.", "error");
           return;
         }
 
@@ -234,14 +234,14 @@
           localStorage.setItem("autenticar_user_v1", JSON.stringify(data.user));
         }
 
-        setMessage("Sessão iniciada com sucesso. A redirecionar...", "success");
+        setMessage("SessÃ£o iniciada com sucesso. A redirecionar...", "success");
         setTimeout(async () => {
           const params = new URLSearchParams(window.location.search);
           const next = params.get("next");
           await routeBySession(data.session, next);
         }, 700);
       } catch (_err) {
-        setMessage("Erro de ligação ao servidor.", "error");
+        setMessage("Erro de liga??o ao servidor.", "error");
       }
     });
 
@@ -264,14 +264,14 @@
         const data = await response.json();
 
         if (!response.ok || !data.ok) {
-          setMessage(data.message || "Não foi possível criar conta.", "error");
+          setMessage(data.message || "NÃ£o foi possÃ­vel criar conta.", "error");
           return;
         }
 
         registerForm.reset();
-        setMessage(data.message || "Conta criada com sucesso. Já pode entrar.", "success");
+        setMessage(data.message || "Conta criada com sucesso. J? pode entrar.", "success");
       } catch (_err) {
-        setMessage("Erro de ligação ao servidor.", "error");
+        setMessage("Erro de liga??o ao servidor.", "error");
       }
     });
 
