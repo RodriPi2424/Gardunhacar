@@ -21,6 +21,16 @@
     return String(value || "").replace(/\s+/g, " ").trim();
   }
 
+  function slugify(value) {
+    return sanitizeText(value)
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .replace(/-{2,}/g, "-");
+  }
+
   function normalizeIsoDate(value) {
     const raw = sanitizeText(value);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(raw)) return "";
@@ -139,7 +149,7 @@
     return { mimeType, bytes };
   }
 
-  async function uploadImages(userClient, images) {
+  async function uploadImages(userClient, images, folder = "cars") {
     const imageUrls = [];
     const safeImages = Array.isArray(images) ? images : [];
 
@@ -150,7 +160,7 @@
       if (!decoded) continue;
 
       const ext = (decoded.mimeType.split("/")[1] || "jpg").toLowerCase();
-      const uploadPath = "cars/" + Date.now() + "-" + Math.random().toString(36).slice(2, 10) + "." + ext;
+      const uploadPath = folder + "/" + Date.now() + "-" + Math.random().toString(36).slice(2, 10) + "." + ext;
       const { error } = await userClient.storage
         .from(STORAGE_BUCKET)
         .upload(uploadPath, decoded.bytes, {
@@ -200,6 +210,82 @@
     }
 
     return { ok: true, cars, status: 200 };
+  }
+
+  async function fetchPostsDirect(category, limit) {
+    let query = browserClient
+      .from("posts")
+      .select("id,title,slug,excerpt,content,category,cover_image_url,image_urls,featured,published_at,created_at,updated_at")
+      .order("featured", { ascending: false })
+      .order("published_at", { ascending: false })
+      .limit(limit);
+
+    if (category) {
+      query = query.eq("category", category);
+    }
+
+    const { data, error } = await query;
+    if (error) {
+      return { ok: false, message: error.message, status: 400 };
+    }
+
+    return { ok: true, posts: data || [], status: 200 };
+  }
+
+  async function ensureUniquePostSlug(userClient, slug, currentPostId) {
+    let candidate = slug || ("post-" + Date.now());
+    let suffix = 2;
+
+    for (;;) {
+      const { data, error } = await userClient
+        .from("posts")
+        .select("id")
+        .eq("slug", candidate)
+        .maybeSingle();
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (!data || String(data.id || "") === String(currentPostId || "")) {
+        return candidate;
+      }
+
+      candidate = slug + "-" + suffix;
+      suffix += 1;
+    }
+  }
+
+  function validatePostPayload(post, imageUrls) {
+    if (!post || typeof post !== "object") {
+      return "Dados do post em falta.";
+    }
+    if (!sanitizeText(post.title) || !sanitizeText(post.excerpt) || !sanitizeText(post.content)) {
+      return "Preenche titulo, resumo e conteudo do post.";
+    }
+    if (!["guias", "mercado", "noticias", "manutencao"].includes(sanitizeText(post.category).toLowerCase())) {
+      return "Seleciona uma categoria valida para o post.";
+    }
+    if (!Array.isArray(imageUrls) || imageUrls.length === 0) {
+      return "Adiciona pelo menos uma imagem ao post.";
+    }
+    return "";
+  }
+
+  function normalizePostPayload(post, imageUrls) {
+    const cleanImages = Array.isArray(imageUrls) ? imageUrls.filter(Boolean) : [];
+    return {
+      title: sanitizeText(post.title),
+      slug: slugify(post.slug || post.title),
+      excerpt: sanitizeText(post.excerpt),
+      content: String(post.content || "").trim(),
+      category: sanitizeText(post.category).toLowerCase() || "noticias",
+      featured: Boolean(post.featured),
+      published_at: post.published_at ? new Date(post.published_at).toISOString() : new Date().toISOString(),
+      cover_image_url: sanitizeText(post.cover_image_url) || cleanImages[0] || null,
+      image_urls: cleanImages,
+      updated_at: new Date().toISOString()
+    };
   }
 
   async function handleSessionInfo(options) {
@@ -318,6 +404,16 @@
     );
   }
 
+  async function handlePostsList(url) {
+    const category = sanitizeText(url.searchParams.get("category")).toLowerCase();
+    const limit = Math.min(Math.max(parseInt(url.searchParams.get("limit") || "24", 10) || 24, 1), 100);
+    const result = await fetchPostsDirect(category, limit);
+    return jsonResponse(
+      result.ok ? { ok: true, posts: result.posts } : { ok: false, message: result.message },
+      result.status
+    );
+  }
+
   async function handleCarDetail(pathname) {
     const parts = pathname.split("/").filter(Boolean);
     const carId = parts[2] || "";
@@ -337,6 +433,26 @@
     }
 
     return jsonResponse({ ok: true, car: data }, 200);
+  }
+
+  async function handlePostDetail(pathname) {
+    const slug = slugify(pathname.split("/").filter(Boolean)[2] || "");
+
+    const { data, error } = await browserClient
+      .from("posts")
+      .select("id,title,slug,excerpt,content,category,cover_image_url,image_urls,featured,published_at,created_at,updated_at")
+      .eq("slug", slug)
+      .maybeSingle();
+
+    if (error) {
+      return jsonResponse({ ok: false, message: error.message }, 400);
+    }
+
+    if (!data) {
+      return jsonResponse({ ok: false, message: "Post nao encontrado." }, 404);
+    }
+
+    return jsonResponse({ ok: true, post: data }, 200);
   }
 
   async function handleTestDrive(options) {
@@ -393,7 +509,11 @@
       return jsonResponse({ ok: false, message: error.message }, 400);
     }
 
-    return jsonResponse({ ok: true, message: "Pedido de test drive registado com sucesso." }, 201);
+    return jsonResponse({
+      ok: true,
+      message: "Pedido de test drive registado com sucesso.",
+      warning: "Pedido guardado. O email de notificacao so e enviado quando o backend Node/Express esta ativo."
+    }, 201);
   }
 
   async function handleDeleteCar(pathname, options) {
@@ -486,6 +606,86 @@
     return jsonResponse({ ok: true, car: data }, isUpdate ? 200 : 201);
   }
 
+  async function handleAdminPosts(options) {
+    const token = getBearerToken(options);
+    const { user, error: authError } = await getUserFromToken(token);
+    if (authError || !user || !isAdminUser(user)) {
+      return jsonResponse({ ok: false, message: "Acesso negado: apenas admins podem gerir posts." }, 403);
+    }
+
+    const userClient = createAuthedClient(token);
+    const { data, error } = await userClient
+      .from("posts")
+      .select("id,title,slug,excerpt,category,cover_image_url,image_urls,featured,published_at,created_at")
+      .order("featured", { ascending: false })
+      .order("published_at", { ascending: false });
+
+    if (error) {
+      return jsonResponse({ ok: false, message: error.message }, 400);
+    }
+
+    return jsonResponse({ ok: true, posts: data || [] }, 200);
+  }
+
+  async function handleCreatePost(options) {
+    const token = getBearerToken(options);
+    const { user, error: authError } = await getUserFromToken(token);
+    if (authError || !user || !isAdminUser(user)) {
+      return jsonResponse({ ok: false, message: "Acesso negado: apenas admins podem gerir posts." }, 403);
+    }
+
+    const payload = JSON.parse(options?.body || "{}");
+    const post = payload.post && typeof payload.post === "object" ? payload.post : null;
+    const images = Array.isArray(payload.images) ? payload.images : [];
+
+    if (!post) {
+      return jsonResponse({ ok: false, message: "Dados do post em falta." }, 400);
+    }
+
+    const userClient = createAuthedClient(token);
+    const uploadResult = await uploadImages(userClient, images, "posts");
+    if (uploadResult.error) {
+      return jsonResponse({ ok: false, message: uploadResult.error }, 400);
+    }
+
+    const dbPayload = normalizePostPayload(post, uploadResult.imageUrls || []);
+    dbPayload.slug = await ensureUniquePostSlug(userClient, dbPayload.slug);
+
+    const validationError = validatePostPayload(dbPayload, dbPayload.image_urls);
+    if (validationError) {
+      return jsonResponse({ ok: false, message: validationError }, 400);
+    }
+
+    const { data, error } = await userClient
+      .from("posts")
+      .insert(dbPayload)
+      .select("id,title,slug,excerpt,category,cover_image_url,image_urls,featured,published_at,created_at")
+      .single();
+
+    if (error) {
+      return jsonResponse({ ok: false, message: error.message }, 400);
+    }
+
+    return jsonResponse({ ok: true, post: data }, 201);
+  }
+
+  async function handleDeletePost(pathname, options) {
+    const token = getBearerToken(options);
+    const { user, error: authError } = await getUserFromToken(token);
+    if (authError || !user || !isAdminUser(user)) {
+      return jsonResponse({ ok: false, message: "Acesso negado: apenas admins podem gerir posts." }, 403);
+    }
+
+    const postId = pathname.split("/").filter(Boolean)[3] || "";
+    const userClient = createAuthedClient(token);
+    const { error } = await userClient.from("posts").delete().eq("id", postId);
+    if (error) {
+      return jsonResponse({ ok: false, message: error.message }, 400);
+    }
+
+    return jsonResponse({ ok: true }, 200);
+  }
+
   function unsupportedImportMessage() {
     return jsonResponse({
       ok: false,
@@ -516,8 +716,23 @@
     if (pathname.startsWith("/api/cars/") && method === "GET") {
       return handleCarDetail(pathname);
     }
+    if (pathname === "/api/posts" && method === "GET") {
+      return handlePostsList(url);
+    }
+    if (pathname.startsWith("/api/posts/") && method === "GET") {
+      return handlePostDetail(pathname);
+    }
     if (pathname === "/api/test-drive-requests" && method === "POST") {
       return handleTestDrive(options);
+    }
+    if (pathname === "/api/admin/posts" && method === "GET") {
+      return handleAdminPosts(options);
+    }
+    if (pathname === "/api/admin/posts" && method === "POST") {
+      return handleCreatePost(options);
+    }
+    if (pathname.startsWith("/api/admin/posts/") && method === "DELETE") {
+      return handleDeletePost(pathname, options);
     }
     if (pathname.startsWith("/api/admin/cars/") && method === "DELETE") {
       return handleDeleteCar(pathname, options);

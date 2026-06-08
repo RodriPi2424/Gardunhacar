@@ -14,7 +14,7 @@ const supabaseUrl = process.env.SUPABASE_URL || "";
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || "";
 const testDriveNotificationEmail = process.env.TEST_DRIVE_NOTIFICATION_EMAIL || "rodrigo.pinto@autenticar.pt";
 const resendApiKey = process.env.RESEND_API_KEY || "";
-const resendFromEmail = process.env.RESEND_FROM_EMAIL || "";
+const resendFromEmail = process.env.RESEND_FROM_EMAIL || "Autenticar <onboarding@resend.dev>";
 
 const supabase = supabaseUrl && supabaseAnonKey
   ? createClient(supabaseUrl, supabaseAnonKey, {
@@ -67,7 +67,17 @@ async function getAdminContext(authHeader) {
   return { token, user: userData.user, userClient };
 }
 
-async function uploadCarImages(userClient, images) {
+function slugify(value) {
+  return sanitizeText(value)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .replace(/-{2,}/g, "-");
+}
+
+async function uploadImagesToFolder(userClient, images, folder) {
   const imageUrls = [];
   const safeImages = Array.isArray(images) ? images : [];
 
@@ -81,7 +91,7 @@ async function uploadCarImages(userClient, images) {
     const base64 = match[2];
     const bytes = Buffer.from(base64, "base64");
     const ext = (mimeType.split("/")[1] || "jpg").toLowerCase();
-    const uploadPath = `cars/${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${ext}`;
+    const uploadPath = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${ext}`;
 
     const { error: uploadError } = await userClient.storage
       .from("car-photos")
@@ -98,6 +108,14 @@ async function uploadCarImages(userClient, images) {
   }
 
   return imageUrls;
+}
+
+async function uploadCarImages(userClient, images) {
+  return uploadImagesToFolder(userClient, images, "cars");
+}
+
+async function uploadPostImages(userClient, images) {
+  return uploadImagesToFolder(userClient, images, "posts");
 }
 
 async function fetchListingPage(url) {
@@ -189,6 +207,77 @@ function validateCarPayload(car, categories, imageUrls = []) {
   return null;
 }
 
+function validatePostPayload(post, imageUrls = []) {
+  if (!post || typeof post !== "object") {
+    return "Dados do post em falta.";
+  }
+
+  if (!sanitizeText(post.title) || !sanitizeText(post.excerpt) || !sanitizeText(post.content)) {
+    return "Preenche titulo, resumo e conteudo do post.";
+  }
+
+  const category = sanitizeText(post.category).toLowerCase();
+  if (!["guias", "mercado", "noticias", "manutencao"].includes(category)) {
+    return "Seleciona uma categoria valida para o post.";
+  }
+
+  if (!Array.isArray(imageUrls) || imageUrls.length === 0) {
+    return "Adiciona pelo menos uma imagem ao post.";
+  }
+
+  return null;
+}
+
+function normalizePostPayload(post, imageUrls, existingPost = null) {
+  const title = sanitizeText(post.title);
+  const excerpt = sanitizeText(post.excerpt);
+  const content = String(post.content || "").trim();
+  const category = sanitizeText(post.category).toLowerCase() || "noticias";
+  const requestedSlug = slugify(post.slug || title);
+  const existingImages = Array.isArray(existingPost?.image_urls) ? existingPost.image_urls.filter(Boolean) : [];
+  const finalImages = Array.isArray(imageUrls) && imageUrls.length > 0 ? imageUrls : existingImages;
+  const coverImageUrl = sanitizeText(post.cover_image_url) || finalImages[0] || sanitizeText(existingPost?.cover_image_url);
+
+  return {
+    title,
+    slug: requestedSlug,
+    excerpt,
+    content,
+    category,
+    featured: Boolean(post.featured),
+    published_at: post.published_at ? new Date(post.published_at).toISOString() : (existingPost?.published_at || new Date().toISOString()),
+    cover_image_url: coverImageUrl || null,
+    image_urls: finalImages,
+    updated_at: new Date().toISOString()
+  };
+}
+
+async function ensureUniquePostSlug(client, slug, currentPostId = "") {
+  let candidate = slug || `post-${Date.now()}`;
+  let suffix = 2;
+
+  for (;;) {
+    const { data, error } = await client
+      .from("posts")
+      .select("id")
+      .eq("slug", candidate)
+      .maybeSingle();
+
+    if (error) {
+      const wrappedError = new Error(error.message);
+      wrappedError.statusCode = 400;
+      throw wrappedError;
+    }
+
+    if (!data || String(data.id || "") === String(currentPostId || "")) {
+      return candidate;
+    }
+
+    candidate = `${slug}-${suffix}`;
+    suffix += 1;
+  }
+}
+
 function sanitizeText(value) {
   return String(value || "").replace(/\s+/g, " ").trim();
 }
@@ -265,10 +354,33 @@ function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
+function getTestDriveEmailStatus() {
+  const missingKeys = [
+    !resendApiKey ? "RESEND_API_KEY" : null,
+    !resendFromEmail ? "RESEND_FROM_EMAIL" : null,
+    !testDriveNotificationEmail ? "TEST_DRIVE_NOTIFICATION_EMAIL" : null
+  ].filter(Boolean);
+
+  return {
+    configured: missingKeys.length === 0,
+    provider: "resend",
+    fromConfigured: Boolean(resendFromEmail),
+    toConfigured: Boolean(testDriveNotificationEmail),
+    missingKeys
+  };
+}
+
 async function sendTestDriveNotificationEmail({ carTitle, requestedDate, customerName, customerEmail, customerPhone }) {
-  if (!resendApiKey || !resendFromEmail || !testDriveNotificationEmail) {
-    console.warn("Test drive notification skipped: missing RESEND_API_KEY, RESEND_FROM_EMAIL, or TEST_DRIVE_NOTIFICATION_EMAIL.");
-    return { skipped: true };
+  const emailStatus = getTestDriveEmailStatus();
+  if (!emailStatus.configured) {
+    const missingKeys = emailStatus.missingKeys;
+    console.warn(`Test drive notification skipped: missing ${missingKeys.join(", ")}.`);
+    return {
+      ok: false,
+      skipped: true,
+      reason: "missing_config",
+      missingKeys
+    };
   }
 
   const formattedDate = new Date(`${requestedDate}T00:00:00`)
@@ -318,6 +430,7 @@ async function sendTestDriveNotificationEmail({ carTitle, requestedDate, custome
     body: JSON.stringify({
       from: resendFromEmail,
       to: [testDriveNotificationEmail],
+      reply_to: customerEmail,
       subject,
       text,
       html
@@ -329,7 +442,13 @@ async function sendTestDriveNotificationEmail({ carTitle, requestedDate, custome
     throw new Error(`Resend API error (${response.status}): ${details}`);
   }
 
-  return response.json();
+  const result = await response.json();
+  return {
+    ok: true,
+    skipped: false,
+    provider: "resend",
+    id: result?.id || null
+  };
 }
 
 function extractListingDetails(html) {
@@ -554,6 +673,13 @@ app.get("/", (_req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
+app.get("/api/test-drive-email/status", (_req, res) => {
+  res.json({
+    ok: true,
+    email: getTestDriveEmailStatus()
+  });
+});
+
 app.post("/api/auth/register", async (req, res) => {
   const { name, email, password } = req.body || {};
 
@@ -763,6 +889,65 @@ app.get("/api/cars/:id", async (req, res) => {
   }
 });
 
+app.get("/api/posts", async (req, res) => {
+  const limit = Math.min(Math.max(Number.parseInt(String(req.query.limit || "24"), 10) || 24, 1), 100);
+  const category = sanitizeText(req.query.category).toLowerCase();
+
+  try {
+    assertSupabaseConfigured();
+
+    let query = supabase
+      .from("posts")
+      .select("id,title,slug,excerpt,content,category,cover_image_url,image_urls,featured,published_at,created_at,updated_at")
+      .order("featured", { ascending: false })
+      .order("published_at", { ascending: false })
+      .limit(limit);
+
+    if (category) {
+      query = query.eq("category", category);
+    }
+
+    const { data, error } = await query;
+    if (error) {
+      return res.status(400).json({ ok: false, message: error.message });
+    }
+
+    return res.json({ ok: true, posts: data || [] });
+  } catch (error) {
+    return res.status(500).json({ ok: false, message: "Erro ao listar posts.", error: error.message });
+  }
+});
+
+app.get("/api/posts/:slug", async (req, res) => {
+  const slug = slugify(req.params.slug);
+
+  if (!slug) {
+    return res.status(400).json({ ok: false, message: "Slug do post em falta." });
+  }
+
+  try {
+    assertSupabaseConfigured();
+
+    const { data, error } = await supabase
+      .from("posts")
+      .select("id,title,slug,excerpt,content,category,cover_image_url,image_urls,featured,published_at,created_at,updated_at")
+      .eq("slug", slug)
+      .maybeSingle();
+
+    if (error) {
+      return res.status(400).json({ ok: false, message: error.message });
+    }
+
+    if (!data) {
+      return res.status(404).json({ ok: false, message: "Post nao encontrado." });
+    }
+
+    return res.json({ ok: true, post: data });
+  } catch (error) {
+    return res.status(500).json({ ok: false, message: "Erro ao carregar o post.", error: error.message });
+  }
+});
+
 app.post("/api/test-drive-requests", async (req, res) => {
   const carId = sanitizeText(req.body?.carId);
   const requestedDate = normalizeIsoDate(req.body?.requestedDate);
@@ -820,8 +1005,9 @@ app.post("/api/test-drive-requests", async (req, res) => {
       return res.status(400).json({ ok: false, message: error.message });
     }
 
+    let notificationResult = { ok: false, skipped: true, reason: "unknown" };
     try {
-      await sendTestDriveNotificationEmail({
+      notificationResult = await sendTestDriveNotificationEmail({
         carTitle,
         requestedDate,
         customerName,
@@ -830,11 +1016,107 @@ app.post("/api/test-drive-requests", async (req, res) => {
       });
     } catch (notificationError) {
       console.error("Failed to send test drive notification email:", notificationError);
+      notificationResult = {
+        ok: false,
+        skipped: false,
+        reason: "send_failed",
+        message: notificationError.message
+      };
     }
 
-    return res.status(201).json({ ok: true, message: "Pedido de test drive registado com sucesso." });
+    const warning = notificationResult.ok
+      ? ""
+      : notificationResult.reason === "missing_config"
+        ? `Pedido guardado, mas o email nao foi enviado porque faltam variaveis: ${(notificationResult.missingKeys || []).join(", ")}.`
+        : "Pedido guardado, mas o email de notificacao falhou.";
+
+    return res.status(201).json({
+      ok: true,
+      message: "Pedido de test drive registado com sucesso.",
+      warning,
+      notification: notificationResult
+    });
   } catch (error) {
     return res.status(500).json({ ok: false, message: "Erro ao registar o pedido de test drive.", error: error.message });
+  }
+});
+
+app.get("/api/admin/posts", async (req, res) => {
+  const authHeader = req.headers.authorization || "";
+
+  try {
+    const { userClient } = await getAdminContext(authHeader);
+    const { data, error } = await userClient
+      .from("posts")
+      .select("id,title,slug,excerpt,category,cover_image_url,image_urls,featured,published_at,created_at")
+      .order("featured", { ascending: false })
+      .order("published_at", { ascending: false });
+
+    if (error) {
+      return res.status(400).json({ ok: false, message: error.message });
+    }
+
+    return res.json({ ok: true, posts: data || [] });
+  } catch (error) {
+    return res.status(error.statusCode || 500).json({ ok: false, message: error.message, error: error.statusCode ? undefined : error.message });
+  }
+});
+
+app.post("/api/admin/posts", async (req, res) => {
+  const authHeader = req.headers.authorization || "";
+  const post = req.body?.post && typeof req.body.post === "object" ? req.body.post : null;
+  const images = Array.isArray(req.body?.images) ? req.body.images : [];
+
+  if (!post) {
+    return res.status(400).json({ ok: false, message: "Dados do post em falta." });
+  }
+
+  try {
+    const { userClient } = await getAdminContext(authHeader);
+    const uploadedImages = await uploadPostImages(userClient, images);
+    const payload = normalizePostPayload(post, uploadedImages);
+    payload.slug = await ensureUniquePostSlug(userClient, payload.slug);
+
+    const validationError = validatePostPayload(payload, payload.image_urls);
+    if (validationError) {
+      return res.status(400).json({ ok: false, message: validationError });
+    }
+
+    const { data, error } = await userClient
+      .from("posts")
+      .insert(payload)
+      .select("id,title,slug,excerpt,category,cover_image_url,image_urls,featured,published_at,created_at")
+      .single();
+
+    if (error) {
+      return res.status(400).json({ ok: false, message: error.message });
+    }
+
+    return res.status(201).json({ ok: true, post: data });
+  } catch (error) {
+    return res.status(error.statusCode || 500).json({ ok: false, message: error.message, error: error.statusCode ? undefined : error.message });
+  }
+});
+
+app.delete("/api/admin/posts/:id", async (req, res) => {
+  const authHeader = req.headers.authorization || "";
+  const id = String(req.params.id || "").trim();
+
+  if (!id) {
+    return res.status(400).json({ ok: false, message: "ID do post em falta." });
+  }
+
+  try {
+    const { userClient } = await getAdminContext(authHeader);
+    const { error } = await userClient.from("posts").delete().eq("id", id);
+
+    if (error) {
+      return res.status(400).json({ ok: false, message: error.message });
+    }
+
+    return res.json({ ok: true });
+  } catch (error) {
+    return res.status(error.statusCode || 500).json({ ok: false, message: error.message, error: error.statusCode ? undefined : error.message });
   }
 });
 

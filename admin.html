@@ -62,6 +62,7 @@
         <nav class="hidden md:flex items-center gap-4">
           <a class="text-primary font-bold px-3 py-2 rounded hover:bg-surface-container-high" href="admin.html">Dashboard</a>
           <a class="text-on-surface-variant px-3 py-2 rounded hover:bg-surface-container-high" href="admin-importar-carro.html">Estoque</a>
+          <a class="text-on-surface-variant px-3 py-2 rounded hover:bg-surface-container-high" href="admin-posts.html">Posts</a>
           <a class="text-on-surface-variant px-3 py-2 rounded hover:bg-surface-container-high" href="#suporte">Leads</a>
         </nav>
         <button id="notificationsBtn" class="material-symbols-outlined text-primary p-2 rounded-full hover:bg-surface-container-high" aria-label="Notificações">notifications</button>
@@ -167,13 +168,17 @@
               <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">upload_file</span>
               <span class="text-sm font-bold text-primary">Importar Carro</span>
             </a>
+            <a href="admin-posts.html" class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-outline-variant hover:border-primary hover:bg-surface-container-low transition-all group">
+              <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">post_add</span>
+              <span class="text-sm font-bold text-primary">Novo Post</span>
+            </a>
             <button id="auditBtn" class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-outline-variant hover:border-primary hover:bg-surface-container-low transition-all group">
               <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">admin_panel_settings</span>
               <span class="text-sm font-bold text-primary">Auditar Conta</span>
             </button>
             <button id="campaignBtn" class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-outline-variant hover:border-primary hover:bg-surface-container-low transition-all group">
               <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">campaign</span>
-              <span class="text-sm font-bold text-primary">Promo??es</span>
+              <span class="text-sm font-bold text-primary">Promoções</span>
             </button>
           </div>
         </section>
@@ -194,9 +199,9 @@
       <span class="material-symbols-outlined">directions_car</span>
       <span class="text-xs">Estoque</span>
     </a>
-    <a href="#suporte" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
-      <span class="material-symbols-outlined">person_search</span>
-      <span class="text-xs">Leads</span>
+    <a href="admin-posts.html" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
+      <span class="material-symbols-outlined">post_add</span>
+      <span class="text-xs">Posts</span>
     </a>
   </nav>
 
