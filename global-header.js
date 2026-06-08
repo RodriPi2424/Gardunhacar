@@ -4,7 +4,6 @@
   const links = [
     { href: "index.html", label: "Inicio" },
     { href: "about-us.html", label: "Quem somos" },
-    { href: "blog-noticias.html", label: "Blog e Noticias" },
     { href: "destaque.html", label: "Destaques" },
     { href: "quiz-carro.html", label: "Encontrar carro" }
   ];
