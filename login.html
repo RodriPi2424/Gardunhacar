@@ -76,7 +76,7 @@
             </div>
             <div>
               <label class="block text-sm font-semibold mb-2" for="loginPassword">Palavra-passe</label>
-              <input id="loginPassword" type="password" placeholder="????????" required class="w-full h-12 rounded-lg border border-white/40 bg-white/95 text-on-surface px-4 focus:ring-1 focus:ring-primary focus:border-primary outline-none"/>
+              <input id="loginPassword" type="password" placeholder="Palavra-passe" required class="w-full h-12 rounded-lg border border-white/40 bg-white/95 text-on-surface px-4 focus:ring-1 focus:ring-primary focus:border-primary outline-none"/>
             </div>
             <div class="flex items-center justify-between text-sm">
               <label class="flex items-center gap-2 cursor-pointer text-white/85">
@@ -101,7 +101,7 @@
             </div>
             <div>
               <label class="block text-sm font-semibold mb-2" for="registerPassword">Palavra-passe</label>
-              <input id="registerPassword" type="password" placeholder="m?nimo 8 caracteres" class="w-full h-12 rounded-lg border border-white/40 bg-white/95 text-on-surface px-4 focus:ring-1 focus:ring-primary focus:border-primary outline-none"/>
+              <input id="registerPassword" type="password" placeholder="mínimo 8 caracteres" class="w-full h-12 rounded-lg border border-white/40 bg-white/95 text-on-surface px-4 focus:ring-1 focus:ring-primary focus:border-primary outline-none"/>
             </div>
             <button type="submit" class="w-full h-12 rounded-lg bg-white text-primary font-extrabold hover:bg-white/90 transition-colors">
               Criar conta
@@ -211,7 +211,7 @@
       const email = document.getElementById("loginEmail").value.trim();
       const password = document.getElementById("loginPassword").value;
 
-      setMessage("A iniciar sess?o...");
+      setMessage("A iniciar sessão...");
 
       try {
         const response = await apiFetch("/api/auth/login", {
@@ -241,7 +241,7 @@
           await routeBySession(data.session, next);
         }, 700);
       } catch (_err) {
-        setMessage("Erro de liga??o ao servidor.", "error");
+        setMessage("Erro de ligação ao servidor.", "error");
       }
     });
 
@@ -269,9 +269,9 @@
         }
 
         registerForm.reset();
-        setMessage(data.message || "Conta criada com sucesso. J? pode entrar.", "success");
+        setMessage(data.message || "Conta criada com sucesso. Já pode entrar.", "success");
       } catch (_err) {
-        setMessage("Erro de liga??o ao servidor.", "error");
+        setMessage("Erro de ligação ao servidor.", "error");
       }
     });
 
