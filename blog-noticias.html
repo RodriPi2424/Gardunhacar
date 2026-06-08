@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog e Noticias | autenticar</title>
+  <meta name="description" content="Guias, noticias e conselhos da Autenticar para comprar, vender e manter o seu automovel com confianca." />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script defer src="global-header.js"></script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    body {
+      font-family: 'Montserrat', sans-serif !important;
+    }
+  </style>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-bright": "#f8f9ff",
+            "secondary-fixed": "#ffdea4",
+            "secondary-fixed-dim": "#fabd32",
+            "surface-tint": "#3e6373",
+            "secondary": "#7b5900",
+            "background": "#f8f9ff",
+            "on-secondary-container": "#6e4f00",
+            "primary-container": "#153e4d",
+            "surface-container-low": "#eef4ff",
+            "primary-fixed": "#c1e8fb",
+            "on-primary-fixed": "#001f29",
+            "surface-container": "#e4efff",
+            "inverse-surface": "#19324b",
+            "on-secondary": "#ffffff",
+            "surface": "#f8f9ff",
+            "on-background": "#011d35",
+            "inverse-on-surface": "#e9f1ff",
+            "outline-variant": "#c1c7cb",
+            "outline": "#71787c",
+            "surface-container-high": "#dbe9ff",
+            "surface-dim": "#c4dcfd",
+            "surface-variant": "#d1e4ff",
+            "primary-fixed-dim": "#a5ccdf",
+            "on-surface-variant": "#41484b",
+            "secondary-container": "#fdbf35",
+            "surface-container-highest": "#d1e4ff",
+            "on-primary-container": "#83a9bb",
+            "on-primary": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "on-surface": "#011d35",
+            "inverse-primary": "#a5ccdf",
+            "primary": "#002835"
+          },
+          borderRadius: {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          spacing: {
+            "unit-sm": "8px",
+            "unit-xs": "4px",
+            "gutter": "32px",
+            "unit-lg": "24px",
+            "margin-mobile": "24px",
+            "margin-desktop": "48px",
+            "container-max": "1280px",
+            "unit-md": "16px",
+            "unit-xl": "40px"
+          },
+          fontFamily: {
+            "headline-lg-mobile": ["Montserrat", "sans-serif"],
+            "label-sm": ["Montserrat", "sans-serif"],
+            "headline-md": ["Montserrat", "sans-serif"],
+            "body-md": ["Montserrat", "sans-serif"],
+            "headline-lg": ["Montserrat", "sans-serif"],
+            "label-bold": ["Montserrat", "sans-serif"],
+            "headline-xl": ["Montserrat", "sans-serif"],
+            "body-lg": ["Montserrat", "sans-serif"]
+          },
+          fontSize: {
+            "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+            "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+            "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+            "body-md": ["16px", {"lineHeight": "26px", "fontWeight": "400"}],
+            "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+            "label-bold": ["14px", {"lineHeight": "20px", "fontWeight": "700"}],
+            "headline-xl": ["52px", {"lineHeight": "1.05", "fontWeight": "800"}],
+            "body-lg": ["18px", {"lineHeight": "30px", "fontWeight": "400"}]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-surface text-on-surface font-body-md overflow-x-hidden">
+  <header class="site-header sticky top-0 z-50 border-b border-white/10 bg-[#153e4d]"></header>
+
+  <main>
+    <section class="bg-primary-container text-white">
+      <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-16 md:py-24 grid grid-cols-1 lg:grid-cols-12 gap-gutter items-end">
+        <div class="lg:col-span-7">
+          <span class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-primary-fixed">
+            <span class="material-symbols-outlined text-[18px]">newspaper</span>
+            Blog e noticias
+          </span>
+          <h1 class="mt-5 max-w-3xl text-[40px] leading-[1.04] md:text-headline-xl font-headline-xl">Informacao clara para comprar melhor.</h1>
+          <p class="mt-6 max-w-2xl text-body-lg font-body-lg text-white/78">
+            Guias praticos, novidades do mercado e conselhos da equipa Autenticar para tomar decisoes com seguranca antes, durante e depois da compra.
+          </p>
+        </div>
+        <div class="lg:col-span-5">
+          <div class="border border-white/15 bg-white/8 p-6 rounded-xl">
+            <p class="text-sm font-semibold text-primary-fixed">Em destaque</p>
+            <h2 class="mt-3 text-2xl font-bold">Checklist antes de comprar um usado</h2>
+            <p class="mt-3 text-sm leading-6 text-white/75">O que confirmar no historial, documentos, garantia e teste de estrada antes de fechar negocio.</p>
+            <a class="mt-5 inline-flex items-center gap-2 text-sm font-bold text-white hover:text-primary-fixed" href="#artigos">
+              Ler artigos
+              <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-white border-b border-outline-variant/60">
+      <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-5 flex gap-3 overflow-x-auto">
+        <a class="shrink-0 rounded-full bg-primary text-white px-4 py-2 text-sm font-bold" href="#artigos">Todos</a>
+        <a class="shrink-0 rounded-full bg-surface-container text-primary px-4 py-2 text-sm font-bold hover:bg-surface-container-high" href="#guias">Guias de compra</a>
+        <a class="shrink-0 rounded-full bg-surface-container text-primary px-4 py-2 text-sm font-bold hover:bg-surface-container-high" href="#mercado">Mercado</a>
+        <a class="shrink-0 rounded-full bg-surface-container text-primary px-4 py-2 text-sm font-bold hover:bg-surface-container-high" href="#manutencao">Manutencao</a>
+        <a class="shrink-0 rounded-full bg-surface-container text-primary px-4 py-2 text-sm font-bold hover:bg-surface-container-high" href="#noticias">Noticias</a>
+      </div>
+    </section>
+
+    <section id="artigos" class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-14 md:py-20">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+        <article class="lg:col-span-7 bg-surface-container-lowest border border-outline-variant/70 rounded-xl overflow-hidden">
+          <div class="aspect-[16/9] bg-primary-container relative overflow-hidden">
+            <img src="hero-autenticar.png" alt="Stand Autenticar" class="h-full w-full object-cover opacity-90" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent"></div>
+            <span class="absolute left-5 bottom-5 rounded-full bg-white px-3 py-1 text-xs font-bold uppercase tracking-wide text-primary">Guia</span>
+          </div>
+          <div class="p-6 md:p-8">
+            <p class="text-label-sm font-label-sm uppercase tracking-[0.14em] text-on-surface-variant">8 Jun 2026</p>
+            <h2 class="mt-3 text-3xl font-bold leading-tight text-primary">Como avaliar uma viatura usada sem deixar perguntas importantes para depois</h2>
+            <p class="mt-4 text-body-md font-body-md text-on-surface-variant">Da documentacao ao estado mecanico, reunimos os pontos que ajudam a perceber se o carro corresponde ao que procura e ao que esta anunciado.</p>
+            <a class="mt-6 inline-flex items-center gap-2 font-bold text-primary hover:text-surface-tint" href="#">
+              Ler guia
+              <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+            </a>
+          </div>
+        </article>
+
+        <div class="lg:col-span-5 grid grid-cols-1 gap-unit-md">
+          <article id="mercado" class="bg-surface-container-lowest border border-outline-variant/70 rounded-xl p-6">
+            <span class="text-xs font-bold uppercase tracking-[0.16em] text-secondary">Mercado</span>
+            <h3 class="mt-3 text-2xl font-bold text-primary">O que influencia o preco dos usados em 2026</h3>
+            <p class="mt-3 text-sm leading-6 text-on-surface-variant">Quilometragem, historico, combustivel, procura por segmento e equipamento continuam a fazer diferenca no valor final.</p>
+          </article>
+          <article id="noticias" class="bg-surface-container-lowest border border-outline-variant/70 rounded-xl p-6">
+            <span class="text-xs font-bold uppercase tracking-[0.16em] text-secondary">Noticias</span>
+            <h3 class="mt-3 text-2xl font-bold text-primary">Novas entradas selecionadas pela equipa Autenticar</h3>
+            <p class="mt-3 text-sm leading-6 text-on-surface-variant">Acompanhe os destaques semanais e as viaturas que chegam com maior procura no nosso stock.</p>
+          </article>
+          <article id="manutencao" class="bg-surface-container-lowest border border-outline-variant/70 rounded-xl p-6">
+            <span class="text-xs font-bold uppercase tracking-[0.16em] text-secondary">Manutencao</span>
+            <h3 class="mt-3 text-2xl font-bold text-primary">Sinais a verificar antes de uma viagem longa</h3>
+            <p class="mt-3 text-sm leading-6 text-on-surface-variant">Pneus, travoes, fluidos, luzes e ar condicionado: uma revisao simples evita surpresas na estrada.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="guias" class="bg-surface-container-low py-14 md:py-20">
+      <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+        <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mb-9">
+          <div>
+            <span class="text-label-sm font-label-sm uppercase tracking-[0.16em] text-on-surface-variant">Biblioteca</span>
+            <h2 class="mt-3 text-headline-lg font-headline-lg text-primary">Guias recentes</h2>
+          </div>
+          <a class="inline-flex items-center gap-2 font-bold text-primary hover:text-surface-tint" href="quiz-carro.html">
+            Encontrar carro ideal
+            <span class="material-symbols-outlined text-[20px]">directions_car</span>
+          </a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-unit-md">
+          <article class="bg-white border border-outline-variant/70 rounded-xl p-6">
+            <span class="material-symbols-outlined text-primary text-[32px]">fact_check</span>
+            <h3 class="mt-5 text-xl font-bold text-primary">Documentos essenciais na compra</h3>
+            <p class="mt-3 text-sm leading-6 text-on-surface-variant">Livrete, inspeccao, garantia, financiamento e comprovativos que deve confirmar.</p>
+          </article>
+          <article class="bg-white border border-outline-variant/70 rounded-xl p-6">
+            <span class="material-symbols-outlined text-primary text-[32px]">savings</span>
+            <h3 class="mt-5 text-xl font-bold text-primary">Definir um orcamento realista</h3>
+            <p class="mt-3 text-sm leading-6 text-on-surface-variant">Inclua impostos, seguro, manutencao e margem para despesas iniciais.</p>
+          </article>
+          <article class="bg-white border border-outline-variant/70 rounded-xl p-6">
+            <span class="material-symbols-outlined text-primary text-[32px]">route</span>
+            <h3 class="mt-5 text-xl font-bold text-primary">Teste de estrada com criterio</h3>
+            <p class="mt-3 text-sm leading-6 text-on-surface-variant">Como observar conforto, direcao, travagem, ruidos e comportamento em cidade.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="text-on-surface pb-unit-lg pt-unit-lg px-margin-mobile md:px-margin-desktop text-white" style="background-color: #153E4D; color: #FFFFFF;">
+    <div class="max-w-container-max mx-auto grid md:grid-cols-4 gap-unit-lg border-b border-outline-variant/10 pb-unit-lg">
+      <div class="md:col-span-1">
+        <img alt="autenticar" class="h-10 mb-unit-sm w-auto" src="logo-new-3.png"/>
+        <p class="font-body-md text-body-md text-white/80">O seu marketplace de confianca para compra e venda de veiculos. Qualidade e transparencia em cada quilometro.</p>
+      </div>
+      <div>
+        <h4 class="font-label-bold text-label-bold mb-unit-sm uppercase tracking-widest !text-white">Veiculos</h4>
+        <ul class="space-y-1 font-label-sm text-label-sm">
+          <li><a class="text-white/80 hover:text-white" href="index.html#stock">Carros</a></li>
+          <li><a class="text-white/80 hover:text-white" href="https://www.agrimog.pt/">Maquinas Agricolas</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-label-bold text-label-bold mb-unit-sm uppercase tracking-widest !text-white">Empresa</h4>
+        <ul class="space-y-1 font-label-sm text-label-sm">
+          <li><a class="text-white/80 hover:text-white" href="about-us.html">Sobre Nos</a></li>
+          <li><a class="text-white/80 hover:text-white" href="blog-noticias.html">Blog e Noticias</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-label-bold text-label-bold mb-unit-sm uppercase tracking-widest !text-white">Suporte</h4>
+        <ul class="space-y-1 font-label-sm text-label-sm">
+          <li><a class="text-white/80 hover:text-white" href="quiz-carro.html">Encontrar carro</a></li>
+          <li><a class="text-white/80 hover:text-white" href="mailto:rodrigo.pinto@autenticar.pt">Contactos</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="max-w-container-max mx-auto pt-unit-sm flex flex-col md:flex-row justify-between items-center gap-unit-sm font-label-sm text-label-sm">
+      <p class="text-white/60">2024 autenticar. Todos os direitos reservados.</p>
+      <a class="inline-flex items-center rounded-full border border-white/20 px-3 py-1 text-white/70 transition-colors hover:border-white/40 hover:text-white" href="login.html">Admin Login</a>
+    </div>
+  </footer>
+</body>
+</html>

@@ -3,7 +3,10 @@
   const currentPage = window.location.pathname.split("/").pop() || "index.html";
   const links = [
     { href: "index.html", label: "Inicio" },
-    { href: "about-us.html", label: "Quem somos" }
+    { href: "about-us.html", label: "Quem somos" },
+    { href: "blog-noticias.html", label: "Blog e Noticias" },
+    { href: "destaque.html", label: "Destaques" },
+    { href: "quiz-carro.html", label: "Encontrar carro" }
   ];
 
   function injectStyles() {
@@ -92,6 +95,9 @@
   }
 
   function findHeaderContainer() {
+    const explicitHeader = document.querySelector("header.site-header");
+    if (explicitHeader) return explicitHeader;
+
     return Array.from(document.querySelectorAll("header, div")).find(isHeaderCandidate);
   }
 
