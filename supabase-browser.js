@@ -315,6 +315,19 @@
     return { ok: true, cars, status: 200 };
   }
 
+  async function fetchBrandsDirect() {
+    const { data, error } = await browserClient
+      .from("brands")
+      .select("id,name")
+      .order("name", { ascending: true });
+
+    if (error) {
+      return { ok: false, message: error.message, status: 400 };
+    }
+
+    return { ok: true, brands: data || [], status: 200 };
+  }
+
   async function fetchPostsDirect(category, limit) {
     let query = browserClient
       .from("posts")
@@ -503,6 +516,14 @@
     const result = await fetchCarsDirect(category, limit);
     return jsonResponse(
       result.ok ? { ok: true, cars: result.cars } : { ok: false, message: result.message },
+      result.status
+    );
+  }
+
+  async function handleBrandsList() {
+    const result = await fetchBrandsDirect();
+    return jsonResponse(
+      result.ok ? { ok: true, brands: result.brands } : { ok: false, message: result.message },
       result.status
     );
   }
@@ -1077,6 +1098,9 @@
     }
     if (pathname === "/api/cars" && method === "GET") {
       return handleCarsList(url);
+    }
+    if (pathname === "/api/brands" && method === "GET") {
+      return handleBrandsList();
     }
     if (pathname.startsWith("/api/cars/") && method === "GET") {
       return handleCarDetail(pathname);

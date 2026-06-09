@@ -1091,6 +1091,25 @@ app.get("/api/cars", async (req, res) => {
   }
 });
 
+app.get("/api/brands", async (_req, res) => {
+  try {
+    assertSupabaseConfigured();
+
+    const { data, error } = await supabase
+      .from("brands")
+      .select("id,name")
+      .order("name", { ascending: true });
+
+    if (error) {
+      return res.status(500).json({ ok: false, message: "Erro ao listar marcas.", error: error.message });
+    }
+
+    return res.json({ ok: true, brands: data || [] });
+  } catch (error) {
+    return res.status(500).json({ ok: false, message: "Erro ao listar marcas.", error: error.message });
+  }
+});
+
 app.get("/api/cars/:id", async (req, res) => {
   const id = String(req.params.id || "").trim();
 

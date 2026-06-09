@@ -290,14 +290,14 @@ Voltar às categorias
 </button>
 </div>
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-unit-md">
-<select class="w-full h-12 border border-outline-variant rounded-lg px-4 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md">
-<option>Marca</option><option>BMW</option><option>Mercedes-Benz</option><option>Audi</option><option>Tesla</option>
+<select id="advancedBrandFilter" class="w-full h-12 border border-outline-variant rounded-lg px-4 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md">
+<option value="">Marca</option>
 </select>
-<select class="w-full h-12 border border-outline-variant rounded-lg px-4 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md">
-<option>Modelo</option><option>Série 3</option><option>Classe E</option><option>A6</option><option>Model Y</option>
+<select id="advancedModelFilter" class="w-full h-12 border border-outline-variant rounded-lg px-4 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md">
+<option value="">Modelo</option>
 </select>
-<select class="w-full h-12 border border-outline-variant rounded-lg px-4 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md">
-<option>Combustível</option><option>Gasolina</option><option>Diesel</option><option>Híbrido</option><option>Elétrico</option>
+<select id="advancedFuelFilter" class="w-full h-12 border border-outline-variant rounded-lg px-4 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md">
+<option value="">Combustível</option>
 </select>
 <input class="w-full h-12 border border-outline-variant rounded-lg px-4 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md" placeholder="Preço máximo (€)" type="text"/>
 <input class="w-full h-12 border border-outline-variant rounded-lg px-4 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md" placeholder="Quilómetros máximos" type="text"/>
@@ -412,6 +412,69 @@ Voltar às categorias
     }
   }
 
+  function uniqueSorted(values) {
+    return Array.from(new Set(values.map((value) => String(value || "").trim()).filter(Boolean)))
+      .sort((a, b) => a.localeCompare(b, "pt", { sensitivity: "base" }));
+  }
+
+  function setSelectOptions(select, placeholder, values) {
+    if (!select) return;
+    const previousValue = select.value;
+    select.innerHTML = "";
+
+    const placeholderOption = document.createElement("option");
+    placeholderOption.value = "";
+    placeholderOption.textContent = placeholder;
+    select.appendChild(placeholderOption);
+
+    values.forEach((value) => {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = value;
+      select.appendChild(option);
+    });
+
+    if (values.includes(previousValue)) {
+      select.value = previousValue;
+    }
+  }
+
+  async function loadAdvancedSearchOptions() {
+    const brandSelect = document.getElementById("advancedBrandFilter");
+    const modelSelect = document.getElementById("advancedModelFilter");
+    const fuelSelect = document.getElementById("advancedFuelFilter");
+    if (!brandSelect || !modelSelect || !fuelSelect) return;
+
+    try {
+      const [brandsResponse, carsResponse] = await Promise.all([
+        apiFetch("/api/brands"),
+        apiFetch("/api/cars?limit=100")
+      ]);
+      const [brandsData, carsData] = await Promise.all([
+        brandsResponse.json(),
+        carsResponse.json()
+      ]);
+      const cars = Array.isArray(carsData.cars) ? carsData.cars : [];
+      const brandsFromTable = Array.isArray(brandsData.brands) ? brandsData.brands.map((brand) => brand.name) : [];
+      const brands = uniqueSorted(brandsFromTable.length ? brandsFromTable : cars.map((car) => car.brand));
+
+      const updateModels = () => {
+        const selectedBrand = String(brandSelect.value || "").toLowerCase();
+        const matchingCars = selectedBrand
+          ? cars.filter((car) => String(car.brand || "").trim().toLowerCase() === selectedBrand)
+          : cars;
+        setSelectOptions(modelSelect, "Modelo", uniqueSorted(matchingCars.map((car) => car.model)));
+      };
+
+      setSelectOptions(brandSelect, "Marca", brands);
+      setSelectOptions(fuelSelect, "Combustível", uniqueSorted(cars.map((car) => car.fuel)));
+      updateModels();
+      brandSelect.addEventListener("change", updateModels);
+    } catch {
+      // Keep the placeholder options if the inventory is unavailable.
+    }
+  }
+
   (() => {
     const contactToggle = document.getElementById('contact-toggle');
     const contactOverlay = document.getElementById('contact-overlay');
@@ -500,6 +563,7 @@ Voltar às categorias
   })();
 
   loadFeaturedCars();
+  loadAdvancedSearchOptions();
 </script>
 </body></html>
 
