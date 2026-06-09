@@ -21,6 +21,51 @@
     return String(value || "").replace(/\s+/g, " ").trim();
   }
 
+  function normalizeBrandName(value) {
+    return sanitizeText(value).toLowerCase();
+  }
+
+  async function resolveBrandId(userClient, brandName) {
+    const name = sanitizeText(brandName);
+    const normalizedName = normalizeBrandName(name);
+    if (!normalizedName) return null;
+
+    const { data: existingBrand, error: selectError } = await userClient
+      .from("brands")
+      .select("id")
+      .eq("normalized_name", normalizedName)
+      .maybeSingle();
+
+    if (selectError) {
+      return { error: "Erro ao procurar marca: " + selectError.message };
+    }
+
+    if (existingBrand?.id) {
+      return { brandId: existingBrand.id };
+    }
+
+    const { data: createdBrand, error: insertError } = await userClient
+      .from("brands")
+      .insert({ name, normalized_name: normalizedName })
+      .select("id")
+      .single();
+
+    if (insertError) {
+      if (insertError.code === "23505") {
+        const { data: racedBrand } = await userClient
+          .from("brands")
+          .select("id")
+          .eq("normalized_name", normalizedName)
+          .maybeSingle();
+        if (racedBrand?.id) return { brandId: racedBrand.id };
+      }
+
+      return { error: "Erro ao criar marca: " + insertError.message };
+    }
+
+    return { brandId: createdBrand?.id || null };
+  }
+
   function parseInteger(value) {
     const digits = String(value || "").replace(/[^\d]/g, "");
     return digits ? Number.parseInt(digits, 10) : null;
@@ -644,6 +689,12 @@
       image_urls: imageUrls
     };
 
+    const brandResult = await resolveBrandId(userClient, dbPayload.brand);
+    if (brandResult.error) {
+      return jsonResponse({ ok: false, message: brandResult.error }, 400);
+    }
+    dbPayload.brand_id = brandResult.brandId;
+
     const query = isUpdate
       ? userClient
           .from("cars")
@@ -654,7 +705,7 @@
           .insert(dbPayload);
 
     const { data, error } = await query
-      .select("id,title,brand,model,price_eur,image_urls,categories,created_at")
+      .select("id,title,brand,brand_id,model,price_eur,image_urls,categories,created_at")
       .single();
 
     if (error) {
@@ -987,11 +1038,17 @@
     const categories = Array.isArray(payload.categories) ? payload.categories.map((value) => String(value).trim()).filter(Boolean) : [];
     const imageUrls = Array.isArray(parsed.imageCandidates) ? parsed.imageCandidates.filter(Boolean) : [];
     const userClient = createAuthedClient(token);
+    const dbPayload = { ...car, categories, image_urls: imageUrls };
+    const brandResult = await resolveBrandId(userClient, dbPayload.brand);
+    if (brandResult.error) {
+      return jsonResponse({ ok: false, message: brandResult.error }, 400);
+    }
+    dbPayload.brand_id = brandResult.brandId;
 
     const { data, error } = await userClient
       .from("cars")
-      .insert({ ...car, categories, image_urls: imageUrls })
-      .select("id,title,brand,model,price_eur,image_urls,categories,created_at")
+      .insert(dbPayload)
+      .select("id,title,brand,brand_id,model,price_eur,image_urls,categories,created_at")
       .single();
 
     if (error) {

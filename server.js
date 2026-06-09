@@ -297,6 +297,55 @@ function sanitizeText(value) {
   return String(value || "").replace(/\s+/g, " ").trim();
 }
 
+function normalizeBrandName(value) {
+  return sanitizeText(value).toLowerCase();
+}
+
+async function resolveBrandId(userClient, brandName) {
+  const name = sanitizeText(brandName);
+  const normalizedName = normalizeBrandName(name);
+  if (!normalizedName) return null;
+
+  const { data: existingBrand, error: selectError } = await userClient
+    .from("brands")
+    .select("id")
+    .eq("normalized_name", normalizedName)
+    .maybeSingle();
+
+  if (selectError) {
+    const brandError = new Error(`Erro ao procurar marca: ${selectError.message}`);
+    brandError.statusCode = 400;
+    throw brandError;
+  }
+
+  if (existingBrand?.id) {
+    return existingBrand.id;
+  }
+
+  const { data: createdBrand, error: insertError } = await userClient
+    .from("brands")
+    .insert({ name, normalized_name: normalizedName })
+    .select("id")
+    .single();
+
+  if (insertError) {
+    if (insertError.code === "23505") {
+      const { data: racedBrand } = await userClient
+        .from("brands")
+        .select("id")
+        .eq("normalized_name", normalizedName)
+        .maybeSingle();
+      if (racedBrand?.id) return racedBrand.id;
+    }
+
+    const brandError = new Error(`Erro ao criar marca: ${insertError.message}`);
+    brandError.statusCode = 400;
+    throw brandError;
+  }
+
+  return createdBrand?.id || null;
+}
+
 function parsePriceToNumber(value) {
   const raw = sanitizeText(value);
   if (!raw) return 0;
@@ -1345,11 +1394,13 @@ app.put("/api/admin/cars/:id", async (req, res) => {
       return res.status(400).json({ ok: false, message: validationError });
     }
 
+    payload.brand_id = await resolveBrandId(userClient, payload.brand);
+
     const { data, error } = await userClient
       .from("cars")
       .update(payload)
       .eq("id", id)
-      .select("id,title,brand,model,price_eur,image_urls,categories,created_at")
+      .select("id,title,brand,brand_id,model,price_eur,image_urls,categories,created_at")
       .single();
 
     if (error) {
@@ -1407,10 +1458,12 @@ app.post("/api/admin/import-car", async (req, res) => {
       return res.status(400).json({ ok: false, message: validationError });
     }
 
+    payload.brand_id = await resolveBrandId(userClient, payload.brand);
+
     const { data, error } = await userClient
       .from("cars")
       .insert(payload)
-      .select("id, title, brand, model, price_eur, image_urls")
+      .select("id, title, brand, brand_id, model, price_eur, image_urls")
       .single();
 
     if (error) {
@@ -1419,7 +1472,11 @@ app.post("/api/admin/import-car", async (req, res) => {
 
     return res.status(201).json({ ok: true, car: data });
   } catch (error) {
-    return res.status(500).json({ ok: false, message: "Erro ao importar carro.", error: error.message });
+    return res.status(error.statusCode || 500).json({
+      ok: false,
+      message: error.statusCode ? error.message : "Erro ao importar carro.",
+      error: error.statusCode ? undefined : error.message
+    });
   }
 });
 
@@ -1540,10 +1597,12 @@ app.post("/api/admin/import-from-url", async (req, res) => {
       return res.status(400).json({ ok: false, message: validationError });
     }
 
+    payload.brand_id = await resolveBrandId(userClient, payload.brand);
+
     const { data, error } = await userClient
       .from("cars")
       .insert(payload)
-      .select("id, title, brand, model, price_eur, image_urls")
+      .select("id, title, brand, brand_id, model, price_eur, image_urls")
       .single();
 
     if (error) {
@@ -1552,7 +1611,11 @@ app.post("/api/admin/import-from-url", async (req, res) => {
 
     return res.status(201).json({ ok: true, car: data, importedImages: imageUrls.length });
   } catch (error) {
-    return res.status(500).json({ ok: false, message: "Erro ao importar por URL.", error: error.message });
+    return res.status(error.statusCode || 500).json({
+      ok: false,
+      message: error.statusCode ? error.message : "Erro ao importar por URL.",
+      error: error.statusCode ? undefined : error.message
+    });
   }
 });
 
