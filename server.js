@@ -132,6 +132,21 @@ async function fetchListingPage(url) {
   return pageResp.text();
 }
 
+function getImportSource(urlObj) {
+  const host = urlObj.hostname.toLowerCase();
+  if (host === "autenticar.pt" || host === "www.autenticar.pt") {
+    return { key: "autenticar", label: "autenticar.pt" };
+  }
+  if (host === "viaturas.alonsosebranco.pt") {
+    return { key: "alonsosebranco", label: "viaturas.alonsosebranco.pt" };
+  }
+  return null;
+}
+
+function getAllowedImportSourcesText() {
+  return "autenticar.pt ou viaturas.alonsosebranco.pt";
+}
+
 async function uploadRemoteImages(userClient, imageCandidates) {
   const imageUrls = [];
   for (const imageUrl of imageCandidates || []) {
@@ -524,6 +539,174 @@ function normalizeOrigin(value) {
 function normalizePositiveInteger(value) {
   const parsed = parseInteger(value);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+}
+
+function getNestedName(value) {
+  if (value && typeof value === "object") return sanitizeText(value.Nome || value.Name || value.nome);
+  return sanitizeText(value);
+}
+
+function normalizeRegistrationDateFromYearMonth(year, month) {
+  const cleanYear = parseInteger(year);
+  const cleanMonth = parseInteger(month);
+  if (!cleanYear) return "";
+  if (!cleanMonth || cleanMonth < 1 || cleanMonth > 12) return String(cleanYear);
+  return `${String(cleanMonth).padStart(2, "0")}/${cleanYear}`;
+}
+
+function normalizeWarranty(value) {
+  const raw = getNestedName(value) || sanitizeText(value);
+  if (raw) return raw;
+  return "18 meses";
+}
+
+function extractAlonsoVehicleId(sourceUrl) {
+  const urlObj = new URL(sourceUrl);
+  const parts = urlObj.pathname.split("/").map((part) => part.trim()).filter(Boolean);
+  const id = parts.slice().reverse().find((part) => /^\d+$/.test(part));
+  return id || "";
+}
+
+async function fetchAlonsoEasydataListing(sourceUrl) {
+  const urlObj = new URL(sourceUrl);
+  const hostname = urlObj.hostname.toLowerCase();
+  const vehicleId = extractAlonsoVehicleId(sourceUrl);
+
+  if (!vehicleId) {
+    const error = new Error("Não foi possível encontrar o ID da viatura no URL.");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const assetsBase = `https://multidealer.easysite.pt/assets/${hostname}`;
+  const [envResp, infoResp] = await Promise.all([
+    fetch(`${assetsBase}/env`),
+    fetch(`${assetsBase}/info.json`)
+  ]);
+
+  if (!envResp.ok || !infoResp.ok) {
+    const error = new Error("Não foi possível ler a configuração do site Alonso & Branco.");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const env = await envResp.json();
+  const info = await infoResp.json();
+  const token = sanitizeText(env.REACT_APP_TOKEN_API);
+  const dealerId = info?.Stand?.Anunciante;
+  const sourceType = info?.Stand?.Easymanager ? "easymanager" : "easydata";
+
+  if (!token || !dealerId) {
+    const error = new Error("Configuração do site Alonso & Branco incompleta.");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const apiUrl = new URL(`https://ws.easydata.pt/v1/${sourceType}/carros/GetListaDetalhesViatura/`);
+  apiUrl.searchParams.set("dealer_id", String(dealerId));
+  const listingResp = await fetch(apiUrl, { headers: { token } });
+
+  if (!listingResp.ok) {
+    const error = new Error(`Não foi possível ler as viaturas Alonso & Branco (${listingResp.status}).`);
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const vehicles = await listingResp.json();
+  const vehicle = Array.isArray(vehicles)
+    ? vehicles.find((item) => String(item?.CodViatura || "") === vehicleId)
+    : null;
+
+  if (!vehicle) {
+    const error = new Error("Viatura Alonso & Branco não encontrada.");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  return vehicle;
+}
+
+function parseAlonsoEasydataListing(vehicle) {
+  const brand = getNestedName(vehicle.Marca) || "N/D";
+  const modelParts = [
+    getNestedName(vehicle.Modelo),
+    sanitizeText(vehicle.Motorizacao),
+    sanitizeText(vehicle.VersaoAlternatica)
+  ].filter(Boolean);
+  const model = modelParts.join(" ").trim() || "N/D";
+  const title = [brand, model].filter(Boolean).join(" ").trim() || "Viatura importada";
+  const extras = sanitizeText(vehicle.ExtrasSoltos)
+    .split(",")
+    .map((item) => sanitizeText(item))
+    .filter(Boolean);
+  const imageCandidates = Array.isArray(vehicle.Ficheiros)
+    ? vehicle.Ficheiros
+        .slice()
+        .sort((a, b) => Number(a?.Ordenador || 0) - Number(b?.Ordenador || 0))
+        .map((file) => sanitizeText(file?.Ficheiro))
+        .filter(Boolean)
+    : [];
+  const rawObservation = stripHtmlTags(vehicle.Obs || "");
+  const details = {
+    Marca: brand,
+    Modelo: model,
+    Quilómetros: sanitizeText(vehicle.Km),
+    Combustível: getNestedName(vehicle.Combustivel),
+    "Ano de Registo": normalizeRegistrationDateFromYearMonth(vehicle.Ano, vehicle.Mes),
+    Caixa: getNestedName(vehicle.Transmissao),
+    Cor: getNestedName(vehicle.Cor),
+    Portas: getNestedName(vehicle.Porta),
+    Lugares: getNestedName(vehicle.Lugares),
+    CV: vehicle.Potencia ? `${vehicle.Potencia} CV` : "",
+    Carroçaria: getNestedName(vehicle.Tipo),
+    Origem: vehicle.Importado ? "Importado" : "Nacional",
+    Estado: getNestedName(vehicle.Estado),
+    Garantia: normalizeWarranty(vehicle.Garantia),
+    Cilindrada: vehicle.Cilindrada ? `${vehicle.Cilindrada} cc` : "",
+    Matrícula: sanitizeText(vehicle.Matricula)
+  };
+
+  return {
+    title,
+    brand,
+    model,
+    registration_date: details["Ano de Registo"] || "N/D",
+    mileage: parseInteger(vehicle.Km) || 0,
+    fuel: details["Combustível"] || "N/D",
+    price_eur: parsePriceToNumber(vehicle.PrecoPromo || vehicle.Preco),
+    observations: rawObservation || null,
+    seats: normalizePositiveInteger(details.Lugares),
+    segment: details.Carroçaria || null,
+    power: vehicle.Potencia ? `${String(vehicle.Potencia).replace(/[^\d]/g, "")} CV` : null,
+    origin: normalizeOrigin(details.Origem) || null,
+    engine_displacement: details.Cilindrada || null,
+    transmission: details.Caixa || null,
+    color: details.Cor || null,
+    doors: normalizePositiveInteger(details.Portas),
+    condition: details.Estado || null,
+    warranty: details.Garantia || null,
+    registration_plate: details.Matrícula || null,
+    extras,
+    details,
+    imageCandidates: imageCandidates.slice(0, 24)
+  };
+}
+
+async function parseListingFromUrl(parsedUrl) {
+  const source = getImportSource(parsedUrl);
+  if (!source) {
+    const error = new Error(`Apenas links de ${getAllowedImportSourcesText()} são permitidos.`);
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (source.key === "alonsosebranco") {
+    const vehicle = await fetchAlonsoEasydataListing(parsedUrl.toString());
+    return parseAlonsoEasydataListing(vehicle);
+  }
+
+  const html = await fetchListingPage(parsedUrl.toString());
+  return parseAutenticarListing(html, parsedUrl.toString());
 }
 
 function parseAutenticarListing(html, sourceUrl) {
@@ -1255,15 +1438,13 @@ app.post("/api/admin/preview-import-from-url", async (req, res) => {
     return res.status(400).json({ ok: false, message: "URL inválida." });
   }
 
-  const host = parsedUrl.hostname.toLowerCase();
-  if (!(host === "autenticar.pt" || host === "www.autenticar.pt")) {
-    return res.status(400).json({ ok: false, message: "Apenas links de autenticar.pt são permitidos." });
+  if (!getImportSource(parsedUrl)) {
+    return res.status(400).json({ ok: false, message: `Apenas links de ${getAllowedImportSourcesText()} são permitidos.` });
   }
 
   try {
     await getAdminContext(authHeader);
-    const html = await fetchListingPage(parsedUrl.toString());
-    const parsed = parseAutenticarListing(html, parsedUrl.toString());
+    const parsed = await parseListingFromUrl(parsedUrl);
     return res.json({
       ok: true,
       car: {
@@ -1314,15 +1495,13 @@ app.post("/api/admin/import-from-url", async (req, res) => {
     return res.status(400).json({ ok: false, message: "URL inválida." });
   }
 
-  const host = parsedUrl.hostname.toLowerCase();
-  if (!(host === "autenticar.pt" || host === "www.autenticar.pt")) {
-    return res.status(400).json({ ok: false, message: "Apenas links de autenticar.pt são permitidos." });
+  if (!getImportSource(parsedUrl)) {
+    return res.status(400).json({ ok: false, message: `Apenas links de ${getAllowedImportSourcesText()} são permitidos.` });
   }
 
   try {
     const { userClient } = await getAdminContext(authHeader);
-    const html = await fetchListingPage(parsedUrl.toString());
-    const parsed = parseAutenticarListing(html, parsedUrl.toString());
+    const parsed = await parseListingFromUrl(parsedUrl);
     const defaultPayload = {
       title: parsed.title || "Viatura importada",
       brand: parsed.brand || "N/D",

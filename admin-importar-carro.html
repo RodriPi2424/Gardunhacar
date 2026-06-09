@@ -30,10 +30,10 @@
   <main class="max-w-5xl mx-auto p-4 md:p-6">
     <form id="carImportForm" class="space-y-6" novalidate>
       <section class="bg-white rounded-2xl border border-slate-200 p-5 md:p-6">
-        <h2 class="text-lg font-bold mb-4">Importar por link Autenticar</h2>
-        <p class="text-sm text-slate-500 mb-3">Cola o URL da viatura em <strong>autenticar.pt</strong> para importar automaticamente os dados e imagens.</p>
+        <h2 class="text-lg font-bold mb-4">Importar por link</h2>
+        <p class="text-sm text-slate-500 mb-3">Cola o URL da viatura em <strong>autenticar.pt</strong> ou <strong>viaturas.alonsosebranco.pt</strong> para importar automaticamente os dados e imagens.</p>
         <div class="flex flex-col md:flex-row gap-3">
-          <input id="sourceUrlInput" type="url" class="flex-1 rounded-xl border-slate-300" placeholder="https://www.autenticar.pt/viaturas/..." />
+          <input id="sourceUrlInput" type="url" class="flex-1 rounded-xl border-slate-300" placeholder="https://www.autenticar.pt/viaturas/... ou https://viaturas.alonsosebranco.pt/carros/..." />
         </div>
         <p class="mt-2 text-xs text-slate-500">A importação começa automaticamente ao carregar Enter no campo do link.</p>
       </section>
@@ -852,8 +852,18 @@
       if (sourceUrlInput.dataset.loading === "1") return;
       sourceUrlInput.dataset.loading = "1";
 
-      if (!url.includes("autenticar.pt/viaturas/")) {
-        setFormStatus("URL inválido. Usa um link de viatura da autenticar.pt.", "error");
+      let parsedUrl;
+      try {
+        parsedUrl = new URL(url);
+      } catch (_error) {
+        parsedUrl = null;
+      }
+      const host = parsedUrl?.hostname?.toLowerCase() || "";
+      const path = parsedUrl?.pathname || "";
+      const isAutenticarUrl = (host === "autenticar.pt" || host === "www.autenticar.pt") && path.includes("/viaturas/");
+      const isAlonsoUrl = host === "viaturas.alonsosebranco.pt" && /^\/carros\/.+\/\d+\/?$/.test(path);
+      if (!isAutenticarUrl && !isAlonsoUrl) {
+        setFormStatus("URL inválido. Usa um link de viatura da autenticar.pt ou viaturas.alonsosebranco.pt.", "error");
         sourceUrlInput.dataset.previewLoaded = "0";
         sourceUrlInput.dataset.loading = "0";
         return;
