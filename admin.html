@@ -47,6 +47,16 @@
     .custom-scrollbar::-webkit-scrollbar { width: 6px; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 12px; }
     .chip-active { background: #153e4d; color: #fff; border-color: #153e4d; }
+    .listing-status-select {
+      min-width: 132px;
+      border-radius: 0.75rem;
+      border: 1px solid #c1c7cb;
+      background: #fff;
+      color: #011d35;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.45rem 2rem 0.45rem 0.75rem;
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-browser.js?v=import-static-20260609"></script>
@@ -124,9 +134,8 @@
           <h3 class="text-2xl font-bold text-primary">Gestão de Anúncios</h3>
           <div class="flex items-center gap-2">
             <button class="status-filter chip-active text-xs px-3 py-1.5 rounded-full border border-outline-variant" data-filter="all">Todos</button>
-            <button class="status-filter text-xs px-3 py-1.5 rounded-full border border-outline-variant" data-filter="pending">Pendentes</button>
-            <button class="status-filter text-xs px-3 py-1.5 rounded-full border border-outline-variant" data-filter="approved">Aprovados</button>
-            <button class="status-filter text-xs px-3 py-1.5 rounded-full border border-outline-variant" data-filter="rejected">Rejeitados</button>
+            <button class="status-filter text-xs px-3 py-1.5 rounded-full border border-outline-variant" data-filter="available">Disponíveis</button>
+            <button class="status-filter text-xs px-3 py-1.5 rounded-full border border-outline-variant" data-filter="sold">Vendidos</button>
           </div>
         </div>
         <div class="overflow-x-auto custom-scrollbar">
@@ -269,9 +278,15 @@
         subtitle: subtitleParts.join(" • "),
         image: Array.isArray(car?.image_urls) && car.image_urls[0] ? car.image_urls[0] : "https://placehold.co/160x120/e2e8f0/64748b?text=Carro",
         date: car?.created_at || new Date().toISOString(),
-        status: car?.status || "approved",
+        status: normalizeListingStatus(car?.status),
         price: Number(car?.price_eur || 0)
       };
+    }
+
+    function normalizeListingStatus(status) {
+      const value = String(status || "").toLowerCase();
+      if (value === "sold" || value === "rejected") return "sold";
+      return "available";
     }
 
     async function loadListingsFromServer() {
@@ -294,9 +309,8 @@
     }
 
     function statusBadge(status) {
-      if (status === "approved") return '<span class="px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-bold uppercase tracking-wider">Aprovado</span>';
-      if (status === "rejected") return '<span class="px-3 py-1 rounded-full bg-red-100 text-red-800 text-xs font-bold uppercase tracking-wider">Rejeitado</span>';
-      return '<span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 text-xs font-bold uppercase tracking-wider">Pendente</span>';
+      if (status === "sold") return '<span class="px-3 py-1 rounded-full bg-slate-200 text-slate-700 text-xs font-bold uppercase tracking-wider">Vendido</span>';
+      return '<span class="px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-bold uppercase tracking-wider">Disponível</span>';
     }
 
     function filteredListings() {
@@ -306,7 +320,7 @@
 
     function renderStats() {
       const approvedRevenue = state.listings
-        .filter((item) => item.status === "approved")
+        .filter((item) => item.status === "available")
         .reduce((total, item) => total + Number(item.price || 0), 0);
 
       document.getElementById("statListings").textContent = state.listings.length.toLocaleString("pt-PT");
@@ -342,9 +356,11 @@
           <td class="px-6 py-4 text-sm text-on-surface-variant">${formatDate(item.date)}</td>
           <td class="px-6 py-4">${statusBadge(item.status)}</td>
           <td class="px-6 py-4">
-            <div class="flex gap-2">
-              <button class="action-btn p-2 hover:bg-green-50 text-green-700 rounded-lg material-symbols-outlined" data-action="approve" title="Aprovar">check_circle</button>
-              <button class="action-btn p-2 hover:bg-yellow-50 text-amber-700 rounded-lg material-symbols-outlined" data-action="reject" title="Rejeitar">block</button>
+            <div class="flex items-center gap-2">
+              <select class="action-btn listing-status-select" data-action="status" aria-label="Estado da viatura">
+                <option value="available" ${item.status === "available" ? "selected" : ""}>Disponível</option>
+                <option value="sold" ${item.status === "sold" ? "selected" : ""}>Vendido</option>
+              </select>
               <button class="action-btn p-2 hover:bg-surface-container-high text-primary rounded-lg material-symbols-outlined" data-action="edit" title="Editar">edit</button>
               <button class="action-btn p-2 hover:bg-red-50 text-red-700 rounded-lg material-symbols-outlined" data-action="delete" title="Remover">delete</button>
             </div>
@@ -370,7 +386,7 @@
     }
 
     document.addEventListener("click", (event) => {
-      const actionBtn = event.target.closest(".action-btn");
+      const actionBtn = event.target.closest("button.action-btn");
       if (actionBtn) {
         const row = actionBtn.closest("tr");
         const id = String(row?.dataset.id || "");
@@ -379,9 +395,6 @@
 
         if (action === "edit") {
           window.location.href = `admin-importar-carro.html?id=${encodeURIComponent(id)}`;
-        }
-        if (action === "approve" || action === "reject") {
-          alert("Os filtros de estado ainda não estão ligados à base de dados. Já podes editar e remover carros reais.");
         }
         if (action === "delete") {
           const confirmDelete = confirm("Queres remover este anúncio?");
@@ -397,6 +410,20 @@
         state.filter = filterBtn.dataset.filter || "all";
         renderTable();
       }
+    });
+
+    document.addEventListener("change", (event) => {
+      const statusSelect = event.target.closest('select[data-action="status"]');
+      if (!statusSelect) return;
+
+      const row = statusSelect.closest("tr");
+      const id = String(row?.dataset.id || "");
+      if (!id) return;
+
+      state.listings = state.listings.map((item) => (
+        item.id === id ? { ...item, status: normalizeListingStatus(statusSelect.value) } : item
+      ));
+      renderAll();
     });
 
     document.getElementById("exportBtn").addEventListener("click", () => {
