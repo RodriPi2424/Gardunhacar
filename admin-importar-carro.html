@@ -197,6 +197,15 @@
         <h2 class="text-lg font-bold mb-4">Extras</h2>
         <p class="text-sm text-slate-500 mb-3">Adiciona os extras do carro (AC, GPS, câmara traseira, etc).</p>
         <div id="extrasCheckboxGrid" class="space-y-5" tabindex="-1"></div>
+        <div class="mt-5 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4">
+          <p class="text-sm font-semibold text-slate-700">Extra temporário</p>
+          <p class="mt-1 text-xs text-slate-500">Se faltar alguma opção na lista, podes adicionar manualmente aqui.</p>
+          <div class="mt-3 flex flex-col gap-3 md:flex-row">
+            <input id="extraInput" type="text" class="flex-1 rounded-xl border-slate-300" placeholder="Escreve um extra adicional" />
+            <button id="addExtraBtn" type="button" class="rounded-xl bg-slate-900 px-4 py-2 font-semibold text-white hover:bg-slate-800">Adicionar extra</button>
+          </div>
+          <div id="customExtrasList" class="mt-3 flex flex-wrap gap-2"></div>
+        </div>
         <input id="extrasHidden" type="hidden" name="extras" />
       </section>
 
@@ -237,6 +246,9 @@
     const pageTitle = document.getElementById("pageTitle");
     const submitButton = document.getElementById("submitButton");
     const extrasCheckboxGrid = document.getElementById("extrasCheckboxGrid");
+    const extraInput = document.getElementById("extraInput");
+    const addExtraBtn = document.getElementById("addExtraBtn");
+    const customExtrasList = document.getElementById("customExtrasList");
     const extrasHidden = document.getElementById("extrasHidden");
     const imageInput = document.getElementById("imageInput");
     const previewGrid = document.getElementById("previewGrid");
@@ -249,6 +261,7 @@
     const editingCarId = searchParams.get("id");
     const isEditing = Boolean(editingCarId);
     const extras = [];
+    const customExtras = [];
     const EXTRA_GROUPS = [
       {
         title: "Áudio e Multimédia",
@@ -483,12 +496,44 @@
       });
     }
 
+    function renderCustomExtras() {
+      customExtrasList.innerHTML = "";
+      customExtras.forEach((extra, index) => {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 hover:bg-slate-100";
+        chip.innerHTML = `<span>${extra}</span><span aria-hidden="true">x</span>`;
+        chip.addEventListener("click", () => {
+          customExtras.splice(index, 1);
+          renderCustomExtras();
+          syncExtrasHidden();
+        });
+        customExtrasList.appendChild(chip);
+      });
+    }
+
     function syncExtrasHidden() {
       extras.length = 0;
       Array.from(form.querySelectorAll('input[name="carExtra"]:checked')).forEach((input) => {
         if (!extras.includes(input.value)) extras.push(input.value);
       });
+      customExtras.forEach((extra) => {
+        if (!extras.includes(extra)) extras.push(extra);
+      });
       extrasHidden.value = JSON.stringify(extras);
+    }
+
+    function addCustomExtra() {
+      const value = String(extraInput.value || "").trim();
+      if (!value) return;
+      if (extras.includes(value) || customExtras.includes(value)) {
+        extraInput.value = "";
+        return;
+      }
+      customExtras.push(value);
+      extraInput.value = "";
+      renderCustomExtras();
+      syncExtrasHidden();
     }
 
     function renderExtrasOptions() {
@@ -539,6 +584,12 @@
       Array.from(form.querySelectorAll('input[name="carExtra"]')).forEach((input) => {
         input.checked = selected.has(input.value);
       });
+      customExtras.length = 0;
+      selected.forEach((value) => {
+        const existsInCatalog = EXTRA_GROUPS.some((group) => group.options.includes(value));
+        if (!existsInCatalog && !customExtras.includes(value)) customExtras.push(value);
+      });
+      renderCustomExtras();
       syncExtrasHidden();
     }
 
@@ -651,6 +702,15 @@
       imageInput.click();
     });
 
+    addExtraBtn.addEventListener("click", addCustomExtra);
+
+    extraInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        addCustomExtra();
+      }
+    });
+
     imageInput.addEventListener("change", () => {
       previewGrid.innerHTML = "";
       const files = Array.from(imageInput.files || []);
@@ -684,6 +744,7 @@
 
     form.addEventListener("reset", () => {
       setTimeout(syncExtras, 0, []);
+      extraInput.value = "";
       previewGrid.innerHTML = "";
       selectedImagesLabel.textContent = isEditing ? "Mantém as imagens atuais até gravares novas" : "Nenhum ficheiro selecionado";
       setFormStatus("");
