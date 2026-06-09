@@ -339,8 +339,6 @@
     const category = categoryMap[page];
     const resultsCount = document.getElementById("resultsCount");
     const container = document.querySelector(".grid.grid-cols-1.lg\\:grid-cols-2.gap-gutter");
-    const searchParams = new URLSearchParams(location.search);
-    const hasSearchFilters = searchParams.get("search") === "1";
 
     if (!category || !container) return;
 
@@ -353,54 +351,16 @@
       if (resultsCount) resultsCount.textContent = "0 veículos encontrados";
     }
 
-    function normalize(value) {
-      return String(value || "").trim().toLowerCase();
-    }
-
-    function parseNumber(value) {
-      const normalized = String(value || "")
-        .replace(/[^\d,.\s]/g, "")
-        .replace(/\s/g, "")
-        .replace(/\.(?=\d{3}\b)/g, "")
-        .replace(",", ".");
-      const number = Number.parseFloat(normalized);
-      return Number.isFinite(number) ? number : null;
-    }
-
-    function matchesSearchFilters(car) {
-      const brand = normalize(searchParams.get("brand"));
-      const model = normalize(searchParams.get("model"));
-      const fuel = normalize(searchParams.get("fuel"));
-      const maxPrice = parseNumber(searchParams.get("maxPrice"));
-      const maxMileage = parseNumber(searchParams.get("maxMileage"));
-
-      if (brand && normalize(car.brand) !== brand) return false;
-      if (model && normalize(car.model) !== model) return false;
-      if (fuel && normalize(car.fuel) !== fuel) return false;
-      if (maxPrice !== null && Number(car.price_eur || 0) > maxPrice) return false;
-      if (maxMileage !== null && Number(car.mileage || 0) > maxMileage) return false;
-      return true;
-    }
-
     async function loadCategoryCars() {
       try {
-        const apiPath = hasSearchFilters
-          ? "/api/cars?limit=100"
-          : `/api/cars?category=${encodeURIComponent(category)}&limit=100`;
-        const response = await apiFetch(apiPath);
+        const response = await apiFetch(`/api/cars?category=${encodeURIComponent(category)}&limit=100`);
         const data = await response.json();
-        if (!response.ok || !data.ok || !Array.isArray(data.cars)) {
+        if (!response.ok || !data.ok || !Array.isArray(data.cars) || data.cars.length === 0) {
           renderEmpty();
           return;
         }
 
-        const cars = hasSearchFilters ? data.cars.filter(matchesSearchFilters) : data.cars;
-        if (cars.length === 0) {
-          renderEmpty();
-          return;
-        }
-
-        container.innerHTML = cars.map((car) => {
+        container.innerHTML = data.cars.map((car) => {
           const image = Array.isArray(car.image_urls) && car.image_urls.length ? car.image_urls[0] : "";
           const title = car.title || `${car.brand || ""} ${car.model || ""}`.trim() || "Viatura";
           const price = Number(car.price_eur || 0).toLocaleString("pt-PT", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
@@ -431,7 +391,7 @@
         }).join("");
 
         if (resultsCount) {
-          resultsCount.textContent = `${cars.length} veículos encontrados`;
+          resultsCount.textContent = `${data.cars.length} veículos encontrados`;
         }
       } catch {
         renderEmpty();
