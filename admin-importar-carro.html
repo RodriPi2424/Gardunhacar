@@ -196,11 +196,7 @@
       <section class="bg-white rounded-2xl border border-slate-200 p-5 md:p-6">
         <h2 class="text-lg font-bold mb-4">Extras</h2>
         <p class="text-sm text-slate-500 mb-3">Adiciona os extras do carro (AC, GPS, câmara traseira, etc).</p>
-        <div class="flex flex-col md:flex-row gap-3">
-          <input id="extraInput" type="text" class="flex-1 rounded-xl border-slate-300" placeholder="Escreve um extra e clica em adicionar" />
-          <button id="addExtraBtn" type="button" class="rounded-xl bg-slate-900 text-white font-semibold px-4 py-2 hover:bg-slate-800">Adicionar extra</button>
-        </div>
-        <div id="extrasList" class="mt-4 flex flex-wrap gap-2"></div>
+        <div id="extrasCheckboxGrid" class="space-y-5" tabindex="-1"></div>
         <input id="extrasHidden" type="hidden" name="extras" />
       </section>
 
@@ -240,9 +236,7 @@
 
     const pageTitle = document.getElementById("pageTitle");
     const submitButton = document.getElementById("submitButton");
-    const extraInput = document.getElementById("extraInput");
-    const addExtraBtn = document.getElementById("addExtraBtn");
-    const extrasList = document.getElementById("extrasList");
+    const extrasCheckboxGrid = document.getElementById("extrasCheckboxGrid");
     const extrasHidden = document.getElementById("extrasHidden");
     const imageInput = document.getElementById("imageInput");
     const previewGrid = document.getElementById("previewGrid");
@@ -255,6 +249,171 @@
     const editingCarId = searchParams.get("id");
     const isEditing = Boolean(editingCarId);
     const extras = [];
+    const EXTRA_GROUPS = [
+      {
+        title: "Áudio e Multimédia",
+        options: [
+          "Apple CarPlay",
+          "Android Auto",
+          "Bluetooth",
+          "Rádio",
+          "Sistema mãos livres",
+          "Porta USB",
+          "Carregador de smartphone wireless",
+          "Sistema de navegação",
+          "Sistema de som",
+          "Head-up display",
+          "Ecrã táctil",
+          "Controlo de funções do veículo por voz",
+          "Acesso Internet"
+        ]
+      },
+      {
+        title: "Iluminação e Assistência à Condução",
+        options: [
+          "Ativação automática de mínimos",
+          "Limpa faróis",
+          "Luzes diurnas",
+          "Luzes diurnas LED",
+          "Faróis de nevoeiro",
+          "Faróis de nevoeiro LED",
+          "Farolim traseiro LED",
+          "Follow me home",
+          "Iluminação interior LED",
+          "Sistema start/stop",
+          "Controlo de pressão dos pneus",
+          "Travão de mão eléctrico",
+          "Direcção assistida",
+          "Diferencial autoblocante",
+          "Diferencial controlado centralmente",
+          "Assistente de trânsito",
+          "Sensor de estacionamento dianteiro",
+          "Sensor de estacionamento traseiro",
+          "Assistente de estacionamento",
+          "Sistema de estacionamento autónomo",
+          "Câmara 360º",
+          "Câmara de marcha-atrás",
+          "Retrovisores exteriores com regulação eléctrica",
+          "Retrovisores exteriores aquecidos",
+          "Retrovisores exteriores electricamente retráteis",
+          "Retrovisor câmara nas portas",
+          "Assistente de ângulo morto",
+          "Assistente activo de mudança de faixa",
+          "Sistema de aviso de transposição da via",
+          "Controlo de proximidade",
+          "Limitador de velocidade",
+          "Assistente de travagem",
+          "Assistente da linha de rodagem em curva",
+          "Controlo de tração"
+        ]
+      },
+      {
+        title: "Conforto e Interior",
+        options: [
+          "AC traseiro",
+          "Banco do condutor com regulação eléctrica",
+          "Banco do passageiro com regulação eléctrica",
+          "Banco do condutor aquecido",
+          "Banco do passageiro aquecido",
+          "Regulação lombar do banco do condutor eléctrica",
+          "Regulação lombar do banco do passageiro eléctrica",
+          "Bancos dianteiros ventilados",
+          "Bancos dianteiros com massagem",
+          "Bancos com memória",
+          "Bancos desportivos dianteiros",
+          "Bancos traseiros aquecidos",
+          "Bancos traseiros ventilados",
+          "Bancos traseiros com massagem",
+          "Apoio de braço dianteiro",
+          "Apoio de braço traseiro",
+          "Volante em pele",
+          "Volante desportivo",
+          "Comandos do rádio no volante",
+          "Volante electricamente ajustável",
+          "Volante multifunções",
+          "Volante aquecido",
+          "Volante com patilhas de velocidade",
+          "Manete de velocidades em pele",
+          "Chave digital",
+          "Fecho central sem chave",
+          "Arranque sem chave",
+          "Arranque do motor sem chave",
+          "AC independente",
+          "Hill Descent Control",
+          "Hill Holder",
+          "Reconhecimento activo de sinais de velocidade",
+          "Reconhecimento sinais trânsito",
+          "Assistente de pré-colisão em cruzamento",
+          "Condução autónoma básica",
+          "Sensor de Máximos",
+          "Faróis direcionais",
+          "Faróis adaptativos",
+          "Luzes direcionais dinâmicas"
+        ]
+      },
+      {
+        title: "Segurança",
+        options: [
+          "ABS",
+          "Controlo de estabilidade (ESP)",
+          "Distribuição electrónica de travagem",
+          "Travão assistido electronicamente",
+          "Assistente de travagem em cidade",
+          "Assistente de travagem de proteção de peões",
+          "Assistente activo de travagem",
+          "Sistema de alerta de colisão",
+          "Sistema de alerta pré-colisão",
+          "Sistema pré-colisão traseiro",
+          "Sistema pré-colisão lateral",
+          "Sensores traseiros de alerta de tráfego",
+          "Sistema de alerta acústico de veículos (AVAS)",
+          "Sistema de detecção de fadiga",
+          "Alerta de pausa para descanso",
+          "Emergency Assist",
+          "Assistente de mudança de faixa",
+          "Sistema de segurança pré-colisão",
+          "Chamada automática de SOS",
+          "Airbag do condutor",
+          "Airbag do passageiro",
+          "Airbag joelho condutor",
+          "Airbag joelho passageiro",
+          "Airbags de cabeça condutor e passageiro",
+          "Airbag central do condutor e passageiro",
+          "Airbags dianteiros para assentos traseiros",
+          "Airbag lateral do condutor",
+          "Airbag lateral do condutor e passageiro",
+          "Airbags cabeça traseiros",
+          "Airbags laterais traseiros",
+          "Airbag de cortina traseiro transversal",
+          "Cinto de segurança traseiro com airbag",
+          "ISOFIX",
+          "Sistema de proteção anti-capotamento"
+        ]
+      },
+      {
+        title: "Tecnologia Eléctrica",
+        options: [
+          "Sistema de recuperação de energia",
+          "Função de carregamento rápido",
+          "Cabo de carregamento"
+        ]
+      },
+      {
+        title: "Climatização, Vidros e Exterior",
+        options: [
+          "AC automático",
+          "Sensor de chuva",
+          "Desembaciador de pára-brisas",
+          "Limpa vidros: outros",
+          "Vidros eléctricos dianteiros",
+          "Vidros eléctricos traseiros",
+          "Vidros traseiros escurecidos",
+          "Capota eléctrica",
+          "Capota com controlo remoto",
+          "Gancho de Reboque"
+        ]
+      }
+    ];
 
     if (isEditing) {
       document.title = "Admin - Editar Carro";
@@ -324,37 +483,63 @@
       });
     }
 
-    function renderExtras() {
-      extrasList.innerHTML = "";
-      extras.forEach((extra, index) => {
-        const chip = document.createElement("button");
-        chip.type = "button";
-        chip.className = "inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold hover:bg-slate-200";
-        chip.innerHTML = `<span>${extra}</span><span aria-hidden="true">x</span>`;
-        chip.addEventListener("click", () => {
-          extras.splice(index, 1);
-          renderExtras();
-        });
-        extrasList.appendChild(chip);
+    function syncExtrasHidden() {
+      extras.length = 0;
+      Array.from(form.querySelectorAll('input[name="carExtra"]:checked')).forEach((input) => {
+        if (!extras.includes(input.value)) extras.push(input.value);
       });
       extrasHidden.value = JSON.stringify(extras);
     }
 
-    function addExtra() {
-      const value = extraInput.value.trim();
-      if (!value || extras.includes(value)) return;
-      extras.push(value);
-      extraInput.value = "";
-      renderExtras();
+    function renderExtrasOptions() {
+      extrasCheckboxGrid.innerHTML = "";
+      EXTRA_GROUPS.forEach((group) => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "rounded-xl border border-slate-200 overflow-hidden";
+
+        const heading = document.createElement("h3");
+        heading.className = "bg-slate-100 px-4 py-3 text-sm font-bold text-slate-800";
+        heading.textContent = group.title;
+
+        const grid = document.createElement("div");
+        grid.className = "grid grid-cols-1 md:grid-cols-2 gap-3 p-3";
+
+        group.options.forEach((option) => {
+          const label = document.createElement("label");
+          label.className = "flex min-h-11 items-center gap-3 rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 hover:border-sky-300 hover:bg-sky-50";
+
+          const input = document.createElement("input");
+          input.type = "checkbox";
+          input.name = "carExtra";
+          input.value = option;
+          input.className = "h-4 w-4 rounded border-sky-500 text-sky-600 focus:ring-sky-500";
+          input.addEventListener("change", syncExtrasHidden);
+
+          const text = document.createElement("span");
+          text.textContent = option;
+
+          label.appendChild(input);
+          label.appendChild(text);
+          grid.appendChild(label);
+        });
+
+        wrapper.appendChild(heading);
+        wrapper.appendChild(grid);
+        extrasCheckboxGrid.appendChild(wrapper);
+      });
+      syncExtrasHidden();
     }
 
     function syncExtras(values) {
-      extras.length = 0;
-      (Array.isArray(values) ? values : []).forEach((value) => {
-        const cleaned = String(value || "").trim();
-        if (cleaned && !extras.includes(cleaned)) extras.push(cleaned);
+      const selected = new Set(
+        (Array.isArray(values) ? values : [])
+          .map((value) => String(value || "").trim())
+          .filter(Boolean)
+      );
+      Array.from(form.querySelectorAll('input[name="carExtra"]')).forEach((input) => {
+        input.checked = selected.has(input.value);
       });
-      renderExtras();
+      syncExtrasHidden();
     }
 
     function renderExistingImages(urls) {
@@ -462,14 +647,6 @@
       };
     }
 
-    addExtraBtn.addEventListener("click", addExtra);
-    extraInput.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        addExtra();
-      }
-    });
-
     chooseImagesBtn.addEventListener("click", () => {
       imageInput.click();
     });
@@ -506,8 +683,7 @@
     });
 
     form.addEventListener("reset", () => {
-      extras.length = 0;
-      renderExtras();
+      setTimeout(syncExtras, 0, []);
       previewGrid.innerHTML = "";
       selectedImagesLabel.textContent = isEditing ? "Mantém as imagens atuais até gravares novas" : "Nenhum ficheiro selecionado";
       setFormStatus("");
@@ -540,8 +716,8 @@
       }
 
       if (extras.length === 0) {
-        setFormStatus("Adiciona pelo menos um extra.", "error");
-        extraInput.focus();
+        setFormStatus("Seleciona pelo menos um extra.", "error");
+        extrasCheckboxGrid.focus();
         return;
       }
 
@@ -691,7 +867,7 @@
 
     requireAdminAccess().then((allowed) => {
       if (!allowed) return;
-      renderExtras();
+      renderExtrasOptions();
       if (isEditing) {
         loadCarForEditing();
       }
