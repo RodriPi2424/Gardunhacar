@@ -271,21 +271,6 @@
     <span class="material-symbols-outlined">add</span>
   </button>
 
-  <nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-surface border-t border-outline-variant shadow-lg">
-    <a href="admin.html" class="flex flex-col items-center justify-center bg-primary-container text-white rounded-full px-4 py-1 scale-90">
-      <span class="material-symbols-outlined">dashboard</span>
-      <span class="text-xs">Dashboard</span>
-    </a>
-    <a href="admin-importar-carro.html" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
-      <span class="material-symbols-outlined">directions_car</span>
-      <span class="text-xs">Estoque</span>
-    </a>
-    <a href="admin-posts.html" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
-      <span class="material-symbols-outlined">post_add</span>
-      <span class="text-xs">Posts</span>
-    </a>
-  </nav>
-
   <script>
     const apiBase = window.location.protocol === "file:" ? "http://127.0.0.1:3000" : "";
     async function apiFetch(path, options) {
