@@ -1535,6 +1535,27 @@ app.delete("/api/admin/cars/:id", async (req, res) => {
   }
 });
 
+app.delete("/api/admin/cars", async (req, res) => {
+  const authHeader = req.headers.authorization || "";
+
+  try {
+    const { userClient } = await getAdminContext(authHeader);
+    const { data, error } = await userClient
+      .from("cars")
+      .delete()
+      .not("id", "is", null)
+      .select("id");
+
+    if (error) {
+      return res.status(400).json({ ok: false, message: error.message });
+    }
+
+    return res.json({ ok: true, deleted: Array.isArray(data) ? data.length : 0 });
+  } catch (error) {
+    return res.status(error.statusCode || 500).json({ ok: false, message: error.message, error: error.statusCode ? undefined : error.message });
+  }
+});
+
 app.post("/api/admin/import-car", async (req, res) => {
   const { car, images, categories } = req.body || {};
   const authHeader = req.headers.authorization || "";

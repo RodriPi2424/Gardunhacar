@@ -729,6 +729,26 @@
     return jsonResponse({ ok: true }, 200);
   }
 
+  async function handleDeleteAllCars(options) {
+    const token = getBearerToken(options);
+    const { user, error: authError } = await getUserFromToken(token);
+    if (authError || !user || !isAdminUser(user)) {
+      return jsonResponse({ ok: false, message: "Acesso negado: apenas admins podem gerir carros." }, 403);
+    }
+
+    const userClient = createAuthedClient(token);
+    const { data, error } = await userClient
+      .from("cars")
+      .delete()
+      .not("id", "is", null)
+      .select("id");
+    if (error) {
+      return jsonResponse({ ok: false, message: error.message }, 400);
+    }
+
+    return jsonResponse({ ok: true, deleted: Array.isArray(data) ? data.length : 0 }, 200);
+  }
+
   async function handleSaveCar(pathname, options) {
     const token = getBearerToken(options);
     const { user, error: authError } = await getUserFromToken(token);
@@ -1305,6 +1325,9 @@
     }
     if (pathname.startsWith("/api/admin/posts/") && method === "DELETE") {
       return handleDeletePost(pathname, options);
+    }
+    if (pathname === "/api/admin/cars" && method === "DELETE") {
+      return handleDeleteAllCars(options);
     }
     if (pathname.startsWith("/api/admin/cars/") && method === "DELETE") {
       return handleDeleteCar(pathname, options);

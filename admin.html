@@ -62,6 +62,26 @@
       border-color: #153e4d;
       box-shadow: 0 0 0 3px rgba(21, 62, 77, 0.12);
     }
+    .danger-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      border: 1px solid #ba1a1a;
+      border-radius: 999px;
+      background: #fff;
+      color: #ba1a1a;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 0.35rem 0.75rem;
+      transition: background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+    }
+    .danger-action-btn:hover {
+      background: #fff1f1;
+    }
+    .danger-action-btn:disabled {
+      opacity: 0.55;
+      pointer-events: none;
+    }
     .listing-status-select {
       min-width: 132px;
       border-radius: 0.75rem;
@@ -148,10 +168,14 @@
         <div class="p-6 border-b border-outline-variant space-y-4">
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <h3 class="text-2xl font-bold text-primary">Gestão de Anúncios</h3>
-            <div class="flex items-center gap-2">
+            <div class="flex flex-wrap items-center gap-2">
               <button class="status-filter chip-active text-xs px-3 py-1.5 rounded-full border border-outline-variant" data-filter="all">Todos</button>
               <button class="status-filter text-xs px-3 py-1.5 rounded-full border border-outline-variant" data-filter="available">Disponíveis</button>
               <button class="status-filter text-xs px-3 py-1.5 rounded-full border border-outline-variant" data-filter="sold">Vendidos</button>
+              <button id="deleteAllListingsBtn" class="danger-action-btn" type="button">
+                <span class="material-symbols-outlined text-[18px]">delete_sweep</span>
+                Apagar todos
+              </button>
             </div>
           </div>
           <div class="relative">
@@ -704,6 +728,51 @@
         alert("Erro de ligação ao servidor.");
       }
     }
+
+    async function deleteAllListings() {
+      if (state.listings.length === 0) {
+        alert("Não existem anúncios para apagar.");
+        return;
+      }
+
+      const confirmation = prompt(`Esta ação apaga todos os ${state.listings.length} anúncios. Escreve APAGAR TODOS para confirmar.`);
+      if (confirmation !== "APAGAR TODOS") return;
+
+      const session = getSession();
+      if (!session?.access_token) {
+        window.location.href = "login.html?next=admin.html";
+        return;
+      }
+
+      const button = document.getElementById("deleteAllListingsBtn");
+      button.disabled = true;
+
+      try {
+        const response = await apiFetch("/api/admin/cars", {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${session.access_token}`
+          }
+        });
+        const result = await response.json();
+        if (!response.ok || !result.ok) {
+          alert(result.message || "Não foi possível apagar os anúncios.");
+          return;
+        }
+
+        state.listings = [];
+        state.quickLook = "";
+        document.getElementById("quickLookInput").value = "";
+        renderAll();
+        alert(`Anúncios apagados: ${Number(result.deleted || 0).toLocaleString("pt-PT")}.`);
+      } catch {
+        alert("Erro de ligação ao servidor.");
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    document.getElementById("deleteAllListingsBtn").addEventListener("click", deleteAllListings);
 
     (async function checkDbHealth() {
       const statusEl = document.getElementById("dbConnectionStatus");
