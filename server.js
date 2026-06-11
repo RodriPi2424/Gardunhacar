@@ -171,7 +171,7 @@ async function uploadRemoteImages(userClient, imageCandidates) {
   return imageUrls;
 }
 
-function validateCarPayload(car, categories, imageUrls = []) {
+function validateCarPayload(car, categories, imageUrls = [], options = {}) {
   if (!car || typeof car !== "object") {
     return "Dados do carro em falta.";
   }
@@ -202,12 +202,13 @@ function validateCarPayload(car, categories, imageUrls = []) {
   const requiredNumericFields = ["mileage", "price_eur", "seats", "doors"];
   for (const field of requiredNumericFields) {
     const value = Number(car[field]);
-    if (!Number.isFinite(value) || value <= 0) {
+    const allowZero = (field === "mileage" && options.allowZeroMileage) || (field === "price_eur" && options.allowZeroPrice);
+    if (!Number.isFinite(value) || value < 0 || (!allowZero && value === 0)) {
       return "Preenche todos os campos obrigatórios.";
     }
   }
 
-  if (!Array.isArray(categories) || categories.length === 0) {
+  if ((!Array.isArray(categories) || categories.length === 0) && !options.allowEmptyCategories) {
     return "Seleciona pelo menos uma categoria.";
   }
 
@@ -609,6 +610,78 @@ function normalizeWarranty(value) {
   return "18 meses";
 }
 
+function normalizeDbCondition(value) {
+  const normalized = sanitizeText(value).toLowerCase();
+  if (normalized === "novo") return "Novo";
+  return "Usado";
+}
+
+function normalizeDbWarranty(value) {
+  const normalized = sanitizeText(value).toLowerCase();
+  if (!normalized || normalized === "não" || normalized === "nao" || normalized.includes("sem garantia")) {
+    return "Não";
+  }
+  return "Sim";
+}
+
+function inferCategoriesForCar(car) {
+  const categories = new Set();
+  const price = Number(car.price_eur || 0);
+  const segment = sanitizeText(car.segment).toLowerCase();
+  const transmission = sanitizeText(car.transmission).toLowerCase();
+  const fuel = sanitizeText(car.fuel).toLowerCase();
+  const seats = Number(car.seats || 0);
+
+  if (price > 0 && price <= 10000) categories.add("ate-10000");
+  if (price > 0 && price <= 15000) categories.add("ate-15000");
+  if (price > 0 && price <= 15000) categories.add("carros-economicos");
+  if (transmission.includes("auto")) categories.add("carros-automaticos");
+  if (segment.includes("suv") || segment.includes("crossover") || segment.includes("todo")) categories.add("suvs");
+  if (segment.includes("util") || segment.includes("citad") || segment.includes("pequeno")) categories.add("carros-cidade");
+  if (segment.includes("carrinha") || segment.includes("monovolume") || seats >= 5) categories.add("carros-familiares");
+  if (fuel.includes("hibr") || fuel.includes("elétr") || fuel.includes("eletr") || fuel.includes("diesel")) categories.add("baixo-consumo");
+  if (seats >= 5 && !categories.has("carros-cidade")) categories.add("carros-viagens");
+
+  return Array.from(categories);
+}
+
+function buildCarDuplicateKey(car) {
+  return [
+    car.brand,
+    car.model,
+    car.registration_date,
+    Number(car.mileage || 0),
+    Number(car.price_eur || 0)
+  ].map((value) => sanitizeText(value).toLowerCase()).join("|");
+}
+
+function buildPayloadFromParsedListing(parsed, categories = []) {
+  const extras = Array.isArray(parsed.extras) && parsed.extras.length > 0 ? parsed.extras : ["Sem extras indicados"];
+  const payload = {
+    title: parsed.title || "Viatura importada",
+    brand: parsed.brand || "N/D",
+    model: parsed.model || "N/D",
+    registration_date: parsed.registration_date || "N/D",
+    mileage: Number.isFinite(parsed.mileage) ? parsed.mileage : 0,
+    fuel: parsed.fuel || "N/D",
+    price_eur: Number.isFinite(parsed.price_eur) ? parsed.price_eur : 0,
+    observations: parsed.observations || "Sem observações.",
+    seats: parsed.seats || 5,
+    segment: parsed.segment || "N/D",
+    power: parsed.power || "N/D",
+    origin: parsed.origin || "Nacional",
+    engine_displacement: parsed.engine_displacement || "N/D",
+    transmission: parsed.transmission || "N/D",
+    color: parsed.color || "N/D",
+    doors: parsed.doors || 5,
+    condition: normalizeDbCondition(parsed.condition),
+    warranty: normalizeDbWarranty(parsed.warranty),
+    extras
+  };
+  payload.categories = Array.isArray(categories) && categories.length > 0 ? categories : inferCategoriesForCar(payload);
+  return payload;
+}
+
 function extractAlonsoVehicleId(sourceUrl) {
   const urlObj = new URL(sourceUrl);
   const parts = urlObj.pathname.split("/").map((part) => part.trim()).filter(Boolean);
@@ -616,17 +689,7 @@ function extractAlonsoVehicleId(sourceUrl) {
   return id || "";
 }
 
-async function fetchAlonsoEasydataListing(sourceUrl) {
-  const urlObj = new URL(sourceUrl);
-  const hostname = urlObj.hostname.toLowerCase();
-  const vehicleId = extractAlonsoVehicleId(sourceUrl);
-
-  if (!vehicleId) {
-    const error = new Error("Não foi possível encontrar o ID da viatura no URL.");
-    error.statusCode = 400;
-    throw error;
-  }
-
+async function getAlonsoEasydataConfig(hostname) {
   const assetsBase = `https://multidealer.easysite.pt/assets/${hostname}`;
   const [envResp, infoResp] = await Promise.all([
     fetch(`${assetsBase}/env`),
@@ -651,6 +714,11 @@ async function fetchAlonsoEasydataListing(sourceUrl) {
     throw error;
   }
 
+  return { token, dealerId, sourceType };
+}
+
+async function fetchAlonsoEasydataVehicles(hostname) {
+  const { token, dealerId, sourceType } = await getAlonsoEasydataConfig(hostname);
   const apiUrl = new URL(`https://ws.easydata.pt/v1/${sourceType}/carros/GetListaDetalhesViatura/`);
   apiUrl.searchParams.set("dealer_id", String(dealerId));
   const listingResp = await fetch(apiUrl, { headers: { token } });
@@ -662,9 +730,22 @@ async function fetchAlonsoEasydataListing(sourceUrl) {
   }
 
   const vehicles = await listingResp.json();
-  const vehicle = Array.isArray(vehicles)
-    ? vehicles.find((item) => String(item?.CodViatura || "") === vehicleId)
-    : null;
+  return Array.isArray(vehicles) ? vehicles : [];
+}
+
+async function fetchAlonsoEasydataListing(sourceUrl) {
+  const urlObj = new URL(sourceUrl);
+  const hostname = urlObj.hostname.toLowerCase();
+  const vehicleId = extractAlonsoVehicleId(sourceUrl);
+
+  if (!vehicleId) {
+    const error = new Error("Não foi possível encontrar o ID da viatura no URL.");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const vehicles = await fetchAlonsoEasydataVehicles(hostname);
+  const vehicle = vehicles.find((item) => String(item?.CodViatura || "") === vehicleId) || null;
 
   if (!vehicle) {
     const error = new Error("Viatura Alonso & Branco não encontrada.");
@@ -1578,27 +1659,7 @@ app.post("/api/admin/import-from-url", async (req, res) => {
   try {
     const { userClient } = await getAdminContext(authHeader);
     const parsed = await parseListingFromUrl(parsedUrl);
-    const defaultPayload = {
-      title: parsed.title || "Viatura importada",
-      brand: parsed.brand || "N/D",
-      model: parsed.model || "N/D",
-      registration_date: parsed.registration_date || "N/D",
-      mileage: Number.isFinite(parsed.mileage) ? parsed.mileage : 0,
-      fuel: parsed.fuel || "N/D",
-      price_eur: Number.isFinite(parsed.price_eur) ? parsed.price_eur : 0,
-      observations: parsed.observations || null,
-      seats: parsed.seats,
-      segment: parsed.segment,
-      power: parsed.power,
-      origin: parsed.origin,
-      engine_displacement: parsed.engine_displacement,
-      transmission: parsed.transmission,
-      color: parsed.color,
-      doors: parsed.doors,
-      condition: parsed.condition,
-      warranty: parsed.warranty,
-      extras: Array.isArray(parsed.extras) ? parsed.extras : []
-    };
+    const defaultPayload = buildPayloadFromParsedListing(parsed, categories.map((value) => String(value).trim()).filter(Boolean));
     const mergedPayload = mergeParsedCar(defaultPayload, carOverrides);
     const imageUrls = [
       ...(await uploadRemoteImages(userClient, parsed.imageCandidates)),
@@ -1607,11 +1668,14 @@ app.post("/api/admin/import-from-url", async (req, res) => {
 
     const payload = {
       ...mergedPayload,
-      categories: categories.map((value) => String(value).trim()).filter(Boolean),
+      categories: mergedPayload.categories,
       image_urls: imageUrls
     };
 
-    const validationError = validateCarPayload(payload, payload.categories, payload.image_urls);
+    const validationError = validateCarPayload(payload, payload.categories, payload.image_urls, {
+      allowZeroMileage: true,
+      allowZeroPrice: true
+    });
     if (validationError) {
       return res.status(400).json({ ok: false, message: validationError });
     }
@@ -1633,6 +1697,108 @@ app.post("/api/admin/import-from-url", async (req, res) => {
     return res.status(error.statusCode || 500).json({
       ok: false,
       message: error.statusCode ? error.message : "Erro ao importar por URL.",
+      error: error.statusCode ? undefined : error.message
+    });
+  }
+});
+
+app.post("/api/admin/import-alonso-stock", async (req, res) => {
+  const authHeader = req.headers.authorization || "";
+  const stockUrl = String(req.body?.url || "https://viaturas.alonsosebranco.pt/usadas/?Order=6").trim();
+  const uploadImages = req.body?.uploadImages === true;
+
+  let parsedUrl;
+  try {
+    parsedUrl = new URL(stockUrl);
+  } catch {
+    return res.status(400).json({ ok: false, message: "URL inválida." });
+  }
+
+  if (parsedUrl.hostname.toLowerCase() !== "viaturas.alonsosebranco.pt") {
+    return res.status(400).json({ ok: false, message: "Este importador temporário só aceita viaturas.alonsosebranco.pt." });
+  }
+
+  try {
+    const { userClient } = await getAdminContext(authHeader);
+    const vehicles = await fetchAlonsoEasydataVehicles(parsedUrl.hostname.toLowerCase());
+    const publicVehicles = vehicles.filter((vehicle) => vehicle?.Vendido !== true && vehicle?.Reservado !== true);
+    const existing = await userClient
+      .from("cars")
+      .select("id,title,brand,model,registration_date,mileage,price_eur")
+      .limit(1000);
+
+    if (existing.error) {
+      return res.status(400).json({ ok: false, message: existing.error.message });
+    }
+
+    const seenKeys = new Set((existing.data || []).map((car) => buildCarDuplicateKey(car)));
+    const imported = [];
+    const skipped = [];
+    const failed = [];
+
+    for (const vehicle of publicVehicles) {
+      const sourceId = sanitizeText(vehicle?.CodViatura);
+      try {
+        const parsed = parseAlonsoEasydataListing(vehicle);
+        const payload = buildPayloadFromParsedListing(parsed);
+        const duplicateKey = buildCarDuplicateKey(payload);
+
+        if (seenKeys.has(duplicateKey)) {
+          skipped.push({ sourceId, title: payload.title, reason: "Já existia" });
+          continue;
+        }
+
+        const uploadedImages = uploadImages ? await uploadRemoteImages(userClient, parsed.imageCandidates) : [];
+        const imageUrls = uploadedImages.length > 0 ? uploadedImages : parsed.imageCandidates;
+        const dbPayload = {
+          ...payload,
+          image_urls: imageUrls
+        };
+
+        const validationError = validateCarPayload(dbPayload, dbPayload.categories, dbPayload.image_urls, {
+          allowZeroMileage: true,
+          allowZeroPrice: true,
+          allowEmptyCategories: true
+        });
+        if (validationError) {
+          failed.push({ sourceId, title: payload.title, message: validationError });
+          continue;
+        }
+
+        dbPayload.brand_id = await resolveBrandId(userClient, dbPayload.brand);
+
+        const { data, error } = await userClient
+          .from("cars")
+          .insert(dbPayload)
+          .select("id,title,brand,brand_id,model,price_eur,image_urls")
+          .single();
+
+        if (error) {
+          failed.push({ sourceId, title: payload.title, message: error.message });
+          continue;
+        }
+
+        seenKeys.add(duplicateKey);
+        imported.push(data);
+      } catch (error) {
+        failed.push({ sourceId, title: "Viatura Alonso & Branco", message: error.message });
+      }
+    }
+
+    return res.status(failed.length > 0 ? 207 : 201).json({
+      ok: failed.length === 0,
+      total: publicVehicles.length,
+      imported: imported.length,
+      skipped: skipped.length,
+      failed: failed.length,
+      cars: imported,
+      skippedItems: skipped.slice(0, 25),
+      failures: failed.slice(0, 25)
+    });
+  } catch (error) {
+    return res.status(error.statusCode || 500).json({
+      ok: false,
+      message: error.statusCode ? error.message : "Erro ao importar stock Alonso & Branco.",
       error: error.statusCode ? undefined : error.message
     });
   }
