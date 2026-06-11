@@ -25,6 +25,38 @@
         gap: 1.75rem;
       }
 
+      .global-header-mobile-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-basis: 100%;
+        justify-self: flex-start;
+        width: fit-content;
+        min-height: 2.5rem;
+        padding: 0.625rem 0.95rem;
+        border: 1px solid rgba(255, 255, 255, 0.26);
+        border-radius: 999px;
+        background: rgba(21, 62, 77, 0.18);
+        color: rgba(255, 255, 255, 0.95);
+        font-family: "Montserrat", sans-serif;
+        font-size: 0.72rem;
+        font-weight: 700;
+        line-height: 1;
+        text-decoration: none;
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        transition: background-color 220ms ease, border-color 220ms ease, color 220ms ease;
+        white-space: nowrap;
+        order: 3;
+      }
+
+      .global-header-mobile-link:hover,
+      .global-header-mobile-link[aria-current="page"] {
+        background: rgba(21, 62, 77, 0.3);
+        border-color: rgba(255, 255, 255, 0.4);
+        color: rgba(255, 255, 255, 1);
+      }
+
       .global-header-link {
         padding: 0.375rem 0;
         color: rgba(255, 255, 255, 0.82);
@@ -46,6 +78,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        flex-wrap: wrap;
         gap: 0.75rem;
         width: 100%;
         max-width: 1280px;
@@ -77,6 +110,14 @@
       }
 
       @media (min-width: 768px) {
+        .global-header-shell {
+          flex-wrap: nowrap;
+        }
+
+        .global-header-mobile-link {
+          display: none;
+        }
+
         .global-header-nav {
           display: flex;
         }
@@ -127,6 +168,22 @@
     `;
   }
 
+  function createMobileActionMarkup() {
+    const fallbackLink = links[0];
+    const targetLink = links.find(({ href }) => href !== currentPage) || fallbackLink;
+
+    if (!targetLink) return "";
+
+    const mobileLabel = targetLink.href === "about-us.html" ? "Sobre nos" : targetLink.label;
+
+    return `
+      <a
+        class="global-header-mobile-link"
+        href="${targetLink.href}"
+      >${mobileLabel}</a>
+    `;
+  }
+
   function renderHeader(container) {
     const isFullBleedHeader = Boolean(container.closest("section.w-screen"));
     const hasLogo = container.querySelector('img[src*="logo-new"], img[src*="Logo"], img[alt*="autenticar" i]');
@@ -144,7 +201,7 @@
     const shellClass = container.classList.contains("sticky")
       ? "global-header-shell global-header-shell--bar"
       : "global-header-shell";
-    const markup = `${createBrandMarkup()}${createNavMarkup()}`;
+    const markup = `${createBrandMarkup()}${createMobileActionMarkup()}${createNavMarkup()}`;
 
     if (shouldWrap) {
       if (
