@@ -63,12 +63,16 @@
   }
 
   function renderHeader(container) {
-    const shouldWrap = container.classList.contains("site-header") || container.classList.contains("sticky");
+    const isFullBleedHeader = Boolean(container.closest("section.w-screen"));
+    const shouldWrap =
+      container.classList.contains("site-header") ||
+      container.classList.contains("sticky") ||
+      isFullBleedHeader;
     const markup = `${createBrandMarkup()}${createNavMarkup()}`;
 
     if (shouldWrap) {
       container.innerHTML = `
-        <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-3 flex items-center justify-between gap-3">
+        <div class="mx-auto flex w-full max-w-[1280px] items-center justify-between gap-3 px-4 py-3 md:px-12">
           ${markup}
         </div>
       `;
