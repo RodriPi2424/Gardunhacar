@@ -45,6 +45,21 @@
         #contact-panel {
             transition: opacity 320ms ease, transform 320ms cubic-bezier(0.22, 1, 0.36, 1), filter 320ms ease;
         }
+        .home-hero {
+            min-height: 100vh;
+            min-height: 100svh;
+        }
+        .home-hero-content {
+            min-height: inherit;
+            padding-top: max(1rem, env(safe-area-inset-top));
+            padding-bottom: max(1rem, env(safe-area-inset-bottom));
+        }
+        @media (max-width: 767px) {
+            .home-hero-copy {
+                padding-top: 1.5rem;
+                padding-bottom: 2rem;
+            }
+        }
         /* Overriding existing font classes to use Montserrat */
         body { font-family: 'Montserrat', sans-serif !important; }
     </style>
@@ -150,12 +165,12 @@
 <main class="max-w-container-max mx-auto">
 <!-- Hero Section -->
 <section class="relative left-1/2 right-1/2 ml-[-50vw] mr-[-50vw] w-screen pt-0 mb-unit-xl">
-<div class="relative overflow-hidden h-[100vh] shadow-2xl border-y border-white/10">
+<div class="home-hero relative overflow-hidden shadow-2xl border-y border-white/10">
 <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('hero-autenticar.png');"></div>
 <div class="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/5"></div>
 <div class="absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-black/50"></div>
 
-<div class="relative z-10 h-full px-4 py-4 md:p-8 flex flex-col">
+<div class="home-hero-content relative z-10 px-4 py-4 md:p-8 flex flex-col">
 <div class="flex items-center justify-between gap-3">
 <a href="index.html" aria-label="Voltar ao inicio" class="inline-flex items-center">
 <img alt="autenticar" class="h-8 md:h-10 w-auto" src="logo-new-3.png"/>
@@ -168,7 +183,7 @@
 </div>
 </div>
 
-<div class="my-auto mx-auto md:mx-0 max-w-[620px] pb-4 md:pb-6 text-white text-center md:text-left flex flex-col items-center md:items-start md:pl-[100px]">
+<div class="home-hero-copy my-auto mx-auto md:mx-0 max-w-[620px] pb-4 md:pb-6 text-white text-center md:text-left flex flex-col items-center md:items-start md:pl-[100px]">
 <p class="text-sm md:text-base text-white/80 mb-3">A estrada começa aqui.</p>
 <h1 class="font-black text-[34px] sm:text-[40px] md:text-[64px] leading-[0.95] tracking-[-0.02em] uppercase mb-5 max-w-[12ch]">Compre com confiança</h1>
 <div class="w-full sm:w-auto">
