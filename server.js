@@ -1140,7 +1140,7 @@ app.get("/api/cars", async (req, res) => {
 
     let query = supabase
       .from("cars")
-      .select("id,title,brand,model,registration_date,mileage,fuel,price_eur,image_urls,extras,categories,created_at,updated_at,status")
+      .select("id,title,brand,model,registration_date,mileage,fuel,price_eur,transmission,image_urls,extras,categories,created_at,updated_at,status")
       .order("created_at", { ascending: false })
       .limit(limit);
 
@@ -1156,7 +1156,7 @@ app.get("/api/cars", async (req, res) => {
     if (category && cars.length === 0) {
       const legacy = await supabase
         .from("cars")
-        .select("id,title,brand,model,registration_date,mileage,fuel,price_eur,image_urls,extras,categories,created_at,updated_at,status")
+        .select("id,title,brand,model,registration_date,mileage,fuel,price_eur,transmission,image_urls,extras,categories,created_at,updated_at,status")
         // `extras` is jsonb, so the contains filter must use a JSON literal.
         .filter("extras", "cs", JSON.stringify([`categoria:${category}`]))
         .order("created_at", { ascending: false })
