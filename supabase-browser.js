@@ -357,7 +357,7 @@
   async function fetchCarsDirect(category, limit) {
     let query = browserClient
       .from("cars")
-      .select("id,title,brand,model,registration_date,mileage,fuel,price_eur,image_urls,extras,categories,created_at")
+      .select("id,title,brand,model,registration_date,mileage,fuel,price_eur,image_urls,extras,categories,created_at,updated_at,status")
       .order("created_at", { ascending: false })
       .limit(limit);
 
@@ -374,7 +374,7 @@
     if (category && cars.length === 0) {
       const legacy = await browserClient
         .from("cars")
-        .select("id,title,brand,model,registration_date,mileage,fuel,price_eur,image_urls,extras,categories,created_at")
+        .select("id,title,brand,model,registration_date,mileage,fuel,price_eur,image_urls,extras,categories,created_at,updated_at,status")
         .filter("extras", "cs", JSON.stringify(["categoria:" + category]))
         .order("created_at", { ascending: false })
         .limit(limit);
@@ -747,6 +747,41 @@
     }
 
     return jsonResponse({ ok: true, deleted: Array.isArray(data) ? data.length : 0 }, 200);
+  }
+
+  async function handleUpdateCarStatus(pathname, options) {
+    const token = getBearerToken(options);
+    const { user, error: authError } = await getUserFromToken(token);
+    if (authError || !user || !isAdminUser(user)) {
+      return jsonResponse({ ok: false, message: "Acesso negado: apenas admins podem gerir carros." }, 403);
+    }
+
+    const carId = pathname.split("/").filter(Boolean)[3] || "";
+    const body = JSON.parse(options?.body || "{}");
+    const nextStatus = sanitizeText(body.status).toLowerCase();
+
+    if (!carId) {
+      return jsonResponse({ ok: false, message: "ID do carro em falta." }, 400);
+    }
+
+    if (!["available", "sold"].includes(nextStatus)) {
+      return jsonResponse({ ok: false, message: "Estado inválido." }, 400);
+    }
+
+    const userClient = createAuthedClient(token);
+    const updatedAt = new Date().toISOString();
+    const { data, error } = await userClient
+      .from("cars")
+      .update({ status: nextStatus, updated_at: updatedAt })
+      .eq("id", carId)
+      .select("id,status,updated_at")
+      .single();
+
+    if (error) {
+      return jsonResponse({ ok: false, message: error.message }, 400);
+    }
+
+    return jsonResponse({ ok: true, car: data }, 200);
   }
 
   async function handleSaveCar(pathname, options) {
@@ -1328,6 +1363,9 @@
     }
     if (pathname === "/api/admin/cars" && method === "DELETE") {
       return handleDeleteAllCars(options);
+    }
+    if (pathname.startsWith("/api/admin/cars/") && pathname.endsWith("/status") && method === "PATCH") {
+      return handleUpdateCarStatus(pathname, options);
     }
     if (pathname.startsWith("/api/admin/cars/") && method === "DELETE") {
       return handleDeleteCar(pathname, options);

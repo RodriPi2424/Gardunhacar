@@ -1140,7 +1140,7 @@ app.get("/api/cars", async (req, res) => {
 
     let query = supabase
       .from("cars")
-      .select("id,title,brand,model,registration_date,mileage,fuel,price_eur,image_urls,extras,categories,created_at")
+      .select("id,title,brand,model,registration_date,mileage,fuel,price_eur,image_urls,extras,categories,created_at,updated_at,status")
       .order("created_at", { ascending: false })
       .limit(limit);
 
@@ -1156,7 +1156,7 @@ app.get("/api/cars", async (req, res) => {
     if (category && cars.length === 0) {
       const legacy = await supabase
         .from("cars")
-        .select("id,title,brand,model,registration_date,mileage,fuel,price_eur,image_urls,extras,categories,created_at")
+        .select("id,title,brand,model,registration_date,mileage,fuel,price_eur,image_urls,extras,categories,created_at,updated_at,status")
         // `extras` is jsonb, so the contains filter must use a JSON literal.
         .filter("extras", "cs", JSON.stringify([`categoria:${category}`]))
         .order("created_at", { ascending: false })
@@ -1501,6 +1501,40 @@ app.put("/api/admin/cars/:id", async (req, res) => {
       .update(payload)
       .eq("id", id)
       .select("id,title,brand,brand_id,model,price_eur,image_urls,categories,created_at")
+      .single();
+
+    if (error) {
+      return res.status(400).json({ ok: false, message: error.message });
+    }
+
+    return res.json({ ok: true, car: data });
+  } catch (error) {
+    return res.status(error.statusCode || 500).json({ ok: false, message: error.message, error: error.statusCode ? undefined : error.message });
+  }
+});
+
+app.patch("/api/admin/cars/:id/status", async (req, res) => {
+  const authHeader = req.headers.authorization || "";
+  const id = String(req.params.id || "").trim();
+  const nextStatus = String(req.body?.status || "").toLowerCase();
+
+  if (!id) {
+    return res.status(400).json({ ok: false, message: "ID do carro em falta." });
+  }
+
+  if (!["available", "sold"].includes(nextStatus)) {
+    return res.status(400).json({ ok: false, message: "Estado inválido." });
+  }
+
+  try {
+    const { userClient } = await getAdminContext(authHeader);
+    const updatedAt = new Date().toISOString();
+
+    const { data, error } = await userClient
+      .from("cars")
+      .update({ status: nextStatus, updated_at: updatedAt })
+      .eq("id", id)
+      .select("id,status,updated_at")
       .single();
 
     if (error) {

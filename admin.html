@@ -150,19 +150,17 @@
       <article class="bg-white p-unit-lg rounded-xl shadow-[0_4px_20px_rgba(16,42,67,0.08)] border border-outline-variant">
         <div class="flex justify-between items-start mb-4">
           <div class="p-3 bg-surface-container-low rounded-lg"><span class="material-symbols-outlined text-primary">person_search</span></div>
-          <span class="text-green-700 font-bold text-xs flex items-center bg-green-50 px-2 py-1 rounded-full">+5% <span class="material-symbols-outlined text-[14px]">trending_up</span></span>
         </div>
-        <p class="text-on-surface-variant font-bold text-sm">Leads Ativos</p>
-        <h2 id="statLeads" class="text-4xl font-extrabold text-primary">0</h2>
+        <p class="text-on-surface-variant font-bold text-sm">Vendidos Este Mes</p>
+        <h2 id="statSoldMonth" class="text-4xl font-extrabold text-primary">0</h2>
       </article>
 
       <article class="bg-white p-unit-lg rounded-xl shadow-[0_4px_20px_rgba(16,42,67,0.08)] border border-outline-variant">
         <div class="flex justify-between items-start mb-4">
           <div class="p-3 bg-surface-container-low rounded-lg"><span class="material-symbols-outlined text-primary">payments</span></div>
-          <span class="text-red-700 font-bold text-xs flex items-center bg-red-50 px-2 py-1 rounded-full">-2% <span class="material-symbols-outlined text-[14px]">trending_down</span></span>
         </div>
-        <p class="text-on-surface-variant font-bold text-sm">Receita (Este Mês)</p>
-        <h2 id="statRevenue" class="text-4xl font-extrabold text-primary">€0</h2>
+        <p class="text-on-surface-variant font-bold text-sm">Vendidos Este Ano</p>
+        <h2 id="statSoldYear" class="text-4xl font-extrabold text-primary">0</h2>
       </article>
     </section>
 
@@ -332,8 +330,7 @@
     const state = {
       filter: "all",
       quickLook: "",
-      listings: [],
-      leads: 142
+      listings: []
     };
 
     function getSession() {
@@ -353,6 +350,7 @@
         subtitle: subtitleParts.join(" • "),
         image: Array.isArray(car?.image_urls) && car.image_urls[0] ? car.image_urls[0] : "https://placehold.co/160x120/e2e8f0/64748b?text=Carro",
         date: car?.created_at || new Date().toISOString(),
+        updatedAt: car?.updated_at || car?.created_at || new Date().toISOString(),
         status: normalizeListingStatus(car?.status),
         price: Number(car?.price_eur || 0)
       };
@@ -381,6 +379,19 @@
 
     function formatMoney(value) {
       return new Intl.NumberFormat("pt-PT", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value);
+    }
+
+    function isSameMonth(date, referenceDate = new Date()) {
+      const parsed = new Date(date);
+      return !Number.isNaN(parsed.getTime()) &&
+        parsed.getFullYear() === referenceDate.getFullYear() &&
+        parsed.getMonth() === referenceDate.getMonth();
+    }
+
+    function isSameYear(date, referenceDate = new Date()) {
+      const parsed = new Date(date);
+      return !Number.isNaN(parsed.getTime()) &&
+        parsed.getFullYear() === referenceDate.getFullYear();
     }
 
     function escapeHtml(value) {
@@ -425,13 +436,13 @@
     }
 
     function renderStats() {
-      const approvedRevenue = state.listings
-        .filter((item) => item.status === "available")
-        .reduce((total, item) => total + Number(item.price || 0), 0);
+      const soldListings = state.listings.filter((item) => item.status === "sold");
+      const soldThisMonth = soldListings.filter((item) => isSameMonth(item.updatedAt)).length;
+      const soldThisYear = soldListings.filter((item) => isSameYear(item.updatedAt)).length;
 
       document.getElementById("statListings").textContent = state.listings.length.toLocaleString("pt-PT");
-      document.getElementById("statLeads").textContent = state.leads.toLocaleString("pt-PT");
-      document.getElementById("statRevenue").textContent = formatMoney(approvedRevenue);
+      document.getElementById("statSoldMonth").textContent = soldThisMonth.toLocaleString("pt-PT");
+      document.getElementById("statSoldYear").textContent = soldThisYear.toLocaleString("pt-PT");
     }
 
     function renderTable() {
@@ -521,7 +532,7 @@
       }
     });
 
-    document.addEventListener("change", (event) => {
+    document.addEventListener("change", async (event) => {
       const statusSelect = event.target.closest('select[data-action="status"]');
       if (!statusSelect) return;
 
@@ -529,10 +540,30 @@
       const id = String(row?.dataset.id || "");
       if (!id) return;
 
+      const previousListings = state.listings;
+      const nextStatus = normalizeListingStatus(statusSelect.value);
+      const updatedAt = new Date().toISOString();
       state.listings = state.listings.map((item) => (
-        item.id === id ? { ...item, status: normalizeListingStatus(statusSelect.value) } : item
+        item.id === id ? { ...item, status: nextStatus, updatedAt } : item
       ));
       renderAll();
+
+      try {
+        const response = await apiFetch(`/api/admin/cars/${encodeURIComponent(id)}/status`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: nextStatus })
+        });
+        const result = await response.json();
+        if (!response.ok || !result.ok) {
+          throw new Error(result.message || "Não foi possível atualizar o estado.");
+        }
+      } catch (error) {
+        state.listings = previousListings;
+        statusSelect.value = previousListings.find((item) => item.id === id)?.status || "available";
+        renderAll();
+        alert(error.message || "Não foi possível atualizar o estado.");
+      }
     });
 
     document.getElementById("exportBtn").addEventListener("click", () => {
