@@ -1,11 +1,11 @@
-Ôªø<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Quiz de Recomenda√ß√£o | Autenticar</title>
+  <title>Quiz de RecomendaÁ„o | Autenticar</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script defer src="global-header.js"></script>
+  <script defer src="global-header.js?v=20260611-spacing"></script>
   <style>
     body { font-family: Montserrat, sans-serif; }
     .fade-enter { opacity: 0; transform: translateX(20px); }
@@ -34,7 +34,7 @@
 
       <section class="glass rounded-3xl p-5 md:p-8 shadow-2xl">
         <div class="mb-4">
-          <p class="text-white/80 text-sm">A estrada come√ßa aqui.</p>
+          <p class="text-white/80 text-sm">A estrada comeÁa aqui.</p>
           <h1 class="text-3xl md:text-5xl font-black leading-tight">Descubra o carro ideal para si</h1>
         </div>
         <div class="mb-4">
@@ -59,20 +59,20 @@
   <script>
     const questions = [
       { key: 'q_city', type: 'bool', text: 'Vai conduzir sobretudo em cidade?' },
-      { key: 'q_family', type: 'bool', text: 'Precisa de muito espa√ßo para fam√≠lia?' },
-      { key: 'q_travel', type: 'bool', text: 'Faz viagens longas com frequ√™ncia?' },
-      { key: 'q_auto', type: 'bool', text: 'Prefere caixa autom√°tica?' },
+      { key: 'q_family', type: 'bool', text: 'Precisa de muito espaÁo para famÌlia?' },
+      { key: 'q_travel', type: 'bool', text: 'Faz viagens longas com frequÍncia?' },
+      { key: 'q_auto', type: 'bool', text: 'Prefere caixa autom·tica?' },
       { key: 'q_suv', type: 'bool', text: 'Quer um carro mais alto (SUV)?' },
-      { key: 'q_efficiency', type: 'range', text: 'Import√¢ncia do consumo baixo (1-10)' },
-      { key: 'q_performance', type: 'range', text: 'Import√¢ncia da performance (1-10)' },
+      { key: 'q_efficiency', type: 'range', text: 'Import‚ncia do consumo baixo (1-10)' },
+      { key: 'q_performance', type: 'range', text: 'Import‚ncia da performance (1-10)' },
       { key: 'q_comfort', type: 'range', text: 'Conforto em autoestrada (1-10)' },
       { key: 'q_parking', type: 'range', text: 'Facilidade de estacionamento (1-10)' },
       { key: 'q_tech', type: 'range', text: 'Quanto valoriza tecnologia (1-10)' },
-      { key: 'q_trunk', type: 'range', text: 'Import√¢ncia de mala grande (1-10)' },
-      { key: 'q_daily', type: 'range', text: 'Frequ√™ncia de uso di√°rio (1-10)' },
-      { key: 'q_maintenance', type: 'range', text: 'Custos de manuten√ß√£o baixos (1-10)' },
-      { key: 'q_style', type: 'range', text: 'Import√¢ncia de estilo/design (1-10)' },
-      { key: 'q_budget', type: 'range', text: 'Sensibilidade ao pre√ßo (1-10)' }
+      { key: 'q_trunk', type: 'range', text: 'Import‚ncia de mala grande (1-10)' },
+      { key: 'q_daily', type: 'range', text: 'FrequÍncia de uso di·rio (1-10)' },
+      { key: 'q_maintenance', type: 'range', text: 'Custos de manutenÁ„o baixos (1-10)' },
+      { key: 'q_style', type: 'range', text: 'Import‚ncia de estilo/design (1-10)' },
+      { key: 'q_budget', type: 'range', text: 'Sensibilidade ao preÁo (1-10)' }
     ];
 
     const answers = {};
@@ -90,14 +90,14 @@
       stepLabel.textContent = `Pergunta ${step + 1} de ${questions.length}`;
       progress.style.width = `${((step + 1) / questions.length) * 100}%`;
       prevBtn.disabled = step === 0;
-      nextBtn.textContent = step === questions.length - 1 ? 'Ver recomenda√ß√£o' : 'Seguinte';
+      nextBtn.textContent = step === questions.length - 1 ? 'Ver recomendaÁ„o' : 'Seguinte';
 
       const current = answers[q.key];
       const html = q.type === 'bool'
         ? `<div class="fade-enter"><h2 class="text-xl md:text-2xl font-bold mb-5">${q.text}</h2>
              <div class="flex gap-3">
                <button data-val="yes" class="ans-btn rounded-full px-6 h-12 border border-white/40 ${current === 'yes' ? 'bg-white text-[#111]' : 'text-white'}">Sim</button>
-               <button data-val="no" class="ans-btn rounded-full px-6 h-12 border border-white/40 ${current === 'no' ? 'bg-white text-[#111]' : 'text-white'}">N√£o</button>
+               <button data-val="no" class="ans-btn rounded-full px-6 h-12 border border-white/40 ${current === 'no' ? 'bg-white text-[#111]' : 'text-white'}">N„o</button>
              </div></div>`
         : `<div class="fade-enter"><h2 class="text-xl md:text-2xl font-bold mb-5">${q.text}</h2>
              <input id="range-input" type="range" min="1" max="10" value="${current || 5}" class="w-full"/>
@@ -146,9 +146,9 @@
         family: { label: 'Carros familiares', href: 'carros-familiares.html' },
         travel: { label: 'Carros para viagens', href: 'carros-viagens.html' },
         suv: { label: 'SUVs', href: 'suvs.html' },
-        auto: { label: 'Carros autom√°ticos', href: 'carros-automaticos.html' },
+        auto: { label: 'Carros autom·ticos', href: 'carros-automaticos.html' },
         low: { label: 'Baixo consumo', href: 'baixo-consumo.html' },
-        budget: { label: 'At√© 15.000‚Ç¨', href: 'ate-15000.html' }
+        budget: { label: 'AtÈ 15.000Ä', href: 'ate-15000.html' }
       };
       const bestKey = Object.entries(score).sort((a, b) => b[1] - a[1])[0][0];
       return profiles[bestKey];
@@ -170,9 +170,9 @@
       } else {
         const best = calc();
         result.classList.remove('hidden');
-        result.innerHTML = `<p class="text-sm mb-2">Recomenda√ß√£o personalizada:</p>
+        result.innerHTML = `<p class="text-sm mb-2">RecomendaÁ„o personalizada:</p>
           <h3 class="text-2xl font-black mb-2">${best.label}</h3>
-          <p class="mb-4">Com base nas suas respostas, este √© o melhor perfil para si.</p>
+          <p class="mb-4">Com base nas suas respostas, este È o melhor perfil para si.</p>
           <a href="${best.href}" class="inline-flex items-center justify-center rounded-full bg-[#153E4D] text-white h-11 px-6 font-bold">Ver carros recomendados</a>`;
         result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
