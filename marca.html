@@ -16,7 +16,7 @@
   </style>
 </head>
 <body>
-  <header class="sticky top-0 z-50 border-b border-white/10 bg-[#153e4d]">
+  <header class="site-header sticky top-0 z-50 border-b border-white/10 bg-[#153e4d]">
     <div class="mx-auto flex max-w-[1280px] items-center justify-between gap-3 px-4 py-3 md:px-12">
       <a href="index.html" aria-label="Voltar ao inicio" class="inline-flex items-center">
         <img alt="autenticar" class="h-8 md:h-10 w-auto" src="logo-new-3.png" />
@@ -67,6 +67,40 @@
       </article>
     </section>
   </main>
+
+  <footer class="bg-[#153e4d] px-4 py-10 text-white md:px-12">
+    <div class="mx-auto grid max-w-[1280px] gap-8 border-b border-white/10 pb-8 md:grid-cols-4">
+      <div>
+        <img alt="autenticar" class="mb-3 h-10 w-auto" src="logo-new-3.png" />
+        <p class="max-w-sm text-sm leading-6 text-white/78">O seu marketplace de confianca para compra e venda de veiculos. Qualidade e transparencia em cada quilometro.</p>
+      </div>
+      <div>
+        <h2 class="mb-3 text-xs font-extrabold uppercase tracking-[0.14em] text-white">Veiculos</h2>
+        <ul class="space-y-2 text-sm font-semibold text-white/78">
+          <li><a class="transition-colors hover:text-white" href="index.html#stock">Carros</a></li>
+          <li><a class="transition-colors hover:text-white" href="https://www.agrimog.pt/">Maquinas Agricolas</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="mb-3 text-xs font-extrabold uppercase tracking-[0.14em] text-white">Empresa</h2>
+        <ul class="space-y-2 text-sm font-semibold text-white/78">
+          <li><a class="transition-colors hover:text-white" href="about-us.html">Sobre Nos</a></li>
+          <li><a class="transition-colors hover:text-white" href="destaque.html">Destaques</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="mb-3 text-xs font-extrabold uppercase tracking-[0.14em] text-white">Suporte</h2>
+        <ul class="space-y-2 text-sm font-semibold text-white/78">
+          <li><a class="transition-colors hover:text-white" href="quiz-carro.html">Encontrar carro</a></li>
+          <li><a class="transition-colors hover:text-white" href="mailto:rodrigo.pinto@autenticar.pt">Contactos</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="mx-auto flex max-w-[1280px] flex-col gap-4 pt-5 text-sm text-white/60 md:flex-row md:items-center md:justify-between">
+      <p>2024 autenticar. Todos os direitos reservados.</p>
+      <a class="inline-flex w-fit items-center rounded-full border border-white/20 px-3 py-1.5 font-semibold text-white/75 transition-colors hover:border-white/40 hover:text-white" href="login.html">Admin Login</a>
+    </div>
+  </footer>
 
   <script>
     const apiBase = window.location.protocol === "file:" ? "http://127.0.0.1:3000" : "";
