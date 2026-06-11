@@ -47,6 +47,21 @@
     .custom-scrollbar::-webkit-scrollbar { width: 6px; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 12px; }
     .chip-active { background: #153e4d; color: #fff; border-color: #153e4d; }
+    .quick-look-input {
+      width: 100%;
+      border: 1px solid #c1c7cb;
+      border-radius: 0.75rem;
+      background: #fff;
+      color: #011d35;
+      font-size: 0.875rem;
+      font-weight: 700;
+      padding: 0.7rem 0.9rem 0.7rem 2.55rem;
+      outline: none;
+    }
+    .quick-look-input:focus {
+      border-color: #153e4d;
+      box-shadow: 0 0 0 3px rgba(21, 62, 77, 0.12);
+    }
     .listing-status-select {
       min-width: 132px;
       border-radius: 0.75rem;
@@ -130,12 +145,18 @@
 
     <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <div class="lg:col-span-8 bg-white rounded-xl shadow-[0_4px_20px_rgba(16,42,67,0.08)] border border-outline-variant overflow-hidden">
-        <div class="p-6 border-b border-outline-variant flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <h3 class="text-2xl font-bold text-primary">Gestão de Anúncios</h3>
-          <div class="flex items-center gap-2">
-            <button class="status-filter chip-active text-xs px-3 py-1.5 rounded-full border border-outline-variant" data-filter="all">Todos</button>
-            <button class="status-filter text-xs px-3 py-1.5 rounded-full border border-outline-variant" data-filter="available">Disponíveis</button>
-            <button class="status-filter text-xs px-3 py-1.5 rounded-full border border-outline-variant" data-filter="sold">Vendidos</button>
+        <div class="p-6 border-b border-outline-variant space-y-4">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <h3 class="text-2xl font-bold text-primary">Gestão de Anúncios</h3>
+            <div class="flex items-center gap-2">
+              <button class="status-filter chip-active text-xs px-3 py-1.5 rounded-full border border-outline-variant" data-filter="all">Todos</button>
+              <button class="status-filter text-xs px-3 py-1.5 rounded-full border border-outline-variant" data-filter="available">Disponíveis</button>
+              <button class="status-filter text-xs px-3 py-1.5 rounded-full border border-outline-variant" data-filter="sold">Vendidos</button>
+            </div>
+          </div>
+          <div class="relative">
+            <span class="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-primary text-[22px]">manage_search</span>
+            <input id="quickLookInput" class="quick-look-input" type="search" autocomplete="off" placeholder="Quick look: marca, modelo, combustível..." aria-label="Quick look para encontrar carros" />
           </div>
         </div>
         <div class="overflow-x-auto custom-scrollbar">
@@ -283,6 +304,7 @@
 
     const state = {
       filter: "all",
+      quickLook: "",
       listings: [],
       leads: 142
     };
@@ -348,9 +370,31 @@
       return '<span class="px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-bold uppercase tracking-wider">Disponível</span>';
     }
 
+    function normalizeSearchText(value) {
+      return String(value || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
+    }
+
     function filteredListings() {
-      if (state.filter === "all") return state.listings;
-      return state.listings.filter((item) => item.status === state.filter);
+      const statusRows = state.filter === "all"
+        ? state.listings
+        : state.listings.filter((item) => item.status === state.filter);
+      const query = normalizeSearchText(state.quickLook);
+      if (!query) return statusRows;
+
+      return statusRows.filter((item) => {
+        const haystack = normalizeSearchText([
+          item.title,
+          item.subtitle,
+          item.status,
+          formatDate(item.date),
+          item.price ? formatMoney(item.price) : ""
+        ].join(" "));
+        return haystack.includes(query);
+      });
     }
 
     function renderStats() {
@@ -368,9 +412,12 @@
       const rows = filteredListings();
 
       if (rows.length === 0) {
+        const emptyMessage = state.quickLook
+          ? `Sem carros encontrados para "${escapeHtml(state.quickLook)}".`
+          : "Sem anúncios para este filtro.";
         tbody.innerHTML = `
           <tr>
-            <td colspan="4" class="px-6 py-10 text-center text-on-surface-variant">Sem anúncios para este filtro.</td>
+            <td colspan="4" class="px-6 py-10 text-center text-on-surface-variant">${emptyMessage}</td>
           </tr>`;
         return;
       }
@@ -463,6 +510,11 @@
 
     document.getElementById("exportBtn").addEventListener("click", () => {
       downloadJson("autenticar-relatorio-listagens.json", state.listings);
+    });
+
+    document.getElementById("quickLookInput").addEventListener("input", (event) => {
+      state.quickLook = event.target.value;
+      renderTable();
     });
 
     document.getElementById("last30DaysBtn").addEventListener("click", () => {
