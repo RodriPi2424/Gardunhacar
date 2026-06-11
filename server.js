@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename);
 
 const supabaseUrl = process.env.SUPABASE_URL || "";
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || "";
-const testDriveNotificationEmail = process.env.TEST_DRIVE_NOTIFICATION_EMAIL || "rodrigo.pinto@autenticar.pt";
+const testDriveNotificationEmail = process.env.TEST_DRIVE_NOTIFICATION_EMAIL || "geral@autenticar.pt";
 const resendApiKey = process.env.RESEND_API_KEY || "";
 const resendFromEmail = process.env.RESEND_FROM_EMAIL || "Autenticar <onboarding@resend.dev>";
 

@@ -34,7 +34,7 @@ This project sends test drive request notifications with Resend from the Node ba
    - Production sender: `RESEND_FROM_EMAIL=Autenticar <noreply@autenticar.pt>`
 4. If using `noreply@autenticar.pt`, verify `autenticar.pt` in Resend and add the DNS records Resend gives you.
 5. Set where notifications should arrive:
-   `TEST_DRIVE_NOTIFICATION_EMAIL=rodrigo.pinto@autenticar.pt`
+   `TEST_DRIVE_NOTIFICATION_EMAIL=geral@autenticar.pt`
 6. Restart the backend:
    `npm start`
 
