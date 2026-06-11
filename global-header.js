@@ -9,10 +9,19 @@
   function injectStyles() {
     if (document.getElementById(styleId)) return;
 
+    if (!document.querySelector('link[href*="family=Montserrat"]')) {
+      const fontLink = document.createElement("link");
+      fontLink.rel = "stylesheet";
+      fontLink.href = "https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap";
+      document.head.appendChild(fontLink);
+    }
+
     const style = document.createElement("style");
     style.id = styleId;
     style.textContent = `
       .global-header-nav {
+        display: none;
+        align-items: center;
         gap: 1.75rem;
       }
 
@@ -24,6 +33,7 @@
         font-weight: 700;
         line-height: 1rem;
         transition: color 220ms ease, opacity 220ms ease;
+        text-decoration: none;
       }
 
       .global-header-link:hover,
@@ -32,7 +42,28 @@
       }
 
       .global-header-shell {
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        width: 100%;
+        max-width: 1280px;
+        margin-left: auto;
+        margin-right: auto;
         padding: 0;
+      }
+
+      .global-header-brand {
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+      }
+
+      .global-header-brand img {
+        display: block;
+        width: auto;
+        height: 2rem;
       }
 
       .global-header-shell--bar {
@@ -46,8 +77,16 @@
       }
 
       @media (min-width: 768px) {
+        .global-header-nav {
+          display: flex;
+        }
+
+        .global-header-brand img {
+          height: 2.5rem;
+        }
+
         .global-header-shell--bar {
-          padding: 2rem;
+          padding: 2rem 0;
         }
 
         .global-header-breakout {
@@ -61,8 +100,8 @@
 
   function createBrandMarkup() {
     return `
-      <a href="index.html" aria-label="Voltar ao inicio" class="inline-flex items-center">
-        <img src="logo-new-3.png" alt="autenticar" class="h-8 md:h-10 w-auto" />
+      <a href="index.html" aria-label="Voltar ao inicio" class="global-header-brand">
+        <img src="logo-new-3.png" alt="autenticar" />
       </a>
     `;
   }
@@ -82,7 +121,7 @@
       .join("");
 
     return `
-      <nav class="global-header-nav hidden md:flex items-center text-white/95" aria-label="Navegacao principal">
+      <nav class="global-header-nav" aria-label="Navegacao principal">
         ${navLinks}
       </nav>
     `;
@@ -102,9 +141,9 @@
       !isFullBleedHeader &&
       !container.classList.contains("sticky") &&
       !container.classList.contains("site-header");
-    const shellClass = isFullBleedHeader || isBreakoutLogoHeader
-      ? "global-header-shell"
-      : "global-header-shell global-header-shell--bar";
+    const shellClass = container.classList.contains("sticky")
+      ? "global-header-shell global-header-shell--bar"
+      : "global-header-shell";
     const markup = `${createBrandMarkup()}${createNavMarkup()}`;
 
     if (shouldWrap) {
@@ -115,7 +154,7 @@
       }
 
       container.innerHTML = `
-        <div class="${shellClass} mx-auto flex w-full max-w-[1280px] items-center justify-between gap-3">
+        <div class="${shellClass}">
           ${markup}
         </div>
       `;
