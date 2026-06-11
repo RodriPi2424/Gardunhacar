@@ -47,7 +47,9 @@
     .custom-scrollbar::-webkit-scrollbar { width: 6px; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 12px; }
     .chip-active { background: #153e4d; color: #fff; border-color: #153e4d; }
-    .quick-look-input {
+    #quickLookInput.quick-look-input {
+      appearance: none;
+      box-sizing: border-box;
       width: 100%;
       border: 1px solid #c1c7cb;
       border-radius: 0.75rem;
@@ -55,10 +57,11 @@
       color: #011d35;
       font-size: 0.875rem;
       font-weight: 700;
-      padding: 0.7rem 0.9rem 0.7rem 2.55rem;
+      line-height: 1.25rem;
+      padding: 0.7rem 0.9rem 0.7rem 3rem;
       outline: none;
     }
-    .quick-look-input:focus {
+    #quickLookInput.quick-look-input:focus {
       border-color: #153e4d;
       box-shadow: 0 0 0 3px rgba(21, 62, 77, 0.12);
     }
@@ -179,8 +182,8 @@
             </div>
           </div>
           <div class="relative">
-            <span class="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-primary text-[22px]">manage_search</span>
-            <input id="quickLookInput" class="quick-look-input" type="search" autocomplete="off" placeholder="Quick look: marca, modelo, combustível..." aria-label="Quick look para encontrar carros" />
+            <span class="material-symbols-outlined pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-primary text-[22px] leading-none">manage_search</span>
+            <input id="quickLookInput" class="quick-look-input" type="text" autocomplete="off" inputmode="search" enterkeyhint="search" placeholder="Quick look: marca, modelo, combustível..." aria-label="Quick look para encontrar carros" />
           </div>
         </div>
         <div class="overflow-x-auto custom-scrollbar">
