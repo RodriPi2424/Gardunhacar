@@ -708,8 +708,29 @@
     return jsonResponse({
       ok: true,
       message: "Pedido de test drive registado com sucesso.",
-      warning: "Pedido guardado. O email de notificacao so e enviado quando o backend Node/Express esta ativo."
+      warning: "Pedido guardado no painel interno. A equipa pode consultar este contacto no admin."
     }, 201);
+  }
+
+  async function handleAdminTestDriveRequests(options) {
+    const token = getBearerToken(options);
+    const { user, error: authError } = await getUserFromToken(token);
+    if (authError || !user || !isAdminUser(user)) {
+      return jsonResponse({ ok: false, message: "Acesso negado: apenas admins podem gerir pedidos de test drive." }, 403);
+    }
+
+    const userClient = createAuthedClient(token);
+    const { data, error } = await userClient
+      .from("test_drive_requests")
+      .select("id,car_id,car_title,requested_date,customer_name,customer_email,customer_phone,created_at")
+      .order("created_at", { ascending: false })
+      .limit(50);
+
+    if (error) {
+      return jsonResponse({ ok: false, message: error.message }, 400);
+    }
+
+    return jsonResponse({ ok: true, requests: data || [] }, 200);
   }
 
   async function handleDeleteCar(pathname, options) {
@@ -1351,6 +1372,9 @@
     }
     if (pathname === "/api/test-drive-requests" && method === "POST") {
       return handleTestDrive(options);
+    }
+    if (pathname === "/api/admin/test-drive-requests" && method === "GET") {
+      return handleAdminTestDriveRequests(options);
     }
     if (pathname === "/api/admin/posts" && method === "GET") {
       return handleAdminPosts(options);

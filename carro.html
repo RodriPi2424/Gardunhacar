@@ -601,7 +601,7 @@
               <span class="material-symbols-outlined">check</span>
             </span>
             <h3 class="mt-4 text-2xl font-black tracking-[-0.02em] text-primary">Pedido enviado</h3>
-            <p class="mt-3 text-on-surface-variant">Recebemos o teu pedido de test drive. Vamos confirmar a disponibilidade e responder por email ou telemovel.</p>
+            <p class="mt-3 text-on-surface-variant">Recebemos o teu pedido de test drive. A equipa vai ver o pedido no painel interno e confirmar a disponibilidade por email ou telemovel.</p>
             <button id="closeTestDriveSuccess" type="button" class="mt-6 inline-flex items-center justify-center rounded-full bg-primary-container text-white h-12 px-6 text-sm font-semibold shadow-lg hover:bg-primary transition-colors">
               Fechar
             </button>
@@ -1202,7 +1202,7 @@
         setSelectedTestDriveDate(getDefaultTestDriveDate());
         testDriveChosenDate.textContent = formatDateLong(testDriveDate.value);
         showTestDriveStep("success");
-        setTestDriveFeedback(data.warning || "Pedido registado com sucesso.", data.warning ? "default" : "success");
+        setTestDriveFeedback(data.warning || data.message || "Pedido registado com sucesso.", "success");
       } catch (error) {
         setTestDriveFeedback(error.message || "Nao foi possivel enviar o pedido de test drive.", "error");
       } finally {

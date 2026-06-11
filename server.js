@@ -1358,9 +1358,7 @@ app.post("/api/test-drive-requests", async (req, res) => {
 
     const warning = notificationResult.ok
       ? ""
-      : notificationResult.reason === "missing_config"
-        ? `Pedido guardado, mas o email nao foi enviado porque faltam variaveis: ${(notificationResult.missingKeys || []).join(", ")}.`
-        : "Pedido guardado, mas o email de notificacao falhou.";
+      : "Pedido guardado no painel interno. A equipa pode consultar este contacto no admin.";
 
     return res.status(201).json({
       ok: true,
@@ -1370,6 +1368,27 @@ app.post("/api/test-drive-requests", async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({ ok: false, message: "Erro ao registar o pedido de test drive.", error: error.message });
+  }
+});
+
+app.get("/api/admin/test-drive-requests", async (req, res) => {
+  const authHeader = req.headers.authorization || "";
+
+  try {
+    const { userClient } = await getAdminContext(authHeader);
+    const { data, error } = await userClient
+      .from("test_drive_requests")
+      .select("id,car_id,car_title,requested_date,customer_name,customer_email,customer_phone,created_at")
+      .order("created_at", { ascending: false })
+      .limit(50);
+
+    if (error) {
+      return res.status(400).json({ ok: false, message: error.message });
+    }
+
+    return res.json({ ok: true, requests: data || [] });
+  } catch (error) {
+    return res.status(403).json({ ok: false, message: error.message || "Acesso negado." });
   }
 });
 
