@@ -195,6 +195,27 @@
             </button>
           </div>
           <p id="importAlonsoStockStatus" class="mt-3 text-xs font-semibold text-on-surface-variant"></p>
+          <div id="importAlonsoProgressPanel" class="hidden mt-4 space-y-4">
+            <div>
+              <div class="flex justify-between text-xs font-bold text-primary mb-2">
+                <span id="importAlonsoProgressLabel">0 de 0</span>
+                <span id="importAlonsoProgressPercent">0%</span>
+              </div>
+              <div class="h-3 w-full rounded-full bg-surface-container-high overflow-hidden">
+                <div id="importAlonsoProgressBar" class="h-full w-0 bg-primary transition-all duration-300"></div>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 gap-3">
+              <div class="rounded-lg border border-outline-variant overflow-hidden">
+                <div class="px-3 py-2 bg-surface-container-low text-xs font-bold uppercase tracking-wider text-on-surface-variant">Ainda a importar</div>
+                <ul id="importAlonsoPendingList" class="max-h-44 overflow-auto divide-y divide-outline-variant text-xs"></ul>
+              </div>
+              <div class="rounded-lg border border-outline-variant overflow-hidden">
+                <div class="px-3 py-2 bg-surface-container-low text-xs font-bold uppercase tracking-wider text-on-surface-variant">Já processados</div>
+                <ul id="importAlonsoDoneList" class="max-h-44 overflow-auto divide-y divide-outline-variant text-xs"></ul>
+              </div>
+            </div>
+          </div>
         </section>
       </div>
     </section>
@@ -311,6 +332,15 @@
 
     function formatMoney(value) {
       return new Intl.NumberFormat("pt-PT", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value);
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
 
     function statusBadge(status) {
@@ -451,6 +481,55 @@
       alert("Módulo de promoções em preparação.");
     });
 
+    const alonsoImportUi = {
+      panel: document.getElementById("importAlonsoProgressPanel"),
+      bar: document.getElementById("importAlonsoProgressBar"),
+      label: document.getElementById("importAlonsoProgressLabel"),
+      percent: document.getElementById("importAlonsoProgressPercent"),
+      pendingList: document.getElementById("importAlonsoPendingList"),
+      doneList: document.getElementById("importAlonsoDoneList")
+    };
+
+    function renderAlonsoImportProgress(progress) {
+      const total = Math.max(Number(progress.total || 0), 0);
+      const processed = Math.min(Math.max(Number(progress.processed || 0), 0), total);
+      const percent = total > 0 ? Math.round((processed / total) * 100) : 0;
+      const activeIds = new Set((progress.activeItems || []).map((item) => String(item.sourceId || "")));
+
+      alonsoImportUi.panel.classList.remove("hidden");
+      alonsoImportUi.bar.style.width = `${percent}%`;
+      alonsoImportUi.label.textContent = `${processed} de ${total}`;
+      alonsoImportUi.percent.textContent = `${percent}%`;
+
+      alonsoImportUi.pendingList.innerHTML = progress.pendingItems.length
+        ? progress.pendingItems.map((item) => {
+            const isActive = activeIds.has(String(item.sourceId || ""));
+            const badge = isActive ? '<span class="text-amber-700 font-bold">A importar</span>' : '<span class="text-on-surface-variant">Em fila</span>';
+            return `
+              <li class="px-3 py-2 flex items-start justify-between gap-3 ${isActive ? "bg-amber-50" : "bg-white"}">
+                <span class="font-semibold text-primary">${escapeHtml(item.title)}</span>
+                ${badge}
+              </li>`;
+          }).join("")
+        : '<li class="px-3 py-2 text-on-surface-variant">Sem viaturas em fila.</li>';
+
+      alonsoImportUi.doneList.innerHTML = progress.doneItems.length
+        ? progress.doneItems.map((item) => {
+            const statusText = item.status === "imported" ? "Importado" : item.status === "skipped" ? "Já existia" : "Falhou";
+            const color = item.status === "imported" ? "text-green-700" : item.status === "skipped" ? "text-slate-600" : "text-red-700";
+            const detail = item.message || item.reason || "";
+            return `
+              <li class="px-3 py-2 bg-white">
+                <div class="flex items-start justify-between gap-3">
+                  <span class="font-semibold text-primary">${escapeHtml(item.title)}</span>
+                  <span class="${color} font-bold">${statusText}</span>
+                </div>
+                ${detail ? `<p class="mt-1 text-[11px] text-on-surface-variant">${escapeHtml(detail)}</p>` : ""}
+              </li>`;
+          }).join("")
+        : '<li class="px-3 py-2 text-on-surface-variant">Ainda sem viaturas processadas.</li>';
+    }
+
     document.getElementById("importAlonsoStockBtn").addEventListener("click", async () => {
       const button = document.getElementById("importAlonsoStockBtn");
       const statusEl = document.getElementById("importAlonsoStockStatus");
@@ -465,29 +544,74 @@
 
       button.disabled = true;
       button.classList.add("opacity-60", "pointer-events-none");
-      statusEl.textContent = "A importar stock Alonso & Branco...";
+      statusEl.textContent = "A preparar importação Alonso & Branco...";
+
+      const batchSize = 8;
+      const progress = {
+        total: 0,
+        processed: 0,
+        pendingItems: [],
+        doneItems: [],
+        activeItems: []
+      };
+      renderAlonsoImportProgress(progress);
 
       try {
-        const response = await apiFetch("/api/admin/import-alonso-stock", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session.access_token}`
-          },
-          body: JSON.stringify({
-            url: "https://viaturas.alonsosebranco.pt/usadas/?Order=6"
-          })
-        });
-        const result = await response.json();
+        let offset = 0;
+        let importedTotal = 0;
+        let skippedTotal = 0;
+        let failedTotal = 0;
+        let done = false;
 
-        if (!response.ok && response.status !== 207) {
-          statusEl.textContent = result.message || "Não foi possível importar o stock Alonso & Branco.";
-          return;
+        while (!done) {
+          progress.activeItems = progress.pendingItems.slice(0, batchSize);
+          if (progress.activeItems.length > 0) renderAlonsoImportProgress(progress);
+          statusEl.textContent = progress.total
+            ? `A importar ${Math.min(offset + 1, progress.total)}-${Math.min(offset + batchSize, progress.total)} de ${progress.total}...`
+            : "A carregar lista de viaturas Alonso & Branco...";
+
+          const response = await apiFetch("/api/admin/import-alonso-stock", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${session.access_token}`
+            },
+            body: JSON.stringify({
+              url: "https://viaturas.alonsosebranco.pt/usadas/?Order=6",
+              offset,
+              limit: batchSize
+            })
+          });
+          const result = await response.json();
+
+          if (!response.ok && response.status !== 207) {
+            statusEl.textContent = result.message || "Não foi possível importar o stock Alonso & Branco.";
+            return;
+          }
+
+          if (Array.isArray(result.allItems) && progress.total === 0) {
+            progress.total = Number(result.total || result.allItems.length || 0);
+            progress.pendingItems = result.allItems.slice();
+          }
+
+          const processedItems = Array.isArray(result.processedItems) ? result.processedItems : [];
+          const processedIds = new Set(processedItems.map((item) => String(item.sourceId || "")));
+          progress.doneItems.push(...processedItems);
+          progress.pendingItems = progress.pendingItems.filter((item) => !processedIds.has(String(item.sourceId || "")));
+          progress.processed = Number(result.nextOffset || progress.processed + processedItems.length || 0);
+          progress.activeItems = [];
+
+          importedTotal += Number(result.imported || 0);
+          skippedTotal += Number(result.skipped || 0);
+          failedTotal += Number(result.failed || 0);
+          done = Boolean(result.done);
+          offset = Number(result.nextOffset || offset + batchSize);
+          renderAlonsoImportProgress(progress);
         }
 
-        const failureText = Number(result.failed || 0) > 0 ? ` Falharam ${result.failed}.` : "";
-        const skippedText = Number(result.skipped || 0) > 0 ? ` Ignoradas ${result.skipped} já existentes.` : "";
-        statusEl.textContent = `Importação concluída: ${result.imported || 0}/${result.total || 0} novas viaturas.${skippedText}${failureText}`;
+        const failureText = failedTotal > 0 ? ` Falharam ${failedTotal}.` : "";
+        const skippedText = skippedTotal > 0 ? ` Ignoradas ${skippedTotal} já existentes.` : "";
+        statusEl.textContent = `Importação concluída: ${importedTotal}/${progress.total} novas viaturas.${skippedText}${failureText}`;
         await loadListingsFromServer();
         renderAll();
       } catch {

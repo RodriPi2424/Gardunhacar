@@ -1153,6 +1153,8 @@
 
     const payload = JSON.parse(options?.body || "{}");
     const stockUrl = sanitizeText(payload.url) || "https://viaturas.alonsosebranco.pt/usadas/?Order=6";
+    const offset = Math.max(parseInt(String(payload.offset || "0"), 10) || 0, 0);
+    const limit = Math.min(Math.max(parseInt(String(payload.limit || "8"), 10) || 8, 1), 20);
     let parsedUrl;
     try {
       parsedUrl = new URL(stockUrl);
@@ -1178,12 +1180,21 @@
     }
 
     const publicVehicles = result.vehicles.filter((vehicle) => vehicle?.Vendido !== true && vehicle?.Reservado !== true);
+    const allItems = publicVehicles.map((vehicle) => {
+      const parsed = parseAlonsoEasydataListing(vehicle);
+      return {
+        sourceId: sanitizeText(vehicle?.CodViatura),
+        title: parsed.title || "Viatura Alonso & Branco"
+      };
+    });
+    const batchVehicles = publicVehicles.slice(offset, offset + limit);
     const seenKeys = new Set((existing.data || []).map((car) => buildCarDuplicateKey(car)));
     const imported = [];
     const skipped = [];
     const failed = [];
+    const processedItems = [];
 
-    for (const vehicle of publicVehicles) {
+    for (const vehicle of batchVehicles) {
       const sourceId = sanitizeText(vehicle?.CodViatura);
       try {
         const parsed = parseAlonsoEasydataListing(vehicle);
@@ -1194,13 +1205,17 @@
         const duplicateKey = buildCarDuplicateKey(dbPayload);
 
         if (seenKeys.has(duplicateKey)) {
-          skipped.push({ sourceId, title: dbPayload.title, reason: "Já existia" });
+          const skippedItem = { sourceId, title: dbPayload.title, reason: "Já existia" };
+          skipped.push(skippedItem);
+          processedItems.push({ ...skippedItem, status: "skipped" });
           continue;
         }
 
         const brandResult = await resolveBrandId(userClient, dbPayload.brand);
         if (brandResult.error) {
-          failed.push({ sourceId, title: dbPayload.title, message: brandResult.error });
+          const failedItem = { sourceId, title: dbPayload.title, message: brandResult.error };
+          failed.push(failedItem);
+          processedItems.push({ ...failedItem, status: "failed" });
           continue;
         }
         dbPayload.brand_id = brandResult.brandId;
@@ -1212,24 +1227,36 @@
           .single();
 
         if (error) {
-          failed.push({ sourceId, title: dbPayload.title, message: error.message });
+          const failedItem = { sourceId, title: dbPayload.title, message: error.message };
+          failed.push(failedItem);
+          processedItems.push({ ...failedItem, status: "failed" });
           continue;
         }
 
         seenKeys.add(duplicateKey);
         imported.push(data);
+        processedItems.push({ sourceId, title: dbPayload.title, status: "imported", carId: data.id });
       } catch (error) {
-        failed.push({ sourceId, title: "Viatura Alonso & Branco", message: error.message });
+        const failedItem = { sourceId, title: "Viatura Alonso & Branco", message: error.message };
+        failed.push(failedItem);
+        processedItems.push({ ...failedItem, status: "failed" });
       }
     }
 
+    const nextOffset = Math.min(offset + batchVehicles.length, publicVehicles.length);
     return jsonResponse({
       ok: failed.length === 0,
       total: publicVehicles.length,
+      offset,
+      limit,
+      nextOffset,
+      done: nextOffset >= publicVehicles.length,
       imported: imported.length,
       skipped: skipped.length,
       failed: failed.length,
       cars: imported,
+      allItems,
+      processedItems,
       skippedItems: skipped.slice(0, 25),
       failures: failed.slice(0, 25)
     }, failed.length > 0 ? 207 : 201);

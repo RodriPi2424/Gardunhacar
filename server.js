@@ -1706,6 +1706,8 @@ app.post("/api/admin/import-alonso-stock", async (req, res) => {
   const authHeader = req.headers.authorization || "";
   const stockUrl = String(req.body?.url || "https://viaturas.alonsosebranco.pt/usadas/?Order=6").trim();
   const uploadImages = req.body?.uploadImages === true;
+  const offset = Math.max(Number.parseInt(String(req.body?.offset || "0"), 10) || 0, 0);
+  const limit = Math.min(Math.max(Number.parseInt(String(req.body?.limit || "8"), 10) || 8, 1), 20);
 
   let parsedUrl;
   try {
@@ -1722,6 +1724,14 @@ app.post("/api/admin/import-alonso-stock", async (req, res) => {
     const { userClient } = await getAdminContext(authHeader);
     const vehicles = await fetchAlonsoEasydataVehicles(parsedUrl.hostname.toLowerCase());
     const publicVehicles = vehicles.filter((vehicle) => vehicle?.Vendido !== true && vehicle?.Reservado !== true);
+    const allItems = publicVehicles.map((vehicle) => {
+      const parsed = parseAlonsoEasydataListing(vehicle);
+      return {
+        sourceId: sanitizeText(vehicle?.CodViatura),
+        title: parsed.title || "Viatura Alonso & Branco"
+      };
+    });
+    const batchVehicles = publicVehicles.slice(offset, offset + limit);
     const existing = await userClient
       .from("cars")
       .select("id,title,brand,model,registration_date,mileage,price_eur")
@@ -1735,8 +1745,9 @@ app.post("/api/admin/import-alonso-stock", async (req, res) => {
     const imported = [];
     const skipped = [];
     const failed = [];
+    const processedItems = [];
 
-    for (const vehicle of publicVehicles) {
+    for (const vehicle of batchVehicles) {
       const sourceId = sanitizeText(vehicle?.CodViatura);
       try {
         const parsed = parseAlonsoEasydataListing(vehicle);
@@ -1744,7 +1755,9 @@ app.post("/api/admin/import-alonso-stock", async (req, res) => {
         const duplicateKey = buildCarDuplicateKey(payload);
 
         if (seenKeys.has(duplicateKey)) {
-          skipped.push({ sourceId, title: payload.title, reason: "Já existia" });
+          const skippedItem = { sourceId, title: payload.title, reason: "Já existia" };
+          skipped.push(skippedItem);
+          processedItems.push({ ...skippedItem, status: "skipped" });
           continue;
         }
 
@@ -1761,7 +1774,9 @@ app.post("/api/admin/import-alonso-stock", async (req, res) => {
           allowEmptyCategories: true
         });
         if (validationError) {
-          failed.push({ sourceId, title: payload.title, message: validationError });
+          const failedItem = { sourceId, title: payload.title, message: validationError };
+          failed.push(failedItem);
+          processedItems.push({ ...failedItem, status: "failed" });
           continue;
         }
 
@@ -1774,24 +1789,36 @@ app.post("/api/admin/import-alonso-stock", async (req, res) => {
           .single();
 
         if (error) {
-          failed.push({ sourceId, title: payload.title, message: error.message });
+          const failedItem = { sourceId, title: payload.title, message: error.message };
+          failed.push(failedItem);
+          processedItems.push({ ...failedItem, status: "failed" });
           continue;
         }
 
         seenKeys.add(duplicateKey);
         imported.push(data);
+        processedItems.push({ sourceId, title: payload.title, status: "imported", carId: data.id });
       } catch (error) {
-        failed.push({ sourceId, title: "Viatura Alonso & Branco", message: error.message });
+        const failedItem = { sourceId, title: "Viatura Alonso & Branco", message: error.message };
+        failed.push(failedItem);
+        processedItems.push({ ...failedItem, status: "failed" });
       }
     }
 
+    const nextOffset = Math.min(offset + batchVehicles.length, publicVehicles.length);
     return res.status(failed.length > 0 ? 207 : 201).json({
       ok: failed.length === 0,
       total: publicVehicles.length,
+      offset,
+      limit,
+      nextOffset,
+      done: nextOffset >= publicVehicles.length,
       imported: imported.length,
       skipped: skipped.length,
       failed: failed.length,
       cars: imported,
+      allItems,
+      processedItems,
       skippedItems: skipped.slice(0, 25),
       failures: failed.slice(0, 25)
     });
