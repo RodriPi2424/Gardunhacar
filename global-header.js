@@ -187,7 +187,41 @@
     return Array.from(document.querySelectorAll("header, div")).find(isHeaderCandidate);
   }
 
+  function normalizeText(value) {
+    return (value || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+  }
+
+  function removeLegacyGuidanceBlocks() {
+    document.querySelectorAll("aside > div.bg-secondary-container").forEach((element) => {
+      const text = normalizeText(element.textContent);
+      if (
+        text.includes("dica segura") ||
+        text.includes("dica de") ||
+        text.includes("procure sempre carros")
+      ) {
+        element.remove();
+      }
+    });
+
+    document.querySelectorAll("section.bg-primary-container, div.bg-primary-container").forEach((element) => {
+      const text = normalizeText(element.textContent);
+      const isGuideBlock =
+        (text.includes("guia para") || text.includes("guia de")) &&
+        text.includes("o que verificar") &&
+        text.includes("custos ocultos") &&
+        (text.includes("seguranca primeiro") || text.includes("euro ncap"));
+
+      if (isGuideBlock) {
+        element.remove();
+      }
+    });
+  }
+
   injectStyles();
+  removeLegacyGuidanceBlocks();
 
   const container = findHeaderContainer();
   if (container) {
