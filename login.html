@@ -275,7 +275,27 @@
       }
     });
 
-    redirectIfSessionExists();
+    async function startLoginPage() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("logout") === "1") {
+        localStorage.removeItem("autenticar_session_v1");
+        localStorage.removeItem("autenticar_user_v1");
+        try {
+          await window.AutenticarApi.signOut();
+        } catch {
+          // The local session is already cleared, even if the remote sign-out fails.
+        }
+        params.delete("logout");
+        const query = params.toString();
+        window.history.replaceState({}, "", `login.html${query ? `?${query}` : ""}`);
+        setMessage("Sessão terminada. Podes iniciar sessão novamente.", "success");
+        return;
+      }
+
+      await redirectIfSessionExists();
+    }
+
+    startLoginPage();
   </script>
 </body>
 </html>

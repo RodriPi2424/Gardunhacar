@@ -303,10 +303,12 @@
   }
 
   function createAuthedClient(token) {
+    const storedToken = getStoredSession()?.access_token || "";
+    const activeToken = storedToken || token || "";
     return window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: { persistSession: false, autoRefreshToken: false },
       global: {
-        headers: { Authorization: "Bearer " + token }
+        headers: { Authorization: "Bearer " + activeToken }
       }
     });
   }
@@ -1412,8 +1414,17 @@
 
   async function smartFetch(path, options) {
     const requestUrl = String(path || "");
+    const requestOptions = { ...(options || {}) };
+    const headers = new Headers(options?.headers || {});
+    const storedToken = getStoredSession()?.access_token || "";
+
+    if (storedToken && !headers.has("Authorization")) {
+      headers.set("Authorization", "Bearer " + storedToken);
+    }
+    requestOptions.headers = headers;
+
     try {
-      const response = await window.fetch(requestUrl, options);
+      const response = await window.fetch(requestUrl, requestOptions);
       if (![404, 405, 501].includes(response.status)) {
         return response;
       }
@@ -1421,10 +1432,17 @@
       // Fall back to direct Supabase access when no backend is available.
     }
 
-    return handleFallback(requestUrl, options);
+    return handleFallback(requestUrl, requestOptions);
+  }
+
+  async function signOut() {
+    localStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem("autenticar_user_v1");
+    await browserClient.auth.signOut();
   }
 
   window.AutenticarApi = {
-    fetch: smartFetch
+    fetch: smartFetch,
+    signOut
   };
 })();
