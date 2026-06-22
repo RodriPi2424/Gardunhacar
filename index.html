@@ -6,7 +6,7 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script defer src="global-header.js?v=20260622-standard-mobile"></script>
+<script defer src="global-header.js?v=20260622-responsive-pass"></script>
 <style>
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -54,8 +54,9 @@
             padding-top: max(1rem, env(safe-area-inset-top));
             padding-bottom: max(1rem, env(safe-area-inset-bottom));
         }
-        @media (max-width: 767px) {
+        @media (max-width: 900px) {
             .home-hero {
+                min-height: calc(100svh - 60px);
                 border-top-width: 0 !important;
             }
             .home-hero-content > .global-header-host {

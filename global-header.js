@@ -71,7 +71,7 @@
         width: 100%;
       }
 
-      @media (max-width: 767px) {
+      @media (max-width: 900px) {
         .global-header-host {
           position: relative !important;
           inset: auto !important;
@@ -103,6 +103,15 @@
 
         .global-header-mobile-link {
           display: none !important;
+        }
+
+        main > .w-screen,
+        main > section.w-screen {
+          left: auto !important;
+          right: auto !important;
+          width: 100% !important;
+          margin-left: 0 !important;
+          margin-right: 0 !important;
         }
       }
 
@@ -158,7 +167,7 @@
         transform: translateX(-50%);
       }
 
-      @media (min-width: 768px) {
+      @media (min-width: 901px) {
         .global-header-shell {
           flex-wrap: nowrap;
         }
@@ -307,6 +316,33 @@
     return Array.from(document.querySelectorAll("header, div")).find(isHeaderCandidate);
   }
 
+  function makeHeaderResponsive(container) {
+    const placeholder = document.createComment("global-header-origin");
+    const originalParent = container.parentNode;
+
+    if (!originalParent) return;
+
+    originalParent.insertBefore(placeholder, container);
+
+    const syncPlacement = () => {
+      const isCompact = window.matchMedia("(max-width: 900px)").matches;
+
+      if (isCompact) {
+        if (container.parentNode !== document.body || container !== document.body.firstElementChild) {
+          document.body.insertBefore(container, document.body.firstChild);
+        }
+        return;
+      }
+
+      if (placeholder.parentNode && container.parentNode !== placeholder.parentNode) {
+        placeholder.parentNode.insertBefore(container, placeholder.nextSibling);
+      }
+    };
+
+    syncPlacement();
+    window.matchMedia("(max-width: 900px)").addEventListener("change", syncPlacement);
+  }
+
   function normalizeText(value) {
     return (value || "")
       .normalize("NFD")
@@ -346,5 +382,6 @@
   const container = findHeaderContainer();
   if (container) {
     renderHeader(container);
+    makeHeaderResponsive(container);
   }
 })();

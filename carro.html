@@ -7,7 +7,7 @@
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-  <script defer src="global-header.js?v=20260622-standard-mobile"></script>
+  <script defer src="global-header.js?v=20260622-responsive-pass"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -220,34 +220,11 @@
       opacity: 0.38;
       box-shadow: none;
     }
-    @media (max-width: 767px) {
+    @media (max-width: 900px) {
       html,
       body {
         max-width: 100%;
         overflow-x: hidden;
-      }
-      .site-header.global-header-host {
-        position: relative;
-        inset: auto;
-        top: auto !important;
-        left: auto;
-        right: auto;
-        width: 100% !important;
-        min-height: auto;
-        padding: calc(0.875rem + env(safe-area-inset-top)) 1rem 0.875rem !important;
-        border: 0;
-        border-radius: 0;
-        background: #153e4d;
-        box-shadow: none;
-        backdrop-filter: none;
-        -webkit-backdrop-filter: none;
-      }
-      .site-header .global-header-shell {
-        flex-wrap: nowrap;
-        justify-content: center;
-      }
-      .site-header .global-header-mobile-link {
-        display: none;
       }
       .hero-media {
         height: auto !important;
