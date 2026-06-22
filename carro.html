@@ -7,7 +7,7 @@
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-  <script defer src="global-header.js?v=20260611-guidance-cleanup"></script>
+  <script defer src="global-header.js?v=20260622-mobile-header"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -228,6 +228,14 @@
       }
       .site-header {
         padding-top: 1rem;
+      }
+      .site-header .global-header-shell {
+        flex-wrap: nowrap;
+      }
+      .site-header .global-header-mobile-link {
+        flex: 0 0 auto;
+        width: auto;
+        order: initial;
       }
       .hero-media {
         height: auto !important;
@@ -456,7 +464,7 @@
                   </div>
                 </div>
                 <div class="mt-auto pt-5 flex flex-col gap-3">
-                  <a href="login.html" class="inline-flex items-center justify-center rounded-full bg-white text-[#111111] h-12 px-6 text-[0.95rem] font-semibold shadow-lg hover:bg-white/90 transition-colors">Contactos</a>
+                  <button id="contact-toggle" type="button" aria-expanded="false" aria-controls="contact-overlay" class="inline-flex items-center justify-center rounded-full bg-white text-[#111111] h-12 px-6 text-[0.95rem] font-semibold shadow-lg hover:bg-white/90 transition-colors">Contactos</button>
                   <button id="openTestDriveModal" type="button" class="inline-flex items-center justify-center rounded-full border border-white/30 text-white h-12 px-6 text-[0.95rem] font-semibold hover:bg-white/10 transition-colors">Agendar test drive</button>
                 </div>
               </aside>
@@ -517,6 +525,45 @@
       </div>
     </div>
   </footer>
+
+  <div id="contact-overlay" class="hidden fixed inset-0 z-[100] px-3 sm:px-5 opacity-0 transition-opacity duration-300">
+    <div class="absolute inset-0 bg-[#07141b]/58 backdrop-blur-[6px]"></div>
+    <div class="relative flex min-h-screen items-center justify-center">
+      <div id="contact-panel" role="dialog" aria-modal="true" aria-labelledby="contact-title" class="w-full max-w-[400px] overflow-hidden rounded-[28px] bg-[rgba(255,255,255,0.86)] text-[#153e4d] shadow-[0_24px_80px_rgba(0,0,0,0.24)] ring-1 ring-white/65 backdrop-blur-xl px-6 py-6 text-left opacity-0 scale-95 translate-y-6 blur-sm transition-all duration-300">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="text-[0.68rem] font-semibold uppercase tracking-[0.3em] text-[#fdbf35]">Autenticar</p>
+            <h3 id="contact-title" class="mt-2 text-[1.8rem] leading-none font-black uppercase text-[#153e4d]">Contactos</h3>
+            <p class="mt-3 max-w-[26ch] text-sm leading-6 text-[#5f6970]">Fale connosco diretamente. Respondemos com rapidez.</p>
+          </div>
+          <button id="contact-close" type="button" aria-label="Fechar contactos" class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#153e4d]/10 bg-white/55 text-[#153e4d] shadow-sm hover:bg-white transition-colors">
+            <span class="material-symbols-outlined text-[18px]">close</span>
+          </button>
+        </div>
+        <div class="mt-6 h-px w-full bg-[#153e4d]/10"></div>
+        <div class="mt-6 space-y-2.5">
+          <a class="flex min-h-[80px] items-center gap-4 rounded-[22px] border border-[#8eb8ff] bg-white/34 px-4 py-4 hover:bg-white/58 transition-all" href="tel:+351932783312">
+            <span class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#fdbf35]/22 text-[#153e4d]">
+              <span class="material-symbols-outlined text-[20px]">call</span>
+            </span>
+            <span class="min-w-0">
+              <span class="block text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#8a9196]">Telefone</span>
+              <span class="block mt-1 text-[1.05rem] font-semibold text-[#153e4d]">+351 932 783 312</span>
+            </span>
+          </a>
+          <a class="flex min-h-[80px] items-center gap-4 rounded-[22px] border border-[#8eb8ff] bg-white/34 px-4 py-4 hover:bg-white/58 transition-all" href="mailto:geral@autenticar.pt">
+            <span class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#153e4d]/10 text-[#153e4d]">
+              <span class="material-symbols-outlined text-[20px]">mail</span>
+            </span>
+            <span class="min-w-0">
+              <span class="block text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#8a9196]">Email</span>
+              <span class="block mt-1 text-[0.91rem] sm:text-[1.05rem] font-semibold text-[#153e4d] break-all">geral@autenticar.pt</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div id="galleryModal" class="hidden fixed inset-0 z-[90] gallery-modal-backdrop">
     <div class="relative h-full w-full flex flex-col">
@@ -670,6 +717,10 @@
     const closeGalleryModal = document.getElementById("closeGalleryModal");
     const galleryPrev = document.getElementById("galleryPrev");
     const galleryNext = document.getElementById("galleryNext");
+    const contactToggle = document.getElementById("contact-toggle");
+    const contactOverlay = document.getElementById("contact-overlay");
+    const contactPanel = document.getElementById("contact-panel");
+    const contactClose = document.getElementById("contact-close");
     const openTestDriveModal = document.getElementById("openTestDriveModal");
     const testDriveModal = document.getElementById("testDriveModal");
     const closeTestDriveModal = document.getElementById("closeTestDriveModal");
@@ -708,6 +759,30 @@
       errorState.classList.toggle("hidden", state !== "error");
       carPage.classList.toggle("hidden", state !== "ready");
       if (message) errorMessage.textContent = message;
+    }
+
+    function openContactPanel() {
+      contactOverlay.classList.remove("hidden");
+      requestAnimationFrame(() => {
+        contactOverlay.classList.remove("opacity-0");
+        contactPanel.classList.remove("opacity-0", "scale-95", "translate-y-6", "blur-sm");
+        contactPanel.classList.add("opacity-100", "scale-100", "translate-y-0");
+      });
+      contactToggle.setAttribute("aria-expanded", "true");
+      document.body.classList.add("overflow-hidden");
+      contactClose.focus();
+    }
+
+    function closeContactPanel() {
+      contactOverlay.classList.add("opacity-0");
+      contactPanel.classList.add("opacity-0", "scale-95", "translate-y-6", "blur-sm");
+      contactPanel.classList.remove("opacity-100", "scale-100", "translate-y-0");
+      contactToggle.setAttribute("aria-expanded", "false");
+      window.setTimeout(() => {
+        contactOverlay.classList.add("hidden");
+        document.body.classList.remove("overflow-hidden");
+        contactToggle.focus();
+      }, 280);
     }
 
     function formatCurrency(value) {
@@ -1252,7 +1327,18 @@
         submitTestDrive.textContent = "Pedir agendamento";
       }
     });
+    contactToggle.addEventListener("click", openContactPanel);
+    contactClose.addEventListener("click", closeContactPanel);
+    contactOverlay.addEventListener("click", (event) => {
+      if (event.target === contactOverlay || event.target === contactOverlay.firstElementChild) {
+        closeContactPanel();
+      }
+    });
     document.addEventListener("keydown", (event) => {
+      if (!contactOverlay.classList.contains("hidden") && event.key === "Escape") {
+        closeContactPanel();
+        return;
+      }
       if (!testDriveModal.classList.contains("hidden") && event.key === "Escape") {
         closeTestDrive();
         return;

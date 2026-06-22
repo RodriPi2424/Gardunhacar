@@ -29,30 +29,69 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        gap: 0.45rem;
         flex: 0 0 auto;
         width: fit-content;
-        min-height: 2.5rem;
-        padding: 0.625rem 0.95rem;
-        border: 1px solid rgba(255, 255, 255, 0.26);
+        min-height: 2.25rem;
+        padding: 0.55rem 0.75rem 0.55rem 0.85rem;
+        border: 1px solid rgba(255, 255, 255, 0.18);
         border-radius: 999px;
-        background: rgba(21, 62, 77, 0.18);
+        background: rgba(255, 255, 255, 0.08);
         color: rgba(255, 255, 255, 0.95);
         font-family: "Montserrat", sans-serif;
-        font-size: 0.72rem;
+        font-size: 0.68rem;
         font-weight: 700;
         line-height: 1;
         text-decoration: none;
         backdrop-filter: blur(14px);
         -webkit-backdrop-filter: blur(14px);
-        transition: background-color 220ms ease, border-color 220ms ease, color 220ms ease;
+        transition: transform 220ms ease, background-color 220ms ease, border-color 220ms ease, color 220ms ease;
         white-space: nowrap;
+      }
+
+      .global-header-mobile-link svg {
+        width: 0.9rem;
+        height: 0.9rem;
+        transition: transform 220ms ease;
       }
 
       .global-header-mobile-link:hover,
       .global-header-mobile-link[aria-current="page"] {
-        background: rgba(21, 62, 77, 0.3);
-        border-color: rgba(255, 255, 255, 0.4);
+        background: rgba(255, 255, 255, 0.14);
+        border-color: rgba(255, 255, 255, 0.32);
         color: rgba(255, 255, 255, 1);
+      }
+
+      .global-header-mobile-link:hover svg {
+        transform: translateX(2px);
+      }
+
+      .global-header-host {
+        box-sizing: border-box;
+        width: 100%;
+      }
+
+      @media (max-width: 767px) {
+        .global-header-host {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          flex-direction: row !important;
+          flex-wrap: nowrap !important;
+          gap: 0.75rem !important;
+          min-height: 3.75rem;
+          padding: 0.55rem 0.6rem 0.55rem 0.8rem;
+          border: 1px solid rgba(255, 255, 255, 0.16);
+          border-radius: 1.1rem;
+          background: linear-gradient(110deg, rgba(8, 20, 25, 0.58), rgba(21, 62, 77, 0.24));
+          box-shadow: 0 12px 30px rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+        }
+
+        .global-header-shell {
+          gap: 0.75rem;
+        }
       }
 
       .global-header-link {
@@ -116,6 +155,10 @@
           display: none;
         }
 
+        .global-header-host {
+          width: auto;
+        }
+
         .global-header-nav {
           display: flex;
         }
@@ -172,17 +215,23 @@
 
     if (!targetLink) return "";
 
-    const mobileLabel = targetLink.href === "about-us.html" ? "Sobre nos" : targetLink.label;
+    const mobileLabel = targetLink.href === "about-us.html" ? "Sobre nós" : targetLink.label;
 
     return `
       <a
         class="global-header-mobile-link"
         href="${targetLink.href}"
-      >${mobileLabel}</a>
+      >
+        <span>${mobileLabel}</span>
+        <svg viewBox="0 0 16 16" aria-hidden="true" fill="none">
+          <path d="M3.5 8h8.25M8.75 4.75 12 8l-3.25 3.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
     `;
   }
 
   function renderHeader(container) {
+    container.classList.add("global-header-host");
     const isFullBleedHeader = Boolean(container.closest("section.w-screen"));
     const hasLogo = container.querySelector('img[src*="logo-new"], img[src*="Logo"], img[alt*="autenticar" i]');
     const isLogoHeader = container.tagName === "HEADER" && hasLogo;
