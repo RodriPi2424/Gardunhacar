@@ -55,6 +55,12 @@
             padding-bottom: max(1rem, env(safe-area-inset-bottom));
         }
         @media (max-width: 767px) {
+            .home-hero-content > .global-header-host {
+                width: calc(100% + 2rem) !important;
+                margin-top: calc(-1 * max(1rem, env(safe-area-inset-top))) !important;
+                margin-left: -1rem !important;
+                margin-right: -1rem !important;
+            }
             .home-hero-copy {
                 padding-top: 1.5rem;
                 padding-bottom: 2rem;
