@@ -29,8 +29,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        flex-basis: 100%;
-        justify-self: flex-start;
+        flex: 0 0 auto;
         width: fit-content;
         min-height: 2.5rem;
         padding: 0.625rem 0.95rem;
@@ -47,7 +46,6 @@
         -webkit-backdrop-filter: blur(14px);
         transition: background-color 220ms ease, border-color 220ms ease, color 220ms ease;
         white-space: nowrap;
-        order: 3;
       }
 
       .global-header-mobile-link:hover,
@@ -78,7 +76,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         gap: 0.75rem;
         width: 100%;
         max-width: 1280px;

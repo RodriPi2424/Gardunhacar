@@ -147,21 +147,6 @@
         <h2 id="statListings" class="text-4xl font-extrabold text-primary">0</h2>
       </article>
 
-      <article class="bg-white p-unit-lg rounded-xl shadow-[0_4px_20px_rgba(16,42,67,0.08)] border border-outline-variant">
-        <div class="flex justify-between items-start mb-4">
-          <div class="p-3 bg-surface-container-low rounded-lg"><span class="material-symbols-outlined text-primary">person_search</span></div>
-        </div>
-        <p class="text-on-surface-variant font-bold text-sm">Vendidos Este Mes</p>
-        <h2 id="statSoldMonth" class="text-4xl font-extrabold text-primary">0</h2>
-      </article>
-
-      <article class="bg-white p-unit-lg rounded-xl shadow-[0_4px_20px_rgba(16,42,67,0.08)] border border-outline-variant">
-        <div class="flex justify-between items-start mb-4">
-          <div class="p-3 bg-surface-container-low rounded-lg"><span class="material-symbols-outlined text-primary">payments</span></div>
-        </div>
-        <p class="text-on-surface-variant font-bold text-sm">Vendidos Este Ano</p>
-        <h2 id="statSoldYear" class="text-4xl font-extrabold text-primary">0</h2>
-      </article>
     </section>
 
     <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -382,19 +367,6 @@
       return new Intl.NumberFormat("pt-PT", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value);
     }
 
-    function isSameMonth(date, referenceDate = new Date()) {
-      const parsed = new Date(date);
-      return !Number.isNaN(parsed.getTime()) &&
-        parsed.getFullYear() === referenceDate.getFullYear() &&
-        parsed.getMonth() === referenceDate.getMonth();
-    }
-
-    function isSameYear(date, referenceDate = new Date()) {
-      const parsed = new Date(date);
-      return !Number.isNaN(parsed.getTime()) &&
-        parsed.getFullYear() === referenceDate.getFullYear();
-    }
-
     function escapeHtml(value) {
       return String(value || "")
         .replace(/&/g, "&amp;")
@@ -437,13 +409,7 @@
     }
 
     function renderStats() {
-      const soldListings = state.listings.filter((item) => item.status === "sold");
-      const soldThisMonth = soldListings.filter((item) => isSameMonth(item.updatedAt)).length;
-      const soldThisYear = soldListings.filter((item) => isSameYear(item.updatedAt)).length;
-
       document.getElementById("statListings").textContent = state.listings.length.toLocaleString("pt-PT");
-      document.getElementById("statSoldMonth").textContent = soldThisMonth.toLocaleString("pt-PT");
-      document.getElementById("statSoldYear").textContent = soldThisYear.toLocaleString("pt-PT");
     }
 
     function renderTestDriveRequests() {

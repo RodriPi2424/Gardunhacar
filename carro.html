@@ -169,9 +169,14 @@
     .gallery-modal-stage {
       min-height: 0;
       max-height: calc(100vh - 210px);
+      overflow: hidden;
     }
     .gallery-modal-stage img {
+      width: 100%;
+      height: 100%;
       max-height: calc(100vh - 250px);
+      object-fit: contain;
+      padding: 8px;
     }
     .gallery-modal-thumb.is-active {
       border-color: rgba(255, 255, 255, 0.9);
@@ -216,6 +221,14 @@
       box-shadow: none;
     }
     @media (max-width: 767px) {
+      html,
+      body {
+        max-width: 100%;
+        overflow-x: hidden;
+      }
+      .site-header {
+        padding-top: 1rem;
+      }
       .hero-media {
         height: auto !important;
         min-height: 0 !important;
@@ -229,7 +242,7 @@
         height: auto !important;
         min-height: 0 !important;
         justify-content: flex-end;
-        padding-top: 6.5rem;
+        padding-top: 5.25rem;
         padding-bottom: 2rem;
       }
       .hero-media > .relative.z-20 > .grid {
@@ -249,8 +262,19 @@
         border-radius: 24px;
       }
       .gallery-scroll {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        display: flex;
         gap: 10px;
+        overflow-x: auto;
+        overscroll-behavior-inline: contain;
+        scroll-snap-type: inline mandatory;
+        scrollbar-width: none;
+      }
+      .gallery-scroll::-webkit-scrollbar {
+        display: none;
+      }
+      .gallery-thumb {
+        flex: 0 0 calc((100% - 10px) / 2);
+        scroll-snap-align: start;
       }
       .hero-price-card {
         min-width: 0;
@@ -273,8 +297,9 @@
         border-radius: 28px;
       }
       #carTitle {
-        font-size: clamp(2.5rem, 12vw, 4rem);
-        line-height: 0.94;
+        font-size: clamp(2.25rem, 10vw, 3rem);
+        line-height: 0.96;
+        overflow-wrap: anywhere;
       }
       #priceLabel {
         font-size: clamp(2.75rem, 13vw, 4rem);
@@ -286,13 +311,14 @@
       .gallery-modal-stage img {
         max-height: calc(100vh - 220px);
       }
+      footer .flex.items-center.gap-4 {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
     }
     @media (max-width: 479px) {
-      .gallery-scroll {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
       .hero-media > .relative.z-20 {
-        padding-top: 6rem;
+        padding-top: 5rem;
         padding-bottom: 1.5rem;
       }
       .hero-copy .gallery-rail {
@@ -509,7 +535,7 @@
           <button id="galleryPrev" type="button" class="absolute left-4 top-1/2 -translate-y-1/2 z-10 inline-flex items-center justify-center h-12 w-12 rounded-full border border-white/20 bg-black/25 text-white hover:bg-black/40 transition-colors" aria-label="Imagem anterior">
             <span class="material-symbols-outlined">chevron_left</span>
           </button>
-          <img id="galleryModalImage" src="" alt="" class="max-h-full max-w-full object-contain p-4 md:p-6" />
+          <img id="galleryModalImage" src="" alt="" class="max-h-full max-w-full object-contain" />
           <button id="galleryNext" type="button" class="absolute right-4 top-1/2 -translate-y-1/2 z-10 inline-flex items-center justify-center h-12 w-12 rounded-full border border-white/20 bg-black/25 text-white hover:bg-black/40 transition-colors" aria-label="Imagem seguinte">
             <span class="material-symbols-outlined">chevron_right</span>
           </button>
