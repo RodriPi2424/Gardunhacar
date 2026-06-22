@@ -226,12 +226,21 @@
         max-width: 100%;
         overflow-x: hidden;
       }
-      .site-header {
-        top: calc(0.75rem + env(safe-area-inset-top));
-        left: 0.75rem;
-        right: 0.75rem;
-        width: auto !important;
-        padding-top: 1rem !important;
+      .site-header.global-header-host {
+        position: relative;
+        inset: auto;
+        top: auto !important;
+        left: auto;
+        right: auto;
+        width: 100% !important;
+        min-height: auto;
+        padding: calc(0.875rem + env(safe-area-inset-top)) 1rem 0.875rem !important;
+        border: 0;
+        border-radius: 0;
+        background: #153e4d;
+        box-shadow: none;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
       }
       .site-header .global-header-shell {
         flex-wrap: nowrap;
@@ -254,7 +263,7 @@
         height: auto !important;
         min-height: 0 !important;
         justify-content: flex-end;
-        padding-top: 6.25rem;
+        padding-top: 2rem;
         padding-bottom: 2rem;
       }
       .hero-media > .relative.z-20 > .grid {
@@ -330,7 +339,7 @@
     }
     @media (max-width: 479px) {
       .hero-media > .relative.z-20 {
-        padding-top: 5rem;
+        padding-top: 1.5rem;
         padding-bottom: 1.5rem;
       }
       .hero-copy .gallery-rail {
@@ -382,7 +391,7 @@
   <script src="supabase-browser.js"></script>
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"8caedf609afad31a39b8208b5c0dfb31"})});</script></head>
 <body class="text-on-surface overflow-x-hidden">
-  <header class="site-header px-4 md:px-8 pt-4 md:pt-6" style="top: calc(0.75rem + env(safe-area-inset-top)) !important;">
+  <header class="site-header px-4 md:px-8 pt-4 md:pt-6">
     <div class="max-w-container-max mx-auto flex items-center justify-between gap-3">
       <a href="index.html" aria-label="Voltar ao inicio" class="brand-mark px-4 py-2 md:px-5">
         <img src="logo-new-3.png" alt="autenticar" class="h-8 md:h-10 w-auto" />
