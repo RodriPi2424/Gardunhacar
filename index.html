@@ -437,17 +437,10 @@ Abrir no Google Maps
     if (!brandSelect || !modelSelect || !fuelSelect) return;
 
     try {
-      const [brandsResponse, carsResponse] = await Promise.all([
-        apiFetch("/api/brands"),
-        apiFetch("/api/cars?limit=100")
-      ]);
-      const [brandsData, carsData] = await Promise.all([
-        brandsResponse.json(),
-        carsResponse.json()
-      ]);
+      const carsResponse = await apiFetch("/api/cars?limit=100");
+      const carsData = await carsResponse.json();
       const cars = Array.isArray(carsData.cars) ? carsData.cars : [];
-      const brandsFromTable = Array.isArray(brandsData.brands) ? brandsData.brands.map((brand) => brand.name) : [];
-      const brands = uniqueSorted(brandsFromTable.length ? brandsFromTable : cars.map((car) => car.brand));
+      const brands = uniqueSorted(cars.map((car) => car.brand));
 
       const updateModels = () => {
         const selectedBrand = String(brandSelect.value || "").toLowerCase();

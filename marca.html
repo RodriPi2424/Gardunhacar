@@ -265,16 +265,12 @@
       document.getElementById("maxMileageFilter").value = filters.maxMileage;
 
       try {
-        const [brandsResponse, carsResponse] = await Promise.all([
-          apiFetch("/api/brands"),
-          apiFetch("/api/cars?limit=100")
-        ]);
-        const [brandsData, carsData] = await Promise.all([brandsResponse.json(), carsResponse.json()]);
+        const carsResponse = await apiFetch("/api/cars?limit=100");
+        const carsData = await carsResponse.json();
         state.cars = Array.isArray(carsData.cars) ? carsData.cars : [];
-        state.brands = Array.isArray(brandsData.brands) ? brandsData.brands.map((brand) => brand.name) : [];
+        state.brands = uniqueSorted(state.cars.map((car) => car.brand));
 
-        const brands = uniqueSorted(state.brands.length ? state.brands : state.cars.map((car) => car.brand));
-        setSelectOptions(document.getElementById("brandFilter"), "Marca", brands, filters.brand);
+        setSelectOptions(document.getElementById("brandFilter"), "Marca", state.brands, filters.brand);
         setSelectOptions(document.getElementById("fuelFilter"), "Combustível", uniqueSorted(state.cars.map((car) => car.fuel)), filters.fuel);
         updateModelOptions(filters);
         renderCars(filters);
