@@ -72,6 +72,10 @@
       }
 
       @media (max-width: 900px) {
+        .global-header-brand {
+          align-items: center;
+        }
+
         .global-header-host {
           position: relative !important;
           inset: auto !important;
@@ -147,7 +151,8 @@
 
       .global-header-brand {
         display: inline-flex;
-        align-items: center;
+        flex-direction: column;
+        align-items: flex-start;
         text-decoration: none;
       }
 
@@ -155,6 +160,17 @@
         display: block;
         width: auto;
         height: 2rem;
+      }
+
+      .global-header-credit {
+        margin-top: 0.2rem;
+        color: rgba(255, 255, 255, 0.68);
+        font-family: "Montserrat", sans-serif;
+        font-size: 0.48rem;
+        font-weight: 500;
+        line-height: 1;
+        letter-spacing: 0.06em;
+        white-space: nowrap;
       }
 
       .global-header-shell--bar {
@@ -202,9 +218,14 @@
   }
 
   function createBrandMarkup() {
+    const credit = currentPage === "index.html"
+      ? '<span class="global-header-credit">powered by Alonsos e Branco.</span>'
+      : "";
+
     return `
       <a href="index.html" aria-label="Voltar ao inicio" class="global-header-brand">
         <img src="logo-new-3.png" alt="autenticar" />
+        ${credit}
       </a>
     `;
   }
