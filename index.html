@@ -13,21 +13,6 @@
         }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .category-card {
-            transition: transform 260ms ease, opacity 260ms ease, filter 260ms ease;
-        }
-        .category-card.is-hidden {
-            opacity: 0;
-            transform: translateY(10px) scale(0.97);
-            filter: blur(1px);
-            pointer-events: none;
-        }
-        .category-card.is-collapsed {
-            display: none !important;
-        }
-        #advanced-search-panel {
-            transition: opacity 280ms ease, transform 280ms ease;
-        }
         .brand-nav {
             gap: 1.75rem;
         }
@@ -242,72 +227,12 @@ Contactos
 </div>
 </div>
 </section>
-<!-- Categories Section -->
+<!-- Advanced Search Section -->
 <section class="px-margin-mobile md:px-margin-desktop mb-unit-xl">
-<h2 class="font-headline-md text-headline-md text-primary mb-unit-lg text-center md:text-left">Categorias</h2>
-<div id="categories-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-unit-md">
-<!-- Primeiro carro -->
-<button id="open-advanced-search" type="button" class="category-card group bg-primary-container hover:bg-primary transition-all p-4 rounded-xl flex flex-col items-center text-center cursor-pointer border border-primary/40 lg:col-span-2">
-<span class="material-symbols-outlined text-[32px] text-white mb-2" data-icon="tune">tune</span>
-<h3 class="font-label-bold text-label-bold text-white">Pesquisa avançada</h3>
-<p class="font-label-sm text-label-sm text-primary-fixed mt-1">Marca, modelo, preço e mais</p>
-</button>
-<a href="destaque.html" class="category-card group bg-surface-container hover:bg-primary-container transition-all p-4 rounded-xl flex flex-col items-center text-center cursor-pointer border border-outline-variant/30">
-<span class="material-symbols-outlined text-[32px] text-primary group-hover:text-primary-fixed mb-2" data-icon="star">star</span>
-<h3 class="font-label-bold text-label-bold text-primary group-hover:text-white">Destaque</h3>
-</a>
-<a href="primeiro-carro.html" class="category-card group bg-surface-container hover:bg-primary-container transition-all p-4 rounded-xl flex flex-col items-center text-center cursor-pointer border border-outline-variant/30">
-<span class="material-symbols-outlined text-[32px] text-primary group-hover:text-primary-fixed mb-2" data-icon="school">school</span>
-<h3 class="font-label-bold text-label-bold text-primary group-hover:text-white">Primeiro carro</h3>
-</a>
-<!-- Carros familiares -->
-<a href="carros-familiares.html" class="category-card group bg-surface-container hover:bg-primary-container transition-all p-4 rounded-xl flex flex-col items-center text-center cursor-pointer border border-outline-variant/30">
-<span class="material-symbols-outlined text-[32px] text-primary group-hover:text-primary-fixed mb-2" data-icon="family_restroom">family_restroom</span>
-<h3 class="font-label-bold text-label-bold text-primary group-hover:text-white">Carros familiares</h3>
-</a>
-<!-- Carros para cidade -->
-<a href="carros-cidade.html" class="category-card group bg-surface-container hover:bg-primary-container transition-all p-4 rounded-xl flex flex-col items-center text-center cursor-pointer border border-outline-variant/30">
-<span class="material-symbols-outlined text-[32px] text-primary group-hover:text-primary-fixed mb-2" data-icon="location_city">location_city</span>
-<h3 class="font-label-bold text-label-bold text-primary group-hover:text-white">Carros para cidade</h3>
-</a>
-<!-- Carros automáticos -->
-<a href="carros-automaticos.html" class="category-card group bg-surface-container hover:bg-primary-container transition-all p-4 rounded-xl flex flex-col items-center text-center cursor-pointer border border-outline-variant/30">
-<span class="material-symbols-outlined text-[32px] text-primary group-hover:text-primary-fixed mb-2" data-icon="settings_input_component">settings_input_component</span>
-<h3 class="font-label-bold text-label-bold text-primary group-hover:text-white">Carros automáticos</h3>
-</a>
-<!-- Carros para viagens -->
-<a href="carros-viagens.html" class="category-card group bg-surface-container hover:bg-primary-container transition-all p-4 rounded-xl flex flex-col items-center text-center cursor-pointer border border-outline-variant/30">
-<span class="material-symbols-outlined text-[32px] text-primary group-hover:text-primary-fixed mb-2" data-icon="explore">explore</span>
-<h3 class="font-label-bold text-label-bold text-primary group-hover:text-white">Carros para viagens</h3>
-</a>
-<!-- SUVs -->
-<a href="suvs.html" class="category-card group bg-surface-container hover:bg-primary-container transition-all p-4 rounded-xl flex flex-col items-center text-center cursor-pointer border border-outline-variant/30">
-<span class="material-symbols-outlined text-[32px] text-primary group-hover:text-primary-fixed mb-2" data-icon="suv">suv</span>
-<h3 class="font-label-bold text-label-bold text-primary group-hover:text-white">SUVs</h3>
-</a>
-<!-- Baixo consumo -->
-<a href="baixo-consumo.html" class="category-card group bg-surface-container hover:bg-primary-container transition-all p-4 rounded-xl flex flex-col items-center text-center cursor-pointer border border-outline-variant/30">
-<span class="material-symbols-outlined text-[32px] text-primary group-hover:text-primary-fixed mb-2" data-icon="eco">eco</span>
-<h3 class="font-label-bold text-label-bold text-primary group-hover:text-white">Baixo consumo</h3>
-</a>
-<!-- Até 10.000€ -->
-<a href="ate-10000.html" class="category-card group bg-surface-container hover:bg-primary-container transition-all p-4 rounded-xl flex flex-col items-center text-center cursor-pointer border border-outline-variant/30">
-<span class="material-symbols-outlined text-[32px] text-primary group-hover:text-primary-fixed mb-2" data-icon="payments">payments</span>
-<h3 class="font-label-bold text-label-bold text-primary group-hover:text-white">Até 10.000€</h3>
-</a>
-<!-- Até 15.000€ -->
-<a href="ate-15000.html" class="category-card group bg-surface-container hover:bg-primary-container transition-all p-4 rounded-xl flex flex-col items-center text-center cursor-pointer border border-outline-variant/30">
-<span class="material-symbols-outlined text-[32px] text-primary group-hover:text-primary-fixed mb-2" data-icon="payments">payments</span>
-<h3 class="font-label-bold text-label-bold text-primary group-hover:text-white">Até 15.000€</h3>
-</a>
-</div>
-<div id="advanced-search-panel" class="hidden opacity-0 translate-y-3 mt-unit-lg bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-unit-lg shadow-sm">
-<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-unit-sm mb-unit-md">
-<h3 class="font-headline-md text-headline-md text-primary">Encontrar veículo específico</h3>
-<button id="close-advanced-search" type="button" class="inline-flex items-center gap-1 text-primary hover:underline font-label-bold text-label-bold">
-<span class="material-symbols-outlined text-[18px]" data-icon="arrow_back">arrow_back</span>
-Voltar às categorias
-</button>
+<div id="advanced-search-panel" class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-unit-lg shadow-sm">
+<div class="flex items-center gap-unit-sm mb-unit-md">
+<span class="material-symbols-outlined text-[28px] text-primary" data-icon="tune" aria-hidden="true">tune</span>
+<h2 class="font-headline-md text-headline-md text-primary">Pesquisa avançada</h2>
 </div>
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-unit-md">
 <select id="advancedBrandFilter" class="w-full h-12 border border-outline-variant rounded-lg px-4 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md">
@@ -524,10 +449,6 @@ Abrir no Google Maps
     const contactOverlay = document.getElementById('contact-overlay');
     const contactPanel = document.getElementById('contact-panel');
     const contactClose = document.getElementById('contact-close');
-    const openBtn = document.getElementById('open-advanced-search');
-    const closeBtn = document.getElementById('close-advanced-search');
-    const panel = document.getElementById('advanced-search-panel');
-    const cards = Array.from(document.querySelectorAll('#categories-grid .category-card')).filter(el => el.id !== 'open-advanced-search');
     const searchButton = document.getElementById('advancedSearchButton');
 
     if (contactToggle && contactOverlay && contactPanel) {
@@ -577,36 +498,6 @@ Abrir no Google Maps
         }
       });
     }
-
-    if (!openBtn || !closeBtn || !panel) return;
-
-    openBtn.addEventListener('click', () => {
-      cards.forEach((card, index) => {
-        setTimeout(() => card.classList.add('is-hidden'), index * 18);
-      });
-      setTimeout(() => {
-        cards.forEach(card => card.classList.add('is-collapsed'));
-      }, 280);
-      setTimeout(() => {
-        panel.classList.remove('hidden');
-        requestAnimationFrame(() => {
-          panel.classList.remove('opacity-0', 'translate-y-3');
-          panel.classList.add('opacity-100', 'translate-y-0');
-        });
-      }, 220);
-    });
-
-    closeBtn.addEventListener('click', () => {
-      panel.classList.remove('opacity-100', 'translate-y-0');
-      panel.classList.add('opacity-0', 'translate-y-3');
-      setTimeout(() => {
-        panel.classList.add('hidden');
-        cards.forEach(card => card.classList.remove('is-collapsed'));
-        cards.forEach((card, index) => {
-          setTimeout(() => card.classList.remove('is-hidden'), 30 + (index * 14));
-        });
-      }, 220);
-    });
 
     searchButton?.addEventListener('click', () => {
       const params = new URLSearchParams({ search: '1' });
