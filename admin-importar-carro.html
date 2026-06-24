@@ -268,6 +268,8 @@
     const extras = [];
     const customExtras = [];
     let selectedImageFiles = [];
+    let selectedImportedImageUrls = [];
+    let isManagingImportedImages = false;
     let draggedImageIndex = null;
     const EXTRA_GROUPS = [
       {
@@ -630,38 +632,42 @@
     }
 
     function moveSelectedImage(fromIndex, toIndex) {
+      const selectedImages = isManagingImportedImages ? selectedImportedImageUrls : selectedImageFiles;
       if (
         fromIndex === toIndex ||
         fromIndex < 0 ||
         toIndex < 0 ||
-        fromIndex >= selectedImageFiles.length ||
-        toIndex >= selectedImageFiles.length
+        fromIndex >= selectedImages.length ||
+        toIndex >= selectedImages.length
       ) return;
 
-      const [movedFile] = selectedImageFiles.splice(fromIndex, 1);
-      selectedImageFiles.splice(toIndex, 0, movedFile);
+      const [movedImage] = selectedImages.splice(fromIndex, 1);
+      selectedImages.splice(toIndex, 0, movedImage);
       renderSelectedImages();
     }
 
     function removeSelectedImage(index) {
-      if (index < 0 || index >= selectedImageFiles.length) return;
-      selectedImageFiles.splice(index, 1);
+      const selectedImages = isManagingImportedImages ? selectedImportedImageUrls : selectedImageFiles;
+      if (index < 0 || index >= selectedImages.length) return;
+      selectedImages.splice(index, 1);
       renderSelectedImages();
     }
 
     function renderSelectedImages() {
       previewGrid.innerHTML = "";
+      const selectedImages = isManagingImportedImages ? selectedImportedImageUrls : selectedImageFiles;
 
-      if (selectedImageFiles.length === 0) {
-        selectedImagesLabel.textContent = "Nenhum ficheiro selecionado";
+      if (selectedImages.length === 0) {
+        selectedImagesLabel.textContent = isManagingImportedImages ? "Nenhuma imagem importada selecionada" : "Nenhum ficheiro selecionado";
         return;
       }
 
-      selectedImagesLabel.textContent = selectedImageFiles.length === 1
-        ? selectedImageFiles[0].name
-        : `${selectedImageFiles.length} ficheiros selecionados`;
+      selectedImagesLabel.textContent = isManagingImportedImages
+        ? `${selectedImages.length} imagem(ns) importada(s) selecionada(s)`
+        : (selectedImages.length === 1 ? selectedImages[0].name : `${selectedImages.length} ficheiros selecionados`);
 
-      selectedImageFiles.forEach((file, index) => {
+      selectedImages.forEach((image, index) => {
+        const imageName = isManagingImportedImages ? `Imagem importada ${index + 1}` : image.name;
         const wrapper = document.createElement("div");
         wrapper.className = "group overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm cursor-grab active:cursor-grabbing";
         wrapper.draggable = true;
@@ -698,9 +704,9 @@
 
         const img = document.createElement("img");
         img.className = "h-28 w-full object-cover pointer-events-none";
-        img.src = URL.createObjectURL(file);
-        img.alt = `${index + 1}. ${file.name}`;
-        img.onload = () => URL.revokeObjectURL(img.src);
+        img.src = isManagingImportedImages ? image : URL.createObjectURL(image);
+        img.alt = `${index + 1}. ${imageName}`;
+        if (!isManagingImportedImages) img.onload = () => URL.revokeObjectURL(img.src);
 
         const orderBadge = document.createElement("span");
         orderBadge.className = "absolute left-2 top-2 rounded-full bg-slate-900/85 px-2 py-1 text-xs font-bold text-white";
@@ -711,7 +717,7 @@
 
         const label = document.createElement("p");
         label.className = "min-w-0 flex-1 truncate text-xs text-slate-600";
-        label.textContent = file.name;
+        label.textContent = imageName;
 
         const buttons = document.createElement("div");
         buttons.className = "flex shrink-0 gap-1";
@@ -721,15 +727,15 @@
         previousButton.className = "rounded-md border border-slate-200 px-2 py-1 text-sm font-bold text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-30";
         previousButton.textContent = "←";
         previousButton.disabled = index === 0;
-        previousButton.setAttribute("aria-label", `Mover ${file.name} para trás`);
+        previousButton.setAttribute("aria-label", `Mover ${imageName} para trás`);
         previousButton.addEventListener("click", () => moveSelectedImage(index, index - 1));
 
         const nextButton = document.createElement("button");
         nextButton.type = "button";
         nextButton.className = previousButton.className;
         nextButton.textContent = "→";
-        nextButton.disabled = index === selectedImageFiles.length - 1;
-        nextButton.setAttribute("aria-label", `Mover ${file.name} para a frente`);
+        nextButton.disabled = index === selectedImages.length - 1;
+        nextButton.setAttribute("aria-label", `Mover ${imageName} para a frente`);
         nextButton.addEventListener("click", () => moveSelectedImage(index, index + 1));
 
         const removeButton = document.createElement("button");
@@ -737,7 +743,7 @@
         removeButton.className = "rounded-md border border-red-200 px-2 py-1 text-sm font-bold text-red-700 hover:bg-red-50";
         removeButton.textContent = "×";
         removeButton.title = "Eliminar imagem";
-        removeButton.setAttribute("aria-label", `Eliminar ${file.name}`);
+        removeButton.setAttribute("aria-label", `Eliminar ${imageName}`);
         removeButton.addEventListener("click", () => removeSelectedImage(index));
 
         buttons.appendChild(previousButton);
@@ -753,7 +759,7 @@
       });
     }
 
-    function populateForm(car) {
+    function populateForm(car, options = {}) {
       form.elements.title.value = car.title || "";
       form.elements.brand.value = car.brand || "";
       form.elements.model.value = car.model || "";
@@ -777,12 +783,21 @@
       Array.from(form.querySelectorAll('input[name="listingCategory"]')).forEach((input) => {
         input.checked = Array.isArray(car.categories) && car.categories.includes(input.value);
       });
-      renderExistingImages(car.image_urls);
+      if (options.manageImportedImages) {
+        selectedImageFiles = [];
+        imageInput.value = "";
+        selectedImportedImageUrls = Array.isArray(car.image_urls) ? car.image_urls.filter(Boolean) : [];
+        isManagingImportedImages = true;
+        renderSelectedImages();
+      } else {
+        isManagingImportedImages = false;
+        renderExistingImages(car.image_urls);
+      }
     }
 
     function populateFromPreview(car) {
       const currentTitle = String(form.elements.title.value || "").trim();
-      populateForm(car);
+      populateForm(car, { manageImportedImages: true });
       if (currentTitle) {
         form.elements.title.value = currentTitle;
       }
@@ -825,7 +840,8 @@
           extras: mergedExtras
         },
         categories: selectedCategories,
-        images
+        images,
+        remoteImageUrls: sourceUrlInput.dataset.previewLoaded === "1" ? [...selectedImportedImageUrls] : undefined
       };
     }
 
@@ -844,6 +860,7 @@
 
     imageInput.addEventListener("change", () => {
       selectedImageFiles = Array.from(imageInput.files || []);
+      isManagingImportedImages = false;
       imageInput.value = "";
       renderSelectedImages();
     });
@@ -852,6 +869,8 @@
       setTimeout(syncExtras, 0, []);
       extraInput.value = "";
       selectedImageFiles = [];
+      selectedImportedImageUrls = [];
+      isManagingImportedImages = false;
       previewGrid.innerHTML = "";
       selectedImagesLabel.textContent = isEditing ? "Mantém as imagens atuais até gravares novas" : "Nenhum ficheiro selecionado";
       setFormStatus("");
@@ -890,7 +909,9 @@
       }
 
       const hasSelectedImages = selectedImageFiles.length > 0;
-      const hasImportedPreviewImages = Boolean(linkValue && sourceUrlInput.dataset.previewLoaded === "1");
+      const hasImportedPreviewImages = Boolean(
+        linkValue && sourceUrlInput.dataset.previewLoaded === "1" && selectedImportedImageUrls.length > 0
+      );
       if (!hasSelectedImages && !hasImportedPreviewImages && !isEditing) {
         setFormStatus("Adiciona pelo menos uma imagem.", "error");
         return;
@@ -1042,6 +1063,8 @@
 
     sourceUrlInput.addEventListener("input", () => {
       sourceUrlInput.dataset.previewLoaded = "0";
+      selectedImportedImageUrls = [];
+      if (isManagingImportedImages) renderSelectedImages();
     });
 
     requireAdminAccess().then((allowed) => {

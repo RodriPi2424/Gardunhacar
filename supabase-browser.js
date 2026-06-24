@@ -1200,7 +1200,15 @@
     const categories = Array.isArray(payload.categories) ? payload.categories.map((value) => String(value).trim()).filter(Boolean) : [];
     const defaultPayload = buildPayloadFromParsedListing(parsed, categories);
     const car = mergeParsedCar(defaultPayload, payload.car);
-    const imageUrls = Array.isArray(parsed.imageCandidates) ? parsed.imageCandidates.filter(Boolean) : [];
+    const availableImageUrls = Array.isArray(parsed.imageCandidates) ? parsed.imageCandidates.filter(Boolean) : [];
+    const allowedImageUrls = new Set(availableImageUrls);
+    const hasRemoteImageSelection = Object.prototype.hasOwnProperty.call(payload, "remoteImageUrls");
+    const requestedImageUrls = Array.isArray(payload.remoteImageUrls) ? payload.remoteImageUrls : [];
+    const imageUrls = hasRemoteImageSelection
+      ? requestedImageUrls
+          .map((url) => String(url || "").trim())
+          .filter((url, index, urls) => allowedImageUrls.has(url) && urls.indexOf(url) === index)
+      : availableImageUrls;
     const userClient = createAuthedClient(token);
     const dbPayload = { ...car, categories: car.categories, image_urls: imageUrls };
     const brandResult = await resolveBrandId(userClient, dbPayload.brand);

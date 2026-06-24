@@ -1714,6 +1714,8 @@ app.post("/api/admin/import-from-url", async (req, res) => {
   const categories = Array.isArray(req.body?.categories) ? req.body.categories : [];
   const carOverrides = req.body?.car && typeof req.body.car === "object" ? req.body.car : {};
   const manualImages = Array.isArray(req.body?.images) ? req.body.images : [];
+  const hasRemoteImageSelection = Object.prototype.hasOwnProperty.call(req.body || {}, "remoteImageUrls");
+  const requestedRemoteImages = Array.isArray(req.body?.remoteImageUrls) ? req.body.remoteImageUrls : [];
 
   if (!listingUrl) {
     return res.status(400).json({ ok: false, message: "URL em falta." });
@@ -1735,8 +1737,15 @@ app.post("/api/admin/import-from-url", async (req, res) => {
     const parsed = await parseListingFromUrl(parsedUrl);
     const defaultPayload = buildPayloadFromParsedListing(parsed, categories.map((value) => String(value).trim()).filter(Boolean));
     const mergedPayload = mergeParsedCar(defaultPayload, carOverrides);
+    const availableRemoteImages = Array.isArray(parsed.imageCandidates) ? parsed.imageCandidates.filter(Boolean) : [];
+    const allowedRemoteImages = new Set(availableRemoteImages);
+    const selectedRemoteImages = hasRemoteImageSelection
+      ? requestedRemoteImages
+          .map((url) => String(url || "").trim())
+          .filter((url, index, urls) => allowedRemoteImages.has(url) && urls.indexOf(url) === index)
+      : availableRemoteImages;
     const imageUrls = [
-      ...(await uploadRemoteImages(userClient, parsed.imageCandidates)),
+      ...(await uploadRemoteImages(userClient, selectedRemoteImages)),
       ...(await uploadCarImages(userClient, manualImages))
     ];
 
