@@ -226,7 +226,7 @@
           </div>
           <input id="imageInput" type="file" name="images" accept="image/*" multiple class="sr-only" />
         </label>
-        <p class="mt-2 text-xs text-slate-500">Podes selecionar várias imagens.</p>
+        <p class="mt-2 text-xs text-slate-500">Podes selecionar várias imagens. Arrasta as fotografias ou usa as setas para alterar a ordem. A primeira será a fotografia de capa.</p>
         <div id="previewGrid" class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3"></div>
       </section>
 
@@ -267,6 +267,8 @@
     const isEditing = Boolean(editingCarId);
     const extras = [];
     const customExtras = [];
+    let selectedImageFiles = [];
+    let draggedImageIndex = null;
     const EXTRA_GROUPS = [
       {
         title: "Áudio e Multimédia",
@@ -627,6 +629,130 @@
       });
     }
 
+    function moveSelectedImage(fromIndex, toIndex) {
+      if (
+        fromIndex === toIndex ||
+        fromIndex < 0 ||
+        toIndex < 0 ||
+        fromIndex >= selectedImageFiles.length ||
+        toIndex >= selectedImageFiles.length
+      ) return;
+
+      const [movedFile] = selectedImageFiles.splice(fromIndex, 1);
+      selectedImageFiles.splice(toIndex, 0, movedFile);
+      renderSelectedImages();
+    }
+
+    function removeSelectedImage(index) {
+      if (index < 0 || index >= selectedImageFiles.length) return;
+      selectedImageFiles.splice(index, 1);
+      renderSelectedImages();
+    }
+
+    function renderSelectedImages() {
+      previewGrid.innerHTML = "";
+
+      if (selectedImageFiles.length === 0) {
+        selectedImagesLabel.textContent = "Nenhum ficheiro selecionado";
+        return;
+      }
+
+      selectedImagesLabel.textContent = selectedImageFiles.length === 1
+        ? selectedImageFiles[0].name
+        : `${selectedImageFiles.length} ficheiros selecionados`;
+
+      selectedImageFiles.forEach((file, index) => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "group overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm cursor-grab active:cursor-grabbing";
+        wrapper.draggable = true;
+        wrapper.dataset.imageIndex = String(index);
+
+        wrapper.addEventListener("dragstart", (event) => {
+          draggedImageIndex = index;
+          wrapper.classList.add("opacity-50");
+          event.dataTransfer.effectAllowed = "move";
+          event.dataTransfer.setData("text/plain", String(index));
+        });
+        wrapper.addEventListener("dragend", () => {
+          draggedImageIndex = null;
+          wrapper.classList.remove("opacity-50");
+          Array.from(previewGrid.children).forEach((item) => item.classList.remove("ring-2", "ring-emerald-500"));
+        });
+        wrapper.addEventListener("dragover", (event) => {
+          event.preventDefault();
+          event.dataTransfer.dropEffect = "move";
+          wrapper.classList.add("ring-2", "ring-emerald-500");
+        });
+        wrapper.addEventListener("dragleave", () => {
+          wrapper.classList.remove("ring-2", "ring-emerald-500");
+        });
+        wrapper.addEventListener("drop", (event) => {
+          event.preventDefault();
+          wrapper.classList.remove("ring-2", "ring-emerald-500");
+          const fromIndex = draggedImageIndex ?? Number(event.dataTransfer.getData("text/plain"));
+          moveSelectedImage(fromIndex, index);
+        });
+
+        const imageWrap = document.createElement("div");
+        imageWrap.className = "relative";
+
+        const img = document.createElement("img");
+        img.className = "h-28 w-full object-cover pointer-events-none";
+        img.src = URL.createObjectURL(file);
+        img.alt = `${index + 1}. ${file.name}`;
+        img.onload = () => URL.revokeObjectURL(img.src);
+
+        const orderBadge = document.createElement("span");
+        orderBadge.className = "absolute left-2 top-2 rounded-full bg-slate-900/85 px-2 py-1 text-xs font-bold text-white";
+        orderBadge.textContent = index === 0 ? "1 · Capa" : String(index + 1);
+
+        const controls = document.createElement("div");
+        controls.className = "flex items-center justify-between gap-2 p-2";
+
+        const label = document.createElement("p");
+        label.className = "min-w-0 flex-1 truncate text-xs text-slate-600";
+        label.textContent = file.name;
+
+        const buttons = document.createElement("div");
+        buttons.className = "flex shrink-0 gap-1";
+
+        const previousButton = document.createElement("button");
+        previousButton.type = "button";
+        previousButton.className = "rounded-md border border-slate-200 px-2 py-1 text-sm font-bold text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-30";
+        previousButton.textContent = "←";
+        previousButton.disabled = index === 0;
+        previousButton.setAttribute("aria-label", `Mover ${file.name} para trás`);
+        previousButton.addEventListener("click", () => moveSelectedImage(index, index - 1));
+
+        const nextButton = document.createElement("button");
+        nextButton.type = "button";
+        nextButton.className = previousButton.className;
+        nextButton.textContent = "→";
+        nextButton.disabled = index === selectedImageFiles.length - 1;
+        nextButton.setAttribute("aria-label", `Mover ${file.name} para a frente`);
+        nextButton.addEventListener("click", () => moveSelectedImage(index, index + 1));
+
+        const removeButton = document.createElement("button");
+        removeButton.type = "button";
+        removeButton.className = "rounded-md border border-red-200 px-2 py-1 text-sm font-bold text-red-700 hover:bg-red-50";
+        removeButton.textContent = "×";
+        removeButton.title = "Eliminar imagem";
+        removeButton.setAttribute("aria-label", `Eliminar ${file.name}`);
+        removeButton.addEventListener("click", () => removeSelectedImage(index));
+
+        buttons.appendChild(previousButton);
+        buttons.appendChild(nextButton);
+        buttons.appendChild(removeButton);
+        controls.appendChild(label);
+        controls.appendChild(buttons);
+        imageWrap.appendChild(img);
+        imageWrap.appendChild(orderBadge);
+        wrapper.appendChild(imageWrap);
+        wrapper.appendChild(controls);
+        previewGrid.appendChild(wrapper);
+      });
+    }
+
     function populateForm(car) {
       form.elements.title.value = car.title || "";
       form.elements.brand.value = car.brand || "";
@@ -664,7 +790,7 @@
 
     async function buildFormPayload() {
       const data = Object.fromEntries(new FormData(form).entries());
-      const files = Array.from(imageInput.files || []);
+      const files = [...selectedImageFiles];
       const selectedCategories = Array.from(
         form.querySelectorAll('input[name="listingCategory"]:checked')
       ).map((item) => item.value);
@@ -717,39 +843,15 @@
     });
 
     imageInput.addEventListener("change", () => {
-      previewGrid.innerHTML = "";
-      const files = Array.from(imageInput.files || []);
-      if (files.length === 0) {
-        selectedImagesLabel.textContent = "Nenhum ficheiro selecionado";
-      } else if (files.length === 1) {
-        selectedImagesLabel.textContent = files[0].name;
-      } else {
-        selectedImagesLabel.textContent = `${files.length} ficheiros selecionados`;
-      }
-
-      files.forEach((file) => {
-        const wrapper = document.createElement("div");
-        wrapper.className = "overflow-hidden rounded-xl border border-slate-200 bg-white";
-
-        const img = document.createElement("img");
-        img.className = "h-28 w-full object-cover";
-        img.src = URL.createObjectURL(file);
-        img.alt = file.name;
-        img.onload = () => URL.revokeObjectURL(img.src);
-
-        const label = document.createElement("p");
-        label.className = "p-2 text-xs text-slate-600 truncate";
-        label.textContent = file.name;
-
-        wrapper.appendChild(img);
-        wrapper.appendChild(label);
-        previewGrid.appendChild(wrapper);
-      });
+      selectedImageFiles = Array.from(imageInput.files || []);
+      imageInput.value = "";
+      renderSelectedImages();
     });
 
     form.addEventListener("reset", () => {
       setTimeout(syncExtras, 0, []);
       extraInput.value = "";
+      selectedImageFiles = [];
       previewGrid.innerHTML = "";
       selectedImagesLabel.textContent = isEditing ? "Mantém as imagens atuais até gravares novas" : "Nenhum ficheiro selecionado";
       setFormStatus("");
@@ -787,7 +889,7 @@
         return;
       }
 
-      const hasSelectedImages = Array.from(imageInput.files || []).length > 0;
+      const hasSelectedImages = selectedImageFiles.length > 0;
       const hasImportedPreviewImages = Boolean(linkValue && sourceUrlInput.dataset.previewLoaded === "1");
       if (!hasSelectedImages && !hasImportedPreviewImages && !isEditing) {
         setFormStatus("Adiciona pelo menos uma imagem.", "error");
@@ -842,6 +944,7 @@
         setFormStatus(isEditing ? "Carro atualizado com sucesso." : "Carro importado com sucesso.", "success");
         if (isEditing) {
           populateForm({ ...payload.car, categories: selectedCategories, image_urls: result.car?.image_urls || [] });
+          selectedImageFiles = [];
           imageInput.value = "";
         } else {
           form.reset();
