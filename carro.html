@@ -983,8 +983,6 @@
       const galleryItems = Array.from(document.querySelectorAll("#galleryThumbs .gallery-thumb"));
       const extrasItems = Array.from(document.querySelectorAll("#extrasList > *"));
       const specItems = Array.from(document.querySelectorAll("#specList > *"));
-      const footerItems = Array.from(document.querySelectorAll("footer p, footer a"));
-
       [
         ...statCards,
         ...detailPanels
@@ -996,8 +994,7 @@
         ...statCards,
         ...detailPanels,
         ...extrasItems,
-        ...specItems,
-        ...footerItems
+        ...specItems
       ]);
     }
 
