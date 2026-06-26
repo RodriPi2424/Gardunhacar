@@ -710,7 +710,7 @@
     return jsonResponse({
       ok: true,
       message: "Pedido de test drive registado com sucesso.",
-      warning: "Pedido guardado no painel interno. A equipa pode consultar este contacto no admin."
+      warning: "Pedido guardado no painel interno. O email automatico nao foi enviado porque o backend Node/Express nao respondeu."
     }, 201);
   }
 
