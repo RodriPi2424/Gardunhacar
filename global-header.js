@@ -38,6 +38,12 @@
         body {
           overflow-x: clip;
         }
+
+        body.overflow-x-hidden,
+        body {
+          overflow-x: clip !important;
+          overflow-y: visible !important;
+        }
       }
 
       main > .w-screen,
