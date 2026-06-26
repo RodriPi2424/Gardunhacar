@@ -1304,6 +1304,7 @@
           throw new Error(data.message || "Nao foi possivel enviar o pedido.");
         }
 
+        console.info("Test drive request result:", data);
         testDriveForm.reset();
         setSelectedTestDriveDate(getDefaultTestDriveDate());
         testDriveChosenDate.textContent = formatDateLong(testDriveDate.value);

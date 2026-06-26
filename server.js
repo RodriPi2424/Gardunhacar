@@ -1370,7 +1370,9 @@ app.post("/api/test-drive-requests", async (req, res) => {
 
     const warning = notificationResult.ok
       ? ""
-      : "Pedido guardado no painel interno. A equipa pode consultar este contacto no admin.";
+      : notificationResult.reason === "missing_config"
+        ? `Pedido guardado no painel interno. Email automatico nao enviado: falta configuracao (${(notificationResult.missingKeys || []).join(", ")}).`
+        : `Pedido guardado no painel interno. Email automatico nao enviado: ${notificationResult.message || notificationResult.reason || "erro desconhecido"}.`;
 
     return res.status(201).json({
       ok: true,

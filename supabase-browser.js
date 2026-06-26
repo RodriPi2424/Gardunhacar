@@ -707,10 +707,43 @@
       return jsonResponse({ ok: false, message: error.message }, 400);
     }
 
+    let notification = { ok: false, skipped: false, provider: "supabase-edge-function", reason: "unknown" };
+    try {
+      const notifyResponse = await window.fetch(`${SUPABASE_URL}/functions/v1/notify-test-drive`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          carTitle,
+          requestedDate,
+          customerName,
+          customerEmail,
+          customerPhone
+        })
+      });
+      const notifyResult = await notifyResponse.json().catch(() => ({}));
+      notification = {
+        ...notifyResult,
+        ok: notifyResponse.ok && Boolean(notifyResult.ok),
+        skipped: false,
+        provider: "supabase-edge-function"
+      };
+    } catch (notifyError) {
+      notification = {
+        ok: false,
+        skipped: false,
+        provider: "supabase-edge-function",
+        reason: "send_failed",
+        message: notifyError?.message || "Nao foi possivel chamar a funcao de notificacao."
+      };
+    }
+
     return jsonResponse({
       ok: true,
       message: "Pedido de test drive registado com sucesso.",
-      warning: "Pedido guardado no painel interno. O email automatico nao foi enviado porque o backend Node/Express nao respondeu."
+      warning: notification.ok
+        ? ""
+        : `Pedido guardado no painel interno. Email automatico nao enviado: ${notification.message || notification.reason || "erro desconhecido"}.`,
+      notification
     }, 201);
   }
 
