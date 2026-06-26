@@ -117,7 +117,10 @@
           <span class="material-symbols-outlined text-[18px]">logout</span>
           <span class="hidden sm:inline">Terminar sessão</span>
         </a>
-        <button id="notificationsBtn" class="material-symbols-outlined text-primary p-2 rounded-full hover:bg-surface-container-high" aria-label="Notificações">notifications</button>
+        <button id="notificationsBtn" class="relative material-symbols-outlined text-primary p-2 rounded-full hover:bg-surface-container-high" aria-label="Notificações">
+          notifications
+          <span id="notificationsBadge" class="hidden absolute -right-1 -top-1 min-w-5 h-5 rounded-full bg-red-600 px-1 font-sans text-[11px] font-black leading-5 text-white">0</span>
+        </button>
       </div>
     </div>
   </header>
@@ -310,6 +313,9 @@
       listings: [],
       testDriveRequests: []
     };
+    const TEST_DRIVE_POLL_INTERVAL_MS = 60000;
+    let unseenTestDriveRequests = [];
+    let testDrivePollTimer = null;
 
     function getSession() {
       try {
@@ -495,7 +501,46 @@
       renderTestDriveRequests();
     }
 
-    async function loadTestDriveRequests() {
+    function updateNotificationBadge() {
+      const badge = document.getElementById("notificationsBadge");
+      if (!badge) return;
+
+      if (unseenTestDriveRequests.length === 0) {
+        badge.classList.add("hidden");
+        badge.textContent = "0";
+        return;
+      }
+
+      badge.textContent = unseenTestDriveRequests.length > 9 ? "9+" : String(unseenTestDriveRequests.length);
+      badge.classList.remove("hidden");
+    }
+
+    function showBrowserTestDriveNotification(request) {
+      if (!("Notification" in window) || Notification.permission !== "granted") return;
+
+      const carTitle = request.car_title || "Viatura";
+      const customerName = request.customer_name || "Novo contacto";
+      const requestedDate = formatDate(request.requested_date);
+      new Notification("Novo pedido de test drive", {
+        body: `${customerName} pediu test drive para ${carTitle} em ${requestedDate}.`,
+        tag: `test-drive-${request.id}`,
+        renotify: true
+      });
+    }
+
+    function registerNewTestDriveRequests(nextRequests, previousRequests) {
+      const previousIds = new Set(previousRequests.map((request) => String(request.id || "")));
+      if (previousIds.size === 0) return;
+
+      const newRequests = nextRequests.filter((request) => !previousIds.has(String(request.id || "")));
+      if (newRequests.length === 0) return;
+
+      unseenTestDriveRequests = [...newRequests, ...unseenTestDriveRequests].slice(0, 20);
+      updateNotificationBadge();
+      newRequests.forEach(showBrowserTestDriveNotification);
+    }
+
+    async function loadTestDriveRequests(options = {}) {
       const session = getSession();
       if (!session?.access_token) {
         throw new Error("Sessao expirada.");
@@ -511,7 +556,28 @@
         throw new Error(result.message || "Nao foi possivel carregar os pedidos de test drive.");
       }
 
-      state.testDriveRequests = Array.isArray(result.requests) ? result.requests : [];
+      const previousRequests = state.testDriveRequests;
+      const nextRequests = Array.isArray(result.requests) ? result.requests : [];
+      state.testDriveRequests = nextRequests;
+
+      if (options.notifyNew) {
+        registerNewTestDriveRequests(nextRequests, previousRequests);
+      }
+    }
+
+    function startTestDriveNotifications() {
+      if (testDrivePollTimer) {
+        window.clearInterval(testDrivePollTimer);
+      }
+
+      testDrivePollTimer = window.setInterval(async () => {
+        try {
+          await loadTestDriveRequests({ notifyNew: true });
+          renderTestDriveRequests();
+        } catch (error) {
+          console.warn("Nao foi possivel atualizar pedidos de test drive:", error);
+        }
+      }, TEST_DRIVE_POLL_INTERVAL_MS);
     }
 
     function downloadJson(filename, data) {
@@ -600,8 +666,21 @@
       alert("Filtro temporal aplicado: Últimos 30 dias.");
     });
 
-    document.getElementById("notificationsBtn").addEventListener("click", () => {
-      alert("Sem notificações novas.");
+    document.getElementById("notificationsBtn").addEventListener("click", async () => {
+      if ("Notification" in window && Notification.permission === "default") {
+        await Notification.requestPermission();
+      }
+
+      if (unseenTestDriveRequests.length === 0) {
+        alert("Sem notificações novas.");
+      } else {
+        const latest = unseenTestDriveRequests[0];
+        alert(`${unseenTestDriveRequests.length} novo(s) pedido(s) de test drive. Mais recente: ${latest.customer_name || "Cliente"} - ${latest.car_title || "Viatura"}.`);
+        unseenTestDriveRequests = [];
+        updateNotificationBadge();
+      }
+
+      document.getElementById("suporte")?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
 
     document.getElementById("auditBtn").addEventListener("click", () => {
@@ -861,6 +940,7 @@
           loadTestDriveRequests()
         ]);
         renderAll();
+        startTestDriveNotifications();
       } catch (error) {
         document.getElementById("listingTableBody").innerHTML = `
           <tr>

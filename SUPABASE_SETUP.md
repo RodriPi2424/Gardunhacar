@@ -35,6 +35,8 @@ This project sends test drive request notifications with Resend from the Node ba
 4. If using `noreply@autenticar.pt`, verify `autenticar.pt` in Resend and add the DNS records Resend gives you.
 5. Set where notifications should arrive:
    `TEST_DRIVE_NOTIFICATION_EMAIL=geral@autenticar.pt`
+   To notify more than one person, use:
+   `TEST_DRIVE_NOTIFICATION_EMAILS=rodrigo.pinto@autenticar.pt,geral@autenticar.pt`
 6. Restart the backend:
    `npm start`
 
@@ -47,4 +49,5 @@ You should see `"configured": true`. If it is false, the response lists the miss
 - This backend auto-creates `public.users` on first register request.
 - `node_modules/` and `.env` stay out of git by default.
 - Test drive email only sends when the Node/Express backend is running. The static Supabase fallback can save requests, but it cannot safely send email because the Resend API key must stay server-side.
+- The admin dashboard also checks for new test drive requests every 60 seconds while it is open. Click the bell icon once to allow browser notifications.
 - If your connection fails, double-check password and project ref in `DATABASE_URL`.

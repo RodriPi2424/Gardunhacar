@@ -12,7 +12,11 @@ const __dirname = path.dirname(__filename);
 
 const supabaseUrl = process.env.SUPABASE_URL || "";
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || "";
-const testDriveNotificationEmail = process.env.TEST_DRIVE_NOTIFICATION_EMAIL || "geral@autenticar.pt";
+const testDriveNotificationEmails = parseEmailList(
+  process.env.TEST_DRIVE_NOTIFICATION_EMAILS ||
+  process.env.TEST_DRIVE_NOTIFICATION_EMAIL ||
+  "geral@autenticar.pt"
+);
 const resendApiKey = process.env.RESEND_API_KEY || "";
 const resendFromEmail = process.env.RESEND_FROM_EMAIL || "Autenticar <onboarding@resend.dev>";
 
@@ -419,18 +423,26 @@ function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
+function parseEmailList(value) {
+  return String(value || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
 function getTestDriveEmailStatus() {
   const missingKeys = [
     !resendApiKey ? "RESEND_API_KEY" : null,
     !resendFromEmail ? "RESEND_FROM_EMAIL" : null,
-    !testDriveNotificationEmail ? "TEST_DRIVE_NOTIFICATION_EMAIL" : null
+    testDriveNotificationEmails.length === 0 ? "TEST_DRIVE_NOTIFICATION_EMAIL" : null
   ].filter(Boolean);
 
   return {
     configured: missingKeys.length === 0,
     provider: "resend",
     fromConfigured: Boolean(resendFromEmail),
-    toConfigured: Boolean(testDriveNotificationEmail),
+    toConfigured: testDriveNotificationEmails.length > 0,
+    recipientCount: testDriveNotificationEmails.length,
     missingKeys
   };
 }
@@ -494,7 +506,7 @@ async function sendTestDriveNotificationEmail({ carTitle, requestedDate, custome
     },
     body: JSON.stringify({
       from: resendFromEmail,
-      to: [testDriveNotificationEmail],
+      to: testDriveNotificationEmails,
       reply_to: customerEmail,
       subject,
       text,
