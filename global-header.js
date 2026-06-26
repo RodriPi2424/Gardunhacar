@@ -19,6 +19,35 @@
     const style = document.createElement("style");
     style.id = styleId;
     style.textContent = `
+      html,
+      body {
+        margin: 0;
+        min-width: 100%;
+        min-height: 100%;
+        overflow-x: hidden;
+        background: #f8f9ff;
+      }
+
+      html {
+        --site-scrollbar-width: 0px;
+        --site-scrollbar-half-width: 0px;
+      }
+
+      @supports (overflow: clip) {
+        html,
+        body {
+          overflow-x: clip;
+        }
+      }
+
+      main > .w-screen,
+      main > section.w-screen,
+      main > footer.w-screen {
+        width: calc(100vw - var(--site-scrollbar-width, 0px)) !important;
+        margin-left: calc(-50vw + var(--site-scrollbar-half-width, 0px)) !important;
+        margin-right: calc(-50vw + var(--site-scrollbar-half-width, 0px)) !important;
+      }
+
       .global-header-nav {
         display: none;
         align-items: center;
@@ -217,6 +246,12 @@
     document.head.appendChild(style);
   }
 
+  function updateScrollbarWidth() {
+    const scrollbarWidth = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
+    document.documentElement.style.setProperty("--site-scrollbar-width", `${scrollbarWidth}px`);
+    document.documentElement.style.setProperty("--site-scrollbar-half-width", `${scrollbarWidth / 2}px`);
+  }
+
   function createBrandMarkup() {
     const credit = currentPage === "index.html"
       ? '<span class="global-header-credit">powered by Alonsos e Branco.</span>'
@@ -397,6 +432,7 @@
     });
   }
 
+  updateScrollbarWidth();
   injectStyles();
   removeLegacyGuidanceBlocks();
 
@@ -405,4 +441,6 @@
     renderHeader(container);
     makeHeaderResponsive(container);
   }
+
+  window.addEventListener("resize", updateScrollbarWidth, { passive: true });
 })();
