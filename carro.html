@@ -220,6 +220,196 @@
       opacity: 0.38;
       box-shadow: none;
     }
+    #heroImage {
+      transform: scale(1.025);
+      transform-origin: center;
+      animation: car-hero-breathe 15s ease-in-out infinite alternate;
+      will-change: transform;
+    }
+    .hero-copy > .flex,
+    .gallery-rail,
+    .hero-price-card {
+      animation: car-hero-rise 780ms cubic-bezier(0.2, 0.9, 0.22, 1) both;
+      will-change: opacity, transform, filter;
+    }
+    .gallery-rail {
+      animation-delay: 140ms;
+    }
+    .hero-price-card {
+      animation-delay: 240ms;
+    }
+    .motion-reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      filter: blur(7px);
+      transition:
+        opacity 720ms ease,
+        transform 720ms cubic-bezier(0.2, 0.9, 0.22, 1),
+        filter 720ms ease;
+      transition-delay: var(--motion-delay, 0ms);
+      will-change: opacity, transform, filter;
+    }
+    .motion-reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+    .motion-panel {
+      transition:
+        transform 280ms cubic-bezier(0.2, 0.9, 0.22, 1),
+        box-shadow 280ms ease,
+        border-color 280ms ease,
+        background-color 280ms ease;
+    }
+    .motion-panel:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 46px rgba(0, 40, 53, 0.13);
+    }
+    .hero-price-card .rounded-2xl,
+    .gallery-thumb,
+    .gallery-modal-thumb,
+    #extrasList > *,
+    #specList > * {
+      transition:
+        transform 240ms cubic-bezier(0.2, 0.9, 0.22, 1),
+        box-shadow 240ms ease,
+        border-color 240ms ease,
+        background-color 240ms ease,
+        opacity 240ms ease;
+    }
+    .hero-price-card .rounded-2xl:hover,
+    .gallery-thumb:hover,
+    .gallery-modal-thumb:hover,
+    #extrasList > *:hover,
+    #specList > *:hover {
+      transform: translateY(-3px);
+    }
+    .gallery-thumb:hover,
+    .gallery-modal-thumb:hover {
+      border-color: rgba(255, 255, 255, 0.42);
+      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.18);
+    }
+    #contact-toggle,
+    #openTestDriveModal,
+    #testDriveNext,
+    #testDriveBack,
+    #submitTestDrive,
+    #closeTestDriveSuccess,
+    #extrasPrev,
+    #extrasNext {
+      transition:
+        transform 240ms cubic-bezier(0.2, 0.9, 0.22, 1),
+        box-shadow 240ms ease,
+        background-color 240ms ease,
+        color 240ms ease,
+        border-color 240ms ease;
+    }
+    #contact-toggle:hover,
+    #openTestDriveModal:hover,
+    #testDriveNext:hover,
+    #testDriveBack:hover,
+    #submitTestDrive:hover,
+    #closeTestDriveSuccess:hover,
+    #extrasPrev:hover:not(:disabled),
+    #extrasNext:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 34px rgba(0, 24, 35, 0.16);
+    }
+    #galleryModal:not(.hidden) .gallery-modal-stage,
+    #testDriveModal:not(.hidden) .test-drive-card {
+      animation: modal-rise 360ms cubic-bezier(0.2, 0.9, 0.22, 1) both;
+    }
+    #galleryModal:not(.hidden) #galleryModalImage {
+      animation: modal-image-focus 420ms ease both;
+    }
+    .test-drive-step.is-active {
+      animation: step-rise 340ms cubic-bezier(0.2, 0.9, 0.22, 1) both;
+    }
+    @keyframes car-hero-rise {
+      from {
+        opacity: 0;
+        transform: translateY(22px);
+        filter: blur(7px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+      }
+    }
+    @keyframes car-hero-breathe {
+      from {
+        transform: scale(1.025) translate3d(0, 0, 0);
+      }
+      to {
+        transform: scale(1.065) translate3d(-0.5%, -0.35%, 0);
+      }
+    }
+    @keyframes modal-rise {
+      from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.985);
+        filter: blur(5px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+      }
+    }
+    @keyframes modal-image-focus {
+      from {
+        opacity: 0;
+        transform: scale(0.985);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    @keyframes step-rise {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #heroImage,
+      .hero-copy > .flex,
+      .gallery-rail,
+      .hero-price-card,
+      .motion-reveal,
+      #galleryModal:not(.hidden) .gallery-modal-stage,
+      #galleryModal:not(.hidden) #galleryModalImage,
+      #testDriveModal:not(.hidden) .test-drive-card,
+      .test-drive-step.is-active {
+        animation: none !important;
+        transition: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+        filter: none !important;
+      }
+      .motion-panel:hover,
+      .hero-price-card .rounded-2xl:hover,
+      .gallery-thumb:hover,
+      .gallery-modal-thumb:hover,
+      #extrasList > *:hover,
+      #specList > *:hover,
+      #contact-toggle:hover,
+      #openTestDriveModal:hover,
+      #testDriveNext:hover,
+      #testDriveBack:hover,
+      #submitTestDrive:hover,
+      #closeTestDriveSuccess:hover,
+      #extrasPrev:hover:not(:disabled),
+      #extrasNext:hover:not(:disabled) {
+        transform: none !important;
+      }
+    }
     @media (max-width: 900px) {
       html,
       body {
@@ -691,6 +881,7 @@
     let activeImages = [];
     let activeGalleryIndex = 0;
     let activeCar = null;
+    let motionObserver = null;
 
     const loadingState = document.getElementById("loadingState");
     const errorState = document.getElementById("errorState");
@@ -749,6 +940,65 @@
 
     async function apiFetch(path, options) {
       return window.AutenticarApi.fetch(`${apiBase}${path}`, options);
+    }
+
+    function prefersReducedMotion() {
+      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    }
+
+    function registerMotionReveal(elements) {
+      const targets = Array.from(elements || []).filter(Boolean);
+      if (!targets.length) return;
+
+      if (prefersReducedMotion()) {
+        targets.forEach((element) => element.classList.add("is-visible"));
+        return;
+      }
+
+      if (!motionObserver) {
+        motionObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add("is-visible");
+            motionObserver.unobserve(entry.target);
+          });
+        }, { threshold: 0.16, rootMargin: "0px 0px -8% 0px" });
+      }
+
+      targets.forEach((element, index) => {
+        element.classList.add("motion-reveal");
+        if (!element.style.getPropertyValue("--motion-delay")) {
+          element.style.setProperty("--motion-delay", `${Math.min(index * 70, 300)}ms`);
+        }
+        motionObserver.observe(element);
+      });
+    }
+
+    function setupCarPageMotion() {
+      const statsSection = document.querySelector("#carPage > section:nth-of-type(2)");
+      const detailSection = document.querySelector("#carPage > section:nth-of-type(3)");
+      const statCards = Array.from(statsSection?.querySelectorAll("article") || []);
+      const detailPanels = Array.from(detailSection?.querySelectorAll("article, aside") || []);
+      const priceItems = Array.from(document.querySelectorAll(".hero-price-card .rounded-2xl"));
+      const galleryItems = Array.from(document.querySelectorAll("#galleryThumbs .gallery-thumb"));
+      const extrasItems = Array.from(document.querySelectorAll("#extrasList > *"));
+      const specItems = Array.from(document.querySelectorAll("#specList > *"));
+      const footerItems = Array.from(document.querySelectorAll("footer p, footer a"));
+
+      [
+        ...statCards,
+        ...detailPanels
+      ].forEach((element) => element.classList.add("motion-panel"));
+
+      registerMotionReveal([
+        ...priceItems,
+        ...galleryItems,
+        ...statCards,
+        ...detailPanels,
+        ...extrasItems,
+        ...specItems,
+        ...footerItems
+      ]);
     }
 
     function showState(state, message) {
@@ -1032,6 +1282,7 @@
           <img src="${image}" alt="${safeTitle} ${index + 1}" class="h-full w-full object-cover" />
         </button>
       `).join("");
+      registerMotionReveal(galleryModalThumbs.querySelectorAll(".gallery-modal-thumb"));
     }
 
     function openGallery(index, title) {
@@ -1082,6 +1333,7 @@
         });
         galleryThumbs.appendChild(button);
       });
+      registerMotionReveal(galleryThumbs.querySelectorAll(".gallery-thumb"));
     }
 
     function renderExtras(extras) {
@@ -1118,6 +1370,7 @@
             </span>
           </div>
         `).join("");
+        registerMotionReveal(node.children);
 
         if (totalPages <= 1) {
           paginationNode.innerHTML = "";
@@ -1167,6 +1420,7 @@
           </div>
         `).join("")
         : `<p class="text-on-surface-variant">A ficha tecnica completa pode ser confirmada com a equipa comercial.</p>`;
+      registerMotionReveal(node.children);
     }
 
     async function fetchCars(limit = 100) {
@@ -1248,6 +1502,7 @@
         renderExtras(car.extras);
         renderSpecs(car);
         showState("ready");
+        requestAnimationFrame(setupCarPageMotion);
       } catch (error) {
         showState("error", error.message || "Nao foi possivel carregar esta viatura.");
       }
