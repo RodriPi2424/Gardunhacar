@@ -39,6 +39,55 @@
             padding-top: max(1rem, env(safe-area-inset-top));
             padding-bottom: max(1rem, env(safe-area-inset-bottom));
         }
+        .location-bloop-section {
+            position: relative;
+            z-index: 2;
+            margin-bottom: -86px !important;
+        }
+        .location-bloop-section::after {
+            content: "";
+            position: absolute;
+            right: max(16px, 11vw);
+            bottom: -34px;
+            width: min(520px, 58vw);
+            height: 72px;
+            border-radius: 0 0 999px 999px;
+            background: #153E4D;
+            z-index: -1;
+        }
+        .location-bloop-card {
+            transform-origin: 62% 100%;
+            animation: location-bloop 760ms cubic-bezier(0.16, 1.18, 0.34, 1) 140ms both;
+            box-shadow: 0 24px 48px rgba(1, 29, 53, 0.18), 0 10px 18px rgba(1, 29, 53, 0.12);
+        }
+        .site-footer-bloop {
+            position: relative;
+            z-index: 1;
+            padding-top: 126px !important;
+        }
+        @keyframes location-bloop {
+            0% {
+                opacity: 0;
+                transform: translateY(96px) scale(0.92, 0.78);
+                filter: blur(8px);
+                border-radius: 48px;
+            }
+            58% {
+                opacity: 1;
+                transform: translateY(-10px) scale(1.015, 1.035);
+                filter: blur(0);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .location-bloop-card {
+                animation: none;
+            }
+        }
         @media (max-width: 900px) {
             .home-hero {
                 min-height: calc(100svh - 60px);
@@ -53,6 +102,19 @@
             .home-hero-copy {
                 padding-top: 1.5rem;
                 padding-bottom: 2rem;
+            }
+            .location-bloop-section {
+                margin-bottom: -64px;
+            }
+            .site-footer-bloop {
+                padding-top: 104px !important;
+            }
+            .location-bloop-section::after {
+                right: 16px;
+                left: 16px;
+                width: auto;
+                height: 58px;
+                bottom: -26px;
             }
         }
         /* Overriding existing font classes to use Montserrat */
@@ -291,8 +353,8 @@ Contactos
 </div>
 </section>
 <!-- Location Section -->
-<section class="px-margin-mobile md:px-margin-desktop mb-unit-xl" aria-labelledby="location-title">
-<div class="overflow-hidden rounded-[28px] bg-primary-container text-white shadow-lg">
+<section class="location-bloop-section px-margin-mobile md:px-margin-desktop" aria-labelledby="location-title">
+<div class="location-bloop-card relative overflow-hidden rounded-[28px] bg-primary-container text-white shadow-lg">
 <div class="grid lg:grid-cols-[0.82fr_1.18fr]">
 <div class="flex flex-col justify-center p-7 sm:p-10 lg:p-12">
 <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-secondary-container text-primary mb-6" aria-hidden="true">
@@ -318,7 +380,7 @@ Abrir no Google Maps
 </section>
 </main>
 <!-- Footer Content -->
-<footer class="text-on-surface pb-unit-lg pt-unit-lg px-margin-mobile md:px-margin-desktop text-white" style="background-color: #153E4D; color: #FFFFFF;">
+<footer class="site-footer-bloop text-on-surface pb-unit-lg pt-unit-lg px-margin-mobile md:px-margin-desktop text-white" style="background-color: #153E4D; color: #FFFFFF;">
 <div class="max-w-container-max mx-auto grid md:grid-cols-4 gap-unit-lg border-b border-outline-variant/10 pb-unit-lg">
 <div class="md:col-span-1">
 <img alt="autenticar" class="h-10 mb-unit-sm w-auto" src="logo-new-3.png"/>
