@@ -42,18 +42,7 @@
         .location-bloop-section {
             position: relative;
             z-index: 2;
-            margin-bottom: -86px !important;
-        }
-        .location-bloop-section::after {
-            content: "";
-            position: absolute;
-            right: max(16px, 11vw);
-            bottom: -34px;
-            width: min(520px, 58vw);
-            height: 72px;
-            border-radius: 0 0 999px 999px;
-            background: #153E4D;
-            z-index: -1;
+            margin-bottom: -18px;
         }
         .location-bloop-card {
             transform-origin: 62% 100%;
@@ -63,12 +52,40 @@
         .site-footer-bloop {
             position: relative;
             z-index: 1;
-            padding-top: 126px !important;
+            margin-top: 0;
+            padding-top: 136px !important;
+            overflow: visible;
+            background: transparent !important;
+        }
+        .site-footer-bloop::before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: -104px;
+            z-index: 0;
+            width: min(1180px, calc(100vw - 72px));
+            height: 214px;
+            transform: translateX(-50%) scaleY(0.78);
+            transform-origin: 50% 100%;
+            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+            background: #153E4D;
+            animation: footer-bloop 820ms cubic-bezier(0.16, 1.18, 0.34, 1) 120ms both;
+        }
+        .site-footer-bloop::after {
+            content: "";
+            position: absolute;
+            inset: 92px 0 0;
+            z-index: 0;
+            background: #153E4D;
+        }
+        .site-footer-bloop > * {
+            position: relative;
+            z-index: 1;
         }
         @keyframes location-bloop {
             0% {
                 opacity: 0;
-                transform: translateY(96px) scale(0.92, 0.78);
+                transform: translateY(74px) scale(0.94, 0.82);
                 filter: blur(8px);
                 border-radius: 48px;
             }
@@ -83,8 +100,20 @@
                 filter: blur(0);
             }
         }
+        @keyframes footer-bloop {
+            0% {
+                transform: translateX(-50%) translateY(74px) scale(0.66, 0.28);
+            }
+            56% {
+                transform: translateX(-50%) translateY(-8px) scale(1.035, 0.86);
+            }
+            100% {
+                transform: translateX(-50%) translateY(0) scale(1, 0.78);
+            }
+        }
         @media (prefers-reduced-motion: reduce) {
-            .location-bloop-card {
+            .location-bloop-card,
+            .site-footer-bloop::before {
                 animation: none;
             }
         }
@@ -104,17 +133,18 @@
                 padding-bottom: 2rem;
             }
             .location-bloop-section {
-                margin-bottom: -64px;
+                margin-bottom: -14px;
             }
             .site-footer-bloop {
-                padding-top: 104px !important;
+                padding-top: 112px !important;
             }
-            .location-bloop-section::after {
-                right: 16px;
-                left: 16px;
-                width: auto;
-                height: 58px;
-                bottom: -26px;
+            .site-footer-bloop::before {
+                top: -74px;
+                width: calc(100vw + 120px);
+                height: 156px;
+            }
+            .site-footer-bloop::after {
+                top: 70px;
             }
         }
         /* Overriding existing font classes to use Montserrat */
