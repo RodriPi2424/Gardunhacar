@@ -3,12 +3,16 @@ import dotenv from "dotenv";
 import { createClient } from "@supabase/supabase-js";
 import path from "path";
 import { fileURLToPath } from "url";
+import { existsSync } from "fs";
 
 dotenv.config();
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const publicDir = existsSync(path.join(__dirname, "public"))
+  ? path.join(__dirname, "public")
+  : __dirname;
 
 const supabaseUrl = process.env.SUPABASE_URL || "";
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || "";
@@ -975,27 +979,79 @@ function assertSupabaseConfigured() {
   }
 }
 
-app.use(express.json({ limit: "25mb" }));
-
 // Avoid stale assets/pages when switching between file:// and localhost views
 app.use((_req, res, next) => {
   res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
   res.setHeader("Pragma", "no-cache");
   res.setHeader("Expires", "0");
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
+});
+
+app.use(express.json({ limit: "100mb" }));
+
+app.use((error, _req, res, next) => {
+  if (!error) {
+    next();
+    return;
+  }
+
+  if (error.type === "entity.too.large") {
+    return res.status(413).json({ ok: false, message: "As imagens selecionadas excedem o limite de upload. Tenta importar menos imagens de cada vez." });
+  }
+
+  if (error instanceof SyntaxError && "body" in error) {
+    return res.status(400).json({ ok: false, message: "Pedido inválido. Verifica os dados e tenta novamente." });
+  }
+
+  next(error);
 });
 
 app.options("*", (_req, res) => {
   res.sendStatus(204);
 });
 
-app.use(express.static(__dirname));
+app.use((req, res, next) => {
+  if (!["GET", "HEAD"].includes(req.method)) {
+    next();
+    return;
+  }
+
+  if (req.path === "/index.html") {
+    res.redirect(301, `/${req.url.includes("?") ? req.url.slice(req.url.indexOf("?")) : ""}`);
+    return;
+  }
+
+  if (req.path.endsWith(".html")) {
+    res.redirect(301, req.originalUrl.replace(/\.html(?=$|\?)/, ""));
+    return;
+  }
+
+  next();
+});
+
+app.use(express.static(publicDir));
 
 app.get("/", (_req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
+  res.sendFile(path.join(publicDir, "index.html"));
+});
+
+app.use((req, res, next) => {
+  if (!["GET", "HEAD"].includes(req.method) || req.path.startsWith("/api/") || path.extname(req.path)) {
+    next();
+    return;
+  }
+
+  const requestedPath = path.normalize(decodeURIComponent(req.path)).replace(/^[/\\]+/, "");
+  const htmlPath = path.join(publicDir, `${requestedPath}.html`);
+  if (!htmlPath.startsWith(publicDir) || !existsSync(htmlPath)) {
+    next();
+    return;
+  }
+
+  res.sendFile(htmlPath);
 });
 
 app.get("/api/test-drive-email/status", (_req, res) => {
@@ -1489,6 +1545,11 @@ app.put("/api/admin/cars/:id", async (req, res) => {
   const authHeader = req.headers.authorization || "";
   const id = String(req.params.id || "").trim();
   const { car, images, categories } = req.body || {};
+  const hasExistingImageSelection = Object.prototype.hasOwnProperty.call(req.body || {}, "existingImageUrls")
+    || Object.prototype.hasOwnProperty.call(car || {}, "image_urls");
+  const requestedExistingImageUrls = Array.isArray(req.body?.existingImageUrls)
+    ? req.body.existingImageUrls
+    : (Array.isArray(car?.image_urls) ? car.image_urls : []);
 
   if (!id) {
     return res.status(400).json({ ok: false, message: "ID do carro em falta." });
@@ -1515,11 +1576,21 @@ app.put("/api/admin/cars/:id", async (req, res) => {
       return res.status(404).json({ ok: false, message: "Carro não encontrado." });
     }
 
+    const existingImageUrls = Array.isArray(existingCar.image_urls)
+      ? existingCar.image_urls.map((url) => String(url || "").trim()).filter(Boolean)
+      : [];
+    const existingImageUrlSet = new Set(existingImageUrls);
     const newImageUrls = await uploadCarImages(userClient, images);
+    const orderedExistingImageUrls = requestedExistingImageUrls
+      .map((url) => String(url || "").trim())
+      .filter((url, index, urls) => Boolean(url) && existingImageUrlSet.has(url) && urls.indexOf(url) === index);
+    const finalImageUrls = hasExistingImageSelection
+      ? [...orderedExistingImageUrls, ...newImageUrls]
+      : (newImageUrls.length > 0 ? newImageUrls : existingImageUrls);
     const payload = {
       ...car,
       categories: Array.isArray(categories) ? categories : [],
-      image_urls: newImageUrls.length > 0 ? newImageUrls : (Array.isArray(existingCar.image_urls) ? existingCar.image_urls : [])
+      image_urls: finalImageUrls
     };
 
     const validationError = validateCarPayload(payload, payload.categories, payload.image_urls);
@@ -1929,7 +2000,7 @@ app.post("/api/admin/import-alonso-stock", async (req, res) => {
 });
 
 app.get("/admin", (_req, res) => {
-  res.sendFile(path.join(__dirname, "admin.html"));
+  res.sendFile(path.join(publicDir, "admin.html"));
 });
 
 const port = Number(process.env.PORT || 3000);

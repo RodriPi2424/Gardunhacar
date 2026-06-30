@@ -1,0 +1,5 @@
+NODE/CPANEL APP VERSION
+=======================
+Upload/extract this app outside public_html.
+Startup file: server.js
+Public files are in public/.

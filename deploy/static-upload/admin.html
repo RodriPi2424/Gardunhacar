@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="pt-PT" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <title>Painel Admin - Autenticar</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Hanken+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#002835",
+            "primary-container": "#153e4d",
+            "on-primary-container": "#83a9bb",
+            surface: "#f8f9ff",
+            "surface-container-low": "#eef4ff",
+            "surface-container-high": "#dbe9ff",
+            "surface-variant": "#d1e4ff",
+            "on-surface": "#011d35",
+            "on-surface-variant": "#41484b",
+            "outline-variant": "#c1c7cb",
+            error: "#ba1a1a"
+          },
+          spacing: {
+            "unit-lg": "24px",
+            "margin-mobile": "16px",
+            "margin-desktop": "48px",
+            "container-max": "1280px"
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    body {
+      font-family: "Manrope", sans-serif;
+      background-color: #f8f9ff;
+      min-height: 100dvh;
+    }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 12px; }
+    .chip-active { background: #153e4d; color: #fff; border-color: #153e4d; }
+    #quickLookInput.quick-look-input {
+      appearance: none;
+      box-sizing: border-box;
+      width: 100%;
+      border: 1px solid #c1c7cb;
+      border-radius: 0.75rem;
+      background: #fff;
+      color: #011d35;
+      font-size: 0.875rem;
+      font-weight: 700;
+      line-height: 1.25rem;
+      padding: 0.7rem 0.9rem 0.7rem 3rem;
+      outline: none;
+    }
+    #quickLookInput.quick-look-input:focus {
+      border-color: #153e4d;
+      box-shadow: 0 0 0 3px rgba(21, 62, 77, 0.12);
+    }
+    .danger-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      border: 1px solid #ba1a1a;
+      border-radius: 999px;
+      background: #fff;
+      color: #ba1a1a;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 0.35rem 0.75rem;
+      transition: background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+    }
+    .danger-action-btn:hover {
+      background: #fff1f1;
+    }
+    .danger-action-btn:disabled {
+      opacity: 0.55;
+      pointer-events: none;
+    }
+    .listing-status-select {
+      min-width: 132px;
+      border-radius: 0.75rem;
+      border: 1px solid #c1c7cb;
+      background: #fff;
+      color: #011d35;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.45rem 2rem 0.45rem 0.75rem;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-browser.js?v=alonso-progress-20260611"></script>
+<script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"8caedf609afad31a39b8208b5c0dfb31"})});</script></head>
+<body class="text-on-surface">
+  <header class="bg-surface border-b border-outline-variant fixed top-0 z-40 w-full">
+    <div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop h-16 max-w-container-max mx-auto">
+      <a href="/" class="flex items-center gap-3">
+        <img src="logo-new-3.png" alt="Autenticar" class="h-9 w-auto" style="filter: brightness(0);" />
+        <span class="font-bold text-primary text-xl">Autenticar</span>
+      </a>
+      <div class="flex items-center gap-4 md:gap-8">
+        <nav class="hidden md:flex items-center gap-4">
+          <a class="text-primary font-bold px-3 py-2 rounded hover:bg-surface-container-high" href="admin">Dashboard</a>
+          <a class="text-on-surface-variant px-3 py-2 rounded hover:bg-surface-container-high" href="admin-importar-carro">Estoque</a>
+          <a class="text-on-surface-variant px-3 py-2 rounded hover:bg-surface-container-high" href="admin-posts">Posts</a>
+          <a class="text-on-surface-variant px-3 py-2 rounded hover:bg-surface-container-high" href="#suporte">Leads</a>
+        </nav>
+        <a href="login?logout=1" class="inline-flex items-center gap-2 text-sm font-bold text-primary px-3 py-2 rounded hover:bg-surface-container-high">
+          <span class="material-symbols-outlined text-[18px]">logout</span>
+          <span class="hidden sm:inline">Terminar sessão</span>
+        </a>
+        <button id="notificationsBtn" class="relative material-symbols-outlined text-primary p-2 rounded-full hover:bg-surface-container-high" aria-label="Notificações">
+          notifications
+          <span id="notificationsBadge" class="hidden absolute -right-1 -top-1 min-w-5 h-5 rounded-full bg-red-600 px-1 font-sans text-[11px] font-black leading-5 text-white">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="pt-24 pb-24 md:pb-10 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+    <section class="mb-unit-lg flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div>
+        <span class="text-amber-700 font-bold uppercase tracking-wider text-sm">Visão Geral</span>
+        <h1 class="text-4xl font-extrabold tracking-tight text-on-surface">Painel Admin</h1>
+        <p class="mt-2 text-sm font-semibold text-on-surface-variant" id="dbConnectionStatus">A verificar ligação à base de dados...</p>
+      </div>
+      <div class="flex gap-2">
+        <button id="last30DaysBtn" class="flex items-center gap-2 bg-white border border-outline-variant px-4 py-2 rounded-xl text-primary font-bold hover:bg-surface-container-low">
+          <span class="material-symbols-outlined text-[20px]">calendar_today</span>
+          Últimos 30 dias
+        </button>
+        <button id="exportBtn" class="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl font-bold hover:opacity-90 shadow-md">
+          <span class="material-symbols-outlined text-[20px]">download</span>
+          Relatórios
+        </button>
+      </div>
+    </section>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-unit-lg">
+      <article class="bg-white p-unit-lg rounded-xl shadow-[0_4px_20px_rgba(16,42,67,0.08)] border border-outline-variant">
+        <div class="flex justify-between items-start mb-4">
+          <div class="p-3 bg-surface-container-low rounded-lg"><span class="material-symbols-outlined text-primary">directions_car</span></div>
+          <span class="text-green-700 font-bold text-xs flex items-center bg-green-50 px-2 py-1 rounded-full">+12% <span class="material-symbols-outlined text-[14px]">trending_up</span></span>
+        </div>
+        <p class="text-on-surface-variant font-bold text-sm">Listagens Totais</p>
+        <h2 id="statListings" class="text-4xl font-extrabold text-primary">0</h2>
+      </article>
+
+    </section>
+
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div class="lg:col-span-8 bg-white rounded-xl shadow-[0_4px_20px_rgba(16,42,67,0.08)] border border-outline-variant overflow-hidden">
+        <div class="p-6 border-b border-outline-variant space-y-4">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <h3 class="text-2xl font-bold text-primary">Gestão de Anúncios</h3>
+            <div class="flex flex-wrap items-center gap-2">
+              <button class="status-filter chip-active text-xs px-3 py-1.5 rounded-full border border-outline-variant" data-filter="all">Todos</button>
+              <button class="status-filter text-xs px-3 py-1.5 rounded-full border border-outline-variant" data-filter="available">Disponíveis</button>
+              <button class="status-filter text-xs px-3 py-1.5 rounded-full border border-outline-variant" data-filter="sold">Vendidos</button>
+              <button id="deleteAllListingsBtn" class="danger-action-btn" type="button">
+                <span class="material-symbols-outlined text-[18px]">delete_sweep</span>
+                Apagar todos
+              </button>
+            </div>
+          </div>
+          <div class="relative">
+            <span class="material-symbols-outlined pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-primary text-[22px] leading-none">manage_search</span>
+            <input id="quickLookInput" class="quick-look-input" type="text" autocomplete="off" inputmode="search" enterkeyhint="search" placeholder="Quick look: marca, modelo, combustível..." aria-label="Quick look para encontrar carros" />
+          </div>
+        </div>
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="w-full text-left border-collapse">
+            <thead class="bg-surface-container-low">
+              <tr>
+                <th class="px-6 py-4 font-bold text-on-surface-variant text-sm">Veículo</th>
+                <th class="px-6 py-4 font-bold text-on-surface-variant text-sm">Data</th>
+                <th class="px-6 py-4 font-bold text-on-surface-variant text-sm">Status</th>
+                <th class="px-6 py-4 font-bold text-on-surface-variant text-sm">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="listingTableBody" class="divide-y divide-outline-variant"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="lg:col-span-4 space-y-6">
+        <section id="suporte" class="bg-white rounded-xl shadow-[0_4px_20px_rgba(16,42,67,0.08)] border border-outline-variant overflow-hidden">
+          <div class="p-6 border-b border-outline-variant bg-surface-container-low">
+            <div class="flex items-center justify-between gap-3">
+              <div class="flex items-center gap-2 text-primary">
+                <span class="material-symbols-outlined font-bold">mail</span>
+                <h3 class="font-bold uppercase tracking-widest">Pedidos de Test Drive</h3>
+              </div>
+              <span id="testDriveCount" class="rounded-full bg-white px-3 py-1 text-sm font-extrabold text-primary">0</span>
+            </div>
+          </div>
+          <div id="testDriveRequestsList" class="p-6 space-y-4">
+            <p class="text-sm text-on-surface-variant">A carregar pedidos de test drive...</p>
+          </div>
+        </section>
+
+        <section class="bg-white rounded-xl shadow-[0_4px_20px_rgba(16,42,67,0.08)] border border-outline-variant p-6">
+          <h3 class="font-bold text-on-surface-variant text-sm uppercase tracking-widest mb-4">Ações Rápidas</h3>
+          <div class="grid grid-cols-2 gap-3">
+            <a href="admin-importar-carro" class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-outline-variant hover:border-primary hover:bg-surface-container-low transition-all group">
+              <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">add_circle</span>
+              <span class="text-sm font-bold text-primary">Novo Anúncio</span>
+            </a>
+            <a href="admin-importar-carro" class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-outline-variant hover:border-primary hover:bg-surface-container-low transition-all group">
+              <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">upload_file</span>
+              <span class="text-sm font-bold text-primary">Importar Carro</span>
+            </a>
+            <a href="admin-posts" class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-outline-variant hover:border-primary hover:bg-surface-container-low transition-all group">
+              <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">post_add</span>
+              <span class="text-sm font-bold text-primary">Novo Post</span>
+            </a>
+            <button id="auditBtn" class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-outline-variant hover:border-primary hover:bg-surface-container-low transition-all group">
+              <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">admin_panel_settings</span>
+              <span class="text-sm font-bold text-primary">Auditar Conta</span>
+            </button>
+            <button id="campaignBtn" class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-outline-variant hover:border-primary hover:bg-surface-container-low transition-all group">
+              <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">campaign</span>
+              <span class="text-sm font-bold text-primary">Promoções</span>
+            </button>
+            <button id="importAlonsoStockBtn" class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-amber-300 bg-amber-50 hover:border-primary hover:bg-surface-container-low transition-all group">
+              <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">sync_alt</span>
+              <span class="text-sm font-bold text-primary">Importar Alonso</span>
+            </button>
+          </div>
+          <p id="importAlonsoStockStatus" class="mt-3 text-xs font-semibold text-on-surface-variant"></p>
+          <div id="importAlonsoProgressPanel" class="hidden mt-4 space-y-4">
+            <div>
+              <div class="flex justify-between text-xs font-bold text-primary mb-2">
+                <span id="importAlonsoProgressLabel">0 de 0</span>
+                <span id="importAlonsoProgressPercent">0%</span>
+              </div>
+              <div class="h-3 w-full rounded-full bg-surface-container-high overflow-hidden">
+                <div id="importAlonsoProgressBar" class="h-full w-0 bg-primary transition-all duration-300"></div>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 gap-3">
+              <div class="rounded-lg border border-outline-variant overflow-hidden">
+                <div class="px-3 py-2 bg-surface-container-low text-xs font-bold uppercase tracking-wider text-on-surface-variant">Ainda a importar</div>
+                <ul id="importAlonsoPendingList" class="max-h-44 overflow-auto divide-y divide-outline-variant text-xs"></ul>
+              </div>
+              <div class="rounded-lg border border-outline-variant overflow-hidden">
+                <div class="px-3 py-2 bg-surface-container-low text-xs font-bold uppercase tracking-wider text-on-surface-variant">Já processados</div>
+                <ul id="importAlonsoDoneList" class="max-h-44 overflow-auto divide-y divide-outline-variant text-xs"></ul>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <button id="fabAdd" class="hidden md:flex fixed bottom-8 right-8 bg-primary text-white w-14 h-14 rounded-full items-center justify-center shadow-xl hover:scale-110 active:scale-95 transition-all z-50" aria-label="Adicionar anúncio">
+    <span class="material-symbols-outlined">add</span>
+  </button>
+
+  <script>
+    const apiBase = window.location.protocol === "file:" ? "http://127.0.0.1:3000" : "";
+    async function apiFetch(path, options) {
+      return window.AutenticarApi.fetch(`${apiBase}${path}`, options);
+    }
+
+    async function requireAdminAccess() {
+      const sessionRaw = localStorage.getItem("autenticar_session_v1");
+      if (!sessionRaw) {
+        window.location.href = "login?next=admin";
+        return false;
+      }
+      let session;
+      try {
+        session = JSON.parse(sessionRaw);
+      } catch {
+        window.location.href = "login?next=admin";
+        return false;
+      }
+      if (!session?.access_token) {
+        window.location.href = "login?next=admin";
+        return false;
+      }
+      try {
+        const response = await apiFetch("/api/auth/session-info", {
+          headers: { Authorization: `Bearer ${session.access_token}` }
+        });
+        const data = await response.json();
+        if (!response.ok || !data.ok || !data.user?.is_admin) {
+          localStorage.removeItem("autenticar_session_v1");
+          localStorage.removeItem("autenticar_user_v1");
+          window.location.href = "login?next=admin";
+          return false;
+        }
+        return true;
+      } catch {
+        window.location.href = "login?next=admin";
+        return false;
+      }
+    }
+
+    const state = {
+      filter: "all",
+      quickLook: "",
+      listings: [],
+      testDriveRequests: []
+    };
+    const TEST_DRIVE_POLL_INTERVAL_MS = 60000;
+    let unseenTestDriveRequests = [];
+    let testDrivePollTimer = null;
+
+    function getSession() {
+      try {
+        return JSON.parse(localStorage.getItem("autenticar_session_v1") || "{}");
+      } catch {
+        return {};
+      }
+    }
+
+    function mapCarToListing(car) {
+      const title = String(car?.title || `${car?.brand || ""} ${car?.model || ""}`).trim() || "Viatura sem título";
+      const subtitleParts = [car?.brand, car?.model, car?.fuel].filter(Boolean);
+      return {
+        id: String(car?.id || ""),
+        title,
+        subtitle: subtitleParts.join(" • "),
+        image: Array.isArray(car?.image_urls) && car.image_urls[0] ? car.image_urls[0] : "https://placehold.co/160x120/e2e8f0/64748b?text=Carro",
+        date: car?.created_at || new Date().toISOString(),
+        updatedAt: car?.updated_at || car?.created_at || new Date().toISOString(),
+        status: normalizeListingStatus(car?.status),
+        price: Number(car?.price_eur || 0)
+      };
+    }
+
+    function normalizeListingStatus(status) {
+      const value = String(status || "").toLowerCase();
+      if (value === "sold" || value === "rejected") return "sold";
+      return "available";
+    }
+
+    async function loadListingsFromServer() {
+      const response = await apiFetch("/api/cars?limit=100");
+      const result = await response.json();
+      if (!response.ok || !result.ok) {
+        throw new Error(result.message || "Não foi possível carregar os carros.");
+      }
+      state.listings = Array.isArray(result.cars) ? result.cars.map(mapCarToListing) : [];
+    }
+
+    function formatDate(isoDate) {
+      const parsed = new Date(isoDate);
+      if (Number.isNaN(parsed.getTime())) return "Sem data";
+      return parsed.toLocaleDateString("pt-PT", { day: "2-digit", month: "short", year: "numeric" });
+    }
+
+    function formatDateTime(isoDate) {
+      const parsed = new Date(isoDate);
+      if (Number.isNaN(parsed.getTime())) return "Sem data";
+      return parsed.toLocaleString("pt-PT", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function formatMoney(value) {
+      return new Intl.NumberFormat("pt-PT", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value);
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function statusBadge(status) {
+      if (status === "sold") return '<span class="px-3 py-1 rounded-full bg-slate-200 text-slate-700 text-xs font-bold uppercase tracking-wider">Vendido</span>';
+      return '<span class="px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-bold uppercase tracking-wider">Disponível</span>';
+    }
+
+    function normalizeSearchText(value) {
+      return String(value || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
+    }
+
+    function filteredListings() {
+      const statusRows = state.filter === "all"
+        ? state.listings
+        : state.listings.filter((item) => item.status === state.filter);
+      const query = normalizeSearchText(state.quickLook);
+      if (!query) return statusRows;
+
+      return statusRows.filter((item) => {
+        const haystack = normalizeSearchText([
+          item.title,
+          item.subtitle,
+          item.status,
+          formatDate(item.date),
+          item.price ? formatMoney(item.price) : ""
+        ].join(" "));
+        return haystack.includes(query);
+      });
+    }
+
+    function renderStats() {
+      document.getElementById("statListings").textContent = state.listings.length.toLocaleString("pt-PT");
+    }
+
+    function renderTestDriveRequests() {
+      const countEl = document.getElementById("testDriveCount");
+      const listEl = document.getElementById("testDriveRequestsList");
+      if (!countEl || !listEl) return;
+
+      countEl.textContent = state.testDriveRequests.length.toLocaleString("pt-PT");
+
+      if (state.testDriveRequests.length === 0) {
+        listEl.innerHTML = '<p class="text-sm text-on-surface-variant">Ainda nao existem pedidos de test drive.</p>';
+        return;
+      }
+
+      listEl.innerHTML = state.testDriveRequests.map((request) => `
+        <article class="rounded-2xl border border-outline-variant bg-white p-4">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="text-sm font-extrabold text-primary">${escapeHtml(request.car_title || "Viatura")}</p>
+              <p class="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-on-surface-variant">Test drive em ${escapeHtml(formatDate(request.requested_date))}</p>
+            </div>
+            <span class="rounded-full bg-surface-container-low px-3 py-1 text-[11px] font-bold text-primary">${escapeHtml(formatDateTime(request.created_at))}</span>
+          </div>
+          <div class="mt-4 space-y-1 text-sm text-on-surface-variant">
+            <p><span class="font-bold text-primary">Nome:</span> ${escapeHtml(request.customer_name)}</p>
+            <p><span class="font-bold text-primary">Email:</span> <a class="text-primary underline underline-offset-2" href="mailto:${escapeHtml(request.customer_email)}">${escapeHtml(request.customer_email)}</a></p>
+            <p><span class="font-bold text-primary">Telemovel:</span> <a class="text-primary underline underline-offset-2" href="tel:${escapeHtml(request.customer_phone)}">${escapeHtml(request.customer_phone)}</a></p>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById("listingTableBody");
+      const rows = filteredListings();
+
+      if (rows.length === 0) {
+        const emptyMessage = state.quickLook
+          ? `Sem carros encontrados para "${escapeHtml(state.quickLook)}".`
+          : "Sem anúncios para este filtro.";
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" class="px-6 py-10 text-center text-on-surface-variant">${emptyMessage}</td>
+          </tr>`;
+        return;
+      }
+
+      tbody.innerHTML = rows.map((item) => `
+        <tr class="hover:bg-surface-container-lowest transition-colors" data-id="${item.id}">
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-9 bg-surface-variant rounded-md overflow-hidden flex-shrink-0">
+                <img alt="${item.title}" class="w-full h-full object-cover" src="${item.image}" />
+              </div>
+              <div>
+                <p class="font-bold text-primary text-sm">${item.title}</p>
+                <p class="text-on-surface-variant text-xs">${item.subtitle}</p>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4 text-sm text-on-surface-variant">${formatDate(item.date)}</td>
+          <td class="px-6 py-4">${statusBadge(item.status)}</td>
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-2">
+              <select class="action-btn listing-status-select" data-action="status" aria-label="Estado da viatura">
+                <option value="available" ${item.status === "available" ? "selected" : ""}>Disponível</option>
+                <option value="sold" ${item.status === "sold" ? "selected" : ""}>Vendido</option>
+              </select>
+              <button class="action-btn p-2 hover:bg-surface-container-high text-primary rounded-lg material-symbols-outlined" data-action="edit" title="Editar">edit</button>
+              <button class="action-btn p-2 hover:bg-red-50 text-red-700 rounded-lg material-symbols-outlined" data-action="delete" title="Remover">delete</button>
+            </div>
+          </td>
+        </tr>`).join("");
+    }
+
+    function renderAll() {
+      renderStats();
+      renderTable();
+      renderTestDriveRequests();
+    }
+
+    function updateNotificationBadge() {
+      const badge = document.getElementById("notificationsBadge");
+      if (!badge) return;
+
+      if (unseenTestDriveRequests.length === 0) {
+        badge.classList.add("hidden");
+        badge.textContent = "0";
+        return;
+      }
+
+      badge.textContent = unseenTestDriveRequests.length > 9 ? "9+" : String(unseenTestDriveRequests.length);
+      badge.classList.remove("hidden");
+    }
+
+    function showBrowserTestDriveNotification(request) {
+      if (!("Notification" in window) || Notification.permission !== "granted") return;
+
+      const carTitle = request.car_title || "Viatura";
+      const customerName = request.customer_name || "Novo contacto";
+      const requestedDate = formatDate(request.requested_date);
+      new Notification("Novo pedido de test drive", {
+        body: `${customerName} pediu test drive para ${carTitle} em ${requestedDate}.`,
+        tag: `test-drive-${request.id}`,
+        renotify: true
+      });
+    }
+
+    function registerNewTestDriveRequests(nextRequests, previousRequests) {
+      const previousIds = new Set(previousRequests.map((request) => String(request.id || "")));
+      if (previousIds.size === 0) return;
+
+      const newRequests = nextRequests.filter((request) => !previousIds.has(String(request.id || "")));
+      if (newRequests.length === 0) return;
+
+      unseenTestDriveRequests = [...newRequests, ...unseenTestDriveRequests].slice(0, 20);
+      updateNotificationBadge();
+      newRequests.forEach(showBrowserTestDriveNotification);
+    }
+
+    async function loadTestDriveRequests(options = {}) {
+      const session = getSession();
+      if (!session?.access_token) {
+        throw new Error("Sessao expirada.");
+      }
+
+      const response = await apiFetch("/api/admin/test-drive-requests", {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`
+        }
+      });
+      const result = await response.json();
+      if (!response.ok || !result.ok) {
+        throw new Error(result.message || "Nao foi possivel carregar os pedidos de test drive.");
+      }
+
+      const previousRequests = state.testDriveRequests;
+      const nextRequests = Array.isArray(result.requests) ? result.requests : [];
+      state.testDriveRequests = nextRequests;
+
+      if (options.notifyNew) {
+        registerNewTestDriveRequests(nextRequests, previousRequests);
+      }
+    }
+
+    function startTestDriveNotifications() {
+      if (testDrivePollTimer) {
+        window.clearInterval(testDrivePollTimer);
+      }
+
+      testDrivePollTimer = window.setInterval(async () => {
+        try {
+          await loadTestDriveRequests({ notifyNew: true });
+          renderTestDriveRequests();
+        } catch (error) {
+          console.warn("Nao foi possivel atualizar pedidos de test drive:", error);
+        }
+      }, TEST_DRIVE_POLL_INTERVAL_MS);
+    }
+
+    function downloadJson(filename, data) {
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    document.addEventListener("click", (event) => {
+      const actionBtn = event.target.closest("button.action-btn");
+      if (actionBtn) {
+        const row = actionBtn.closest("tr");
+        const id = String(row?.dataset.id || "");
+        const action = actionBtn.dataset.action;
+        if (!id || !action) return;
+
+        if (action === "edit") {
+          window.location.href = `admin-importar-carro?id=${encodeURIComponent(id)}`;
+        }
+        if (action === "delete") {
+          const confirmDelete = confirm("Queres remover este anúncio?");
+          if (!confirmDelete) return;
+          deleteListing(id);
+        }
+      }
+
+      const filterBtn = event.target.closest(".status-filter");
+      if (filterBtn) {
+        document.querySelectorAll(".status-filter").forEach((btn) => btn.classList.remove("chip-active"));
+        filterBtn.classList.add("chip-active");
+        state.filter = filterBtn.dataset.filter || "all";
+        renderTable();
+      }
+    });
+
+    document.addEventListener("change", async (event) => {
+      const statusSelect = event.target.closest('select[data-action="status"]');
+      if (!statusSelect) return;
+
+      const row = statusSelect.closest("tr");
+      const id = String(row?.dataset.id || "");
+      if (!id) return;
+
+      const previousListings = state.listings;
+      const nextStatus = normalizeListingStatus(statusSelect.value);
+      const updatedAt = new Date().toISOString();
+      state.listings = state.listings.map((item) => (
+        item.id === id ? { ...item, status: nextStatus, updatedAt } : item
+      ));
+      renderAll();
+
+      try {
+        const response = await apiFetch(`/api/admin/cars/${encodeURIComponent(id)}/status`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: nextStatus })
+        });
+        const result = await response.json();
+        if (!response.ok || !result.ok) {
+          throw new Error(result.message || "Não foi possível atualizar o estado.");
+        }
+      } catch (error) {
+        state.listings = previousListings;
+        statusSelect.value = previousListings.find((item) => item.id === id)?.status || "available";
+        renderAll();
+        alert(error.message || "Não foi possível atualizar o estado.");
+      }
+    });
+
+    document.getElementById("exportBtn").addEventListener("click", () => {
+      downloadJson("autenticar-relatorio-listagens.json", state.listings);
+    });
+
+    document.getElementById("quickLookInput").addEventListener("input", (event) => {
+      state.quickLook = event.target.value;
+      renderTable();
+    });
+
+    document.getElementById("last30DaysBtn").addEventListener("click", () => {
+      alert("Filtro temporal aplicado: Últimos 30 dias.");
+    });
+
+    document.getElementById("notificationsBtn").addEventListener("click", async () => {
+      if ("Notification" in window && Notification.permission === "default") {
+        await Notification.requestPermission();
+      }
+
+      if (unseenTestDriveRequests.length === 0) {
+        alert("Sem notificações novas.");
+      } else {
+        const latest = unseenTestDriveRequests[0];
+        alert(`${unseenTestDriveRequests.length} novo(s) pedido(s) de test drive. Mais recente: ${latest.customer_name || "Cliente"} - ${latest.car_title || "Viatura"}.`);
+        unseenTestDriveRequests = [];
+        updateNotificationBadge();
+      }
+
+      document.getElementById("suporte")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    document.getElementById("auditBtn").addEventListener("click", () => {
+      alert("Módulo de auditoria em preparação.");
+    });
+
+    document.getElementById("campaignBtn").addEventListener("click", () => {
+      alert("Módulo de promoções em preparação.");
+    });
+
+    const alonsoImportUi = {
+      panel: document.getElementById("importAlonsoProgressPanel"),
+      bar: document.getElementById("importAlonsoProgressBar"),
+      label: document.getElementById("importAlonsoProgressLabel"),
+      percent: document.getElementById("importAlonsoProgressPercent"),
+      pendingList: document.getElementById("importAlonsoPendingList"),
+      doneList: document.getElementById("importAlonsoDoneList")
+    };
+
+    function renderAlonsoImportProgress(progress) {
+      const total = Math.max(Number(progress.total || 0), 0);
+      const processed = Math.min(Math.max(Number(progress.processed || 0), 0), total);
+      const percent = total > 0 ? Math.round((processed / total) * 100) : 0;
+      const activeIds = new Set((progress.activeItems || []).map((item) => String(item.sourceId || "")));
+
+      alonsoImportUi.panel.classList.remove("hidden");
+      alonsoImportUi.bar.style.width = `${percent}%`;
+      alonsoImportUi.label.textContent = `${processed} de ${total}`;
+      alonsoImportUi.percent.textContent = `${percent}%`;
+
+      alonsoImportUi.pendingList.innerHTML = progress.pendingItems.length
+        ? progress.pendingItems.map((item) => {
+            const isActive = activeIds.has(String(item.sourceId || ""));
+            const badge = isActive ? '<span class="text-amber-700 font-bold">A importar</span>' : '<span class="text-on-surface-variant">Em fila</span>';
+            return `
+              <li class="px-3 py-2 flex items-start justify-between gap-3 ${isActive ? "bg-amber-50" : "bg-white"}">
+                <span class="font-semibold text-primary">${escapeHtml(item.title)}</span>
+                ${badge}
+              </li>`;
+          }).join("")
+        : '<li class="px-3 py-2 text-on-surface-variant">Sem viaturas em fila.</li>';
+
+      alonsoImportUi.doneList.innerHTML = progress.doneItems.length
+        ? progress.doneItems.map((item) => {
+            const statusText = item.status === "imported" ? "Importado" : item.status === "skipped" ? "Já existia" : "Falhou";
+            const color = item.status === "imported" ? "text-green-700" : item.status === "skipped" ? "text-slate-600" : "text-red-700";
+            const detail = item.message || item.reason || "";
+            return `
+              <li class="px-3 py-2 bg-white">
+                <div class="flex items-start justify-between gap-3">
+                  <span class="font-semibold text-primary">${escapeHtml(item.title)}</span>
+                  <span class="${color} font-bold">${statusText}</span>
+                </div>
+                ${detail ? `<p class="mt-1 text-[11px] text-on-surface-variant">${escapeHtml(detail)}</p>` : ""}
+              </li>`;
+          }).join("")
+        : '<li class="px-3 py-2 text-on-surface-variant">Ainda sem viaturas processadas.</li>';
+    }
+
+    document.getElementById("importAlonsoStockBtn").addEventListener("click", async () => {
+      const button = document.getElementById("importAlonsoStockBtn");
+      const statusEl = document.getElementById("importAlonsoStockStatus");
+      const confirmed = confirm("Importar as 105 viaturas públicas da Alonso & Branco? Esta ação pode demorar alguns minutos.");
+      if (!confirmed) return;
+
+      const session = getSession();
+      if (!session?.access_token) {
+        window.location.href = "login?next=admin";
+        return;
+      }
+
+      button.disabled = true;
+      button.classList.add("opacity-60", "pointer-events-none");
+      statusEl.textContent = "A preparar importação Alonso & Branco...";
+
+      const batchSize = 8;
+      const progress = {
+        total: 0,
+        processed: 0,
+        pendingItems: [],
+        doneItems: [],
+        activeItems: []
+      };
+      renderAlonsoImportProgress(progress);
+
+      try {
+        let offset = 0;
+        let importedTotal = 0;
+        let skippedTotal = 0;
+        let failedTotal = 0;
+        let done = false;
+
+        while (!done) {
+          progress.activeItems = progress.pendingItems.slice(0, batchSize);
+          if (progress.activeItems.length > 0) renderAlonsoImportProgress(progress);
+          statusEl.textContent = progress.total
+            ? `A importar ${Math.min(offset + 1, progress.total)}-${Math.min(offset + batchSize, progress.total)} de ${progress.total}...`
+            : "A carregar lista de viaturas Alonso & Branco...";
+
+          const response = await apiFetch("/api/admin/import-alonso-stock", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${session.access_token}`
+            },
+            body: JSON.stringify({
+              url: "https://viaturas.alonsosebranco.pt/usadas/?Order=6",
+              offset,
+              limit: batchSize
+            })
+          });
+          const result = await response.json();
+
+          if (!response.ok && response.status !== 207) {
+            statusEl.textContent = result.message || "Não foi possível importar o stock Alonso & Branco.";
+            return;
+          }
+
+          if (Array.isArray(result.allItems) && progress.total === 0) {
+            progress.total = Number(result.total || result.allItems.length || 0);
+            progress.pendingItems = result.allItems.slice();
+          }
+
+          const processedItems = Array.isArray(result.processedItems) ? result.processedItems : [];
+          const processedIds = new Set(processedItems.map((item) => String(item.sourceId || "")));
+          progress.doneItems.push(...processedItems);
+          progress.pendingItems = progress.pendingItems.filter((item) => !processedIds.has(String(item.sourceId || "")));
+          progress.processed = Number(result.nextOffset || progress.processed + processedItems.length || 0);
+          progress.activeItems = [];
+
+          importedTotal += Number(result.imported || 0);
+          skippedTotal += Number(result.skipped || 0);
+          failedTotal += Number(result.failed || 0);
+          done = Boolean(result.done);
+          offset = Number(result.nextOffset || offset + batchSize);
+          renderAlonsoImportProgress(progress);
+        }
+
+        const failureText = failedTotal > 0 ? ` Falharam ${failedTotal}.` : "";
+        const skippedText = skippedTotal > 0 ? ` Ignoradas ${skippedTotal} já existentes.` : "";
+        statusEl.textContent = `Importação concluída: ${importedTotal}/${progress.total} novas viaturas.${skippedText}${failureText}`;
+        await loadListingsFromServer();
+        renderAll();
+      } catch {
+        statusEl.textContent = "Erro de ligação ao servidor durante a importação.";
+      } finally {
+        button.disabled = false;
+        button.classList.remove("opacity-60", "pointer-events-none");
+      }
+    });
+
+    document.getElementById("fabAdd").addEventListener("click", () => {
+      window.location.href = "admin-importar-carro";
+    });
+
+    async function deleteListing(id) {
+      const session = getSession();
+      if (!session?.access_token) {
+        window.location.href = "login?next=admin";
+        return;
+      }
+
+      try {
+        const response = await apiFetch(`/api/admin/cars/${encodeURIComponent(id)}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${session.access_token}`
+          }
+        });
+        const result = await response.json();
+        if (!response.ok || !result.ok) {
+          alert(result.message || "Não foi possível remover o carro.");
+          return;
+        }
+
+        state.listings = state.listings.filter((item) => item.id !== id);
+        renderAll();
+      } catch {
+        alert("Erro de ligação ao servidor.");
+      }
+    }
+
+    async function deleteAllListings() {
+      if (state.listings.length === 0) {
+        alert("Não existem anúncios para apagar.");
+        return;
+      }
+
+      const confirmation = prompt(`Esta ação apaga todos os ${state.listings.length} anúncios. Escreve APAGAR TODOS para confirmar.`);
+      if (confirmation !== "APAGAR TODOS") return;
+
+      const session = getSession();
+      if (!session?.access_token) {
+        window.location.href = "login?next=admin";
+        return;
+      }
+
+      const button = document.getElementById("deleteAllListingsBtn");
+      button.disabled = true;
+
+      try {
+        const response = await apiFetch("/api/admin/cars", {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${session.access_token}`
+          }
+        });
+        const result = await response.json();
+        if (!response.ok || !result.ok) {
+          alert(result.message || "Não foi possível apagar os anúncios.");
+          return;
+        }
+
+        state.listings = [];
+        state.quickLook = "";
+        document.getElementById("quickLookInput").value = "";
+        renderAll();
+        alert(`Anúncios apagados: ${Number(result.deleted || 0).toLocaleString("pt-PT")}.`);
+      } catch {
+        alert("Erro de ligação ao servidor.");
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    document.getElementById("deleteAllListingsBtn").addEventListener("click", deleteAllListings);
+
+    (async function checkDbHealth() {
+      const statusEl = document.getElementById("dbConnectionStatus");
+      if (!statusEl) return;
+
+      try {
+        const response = await apiFetch("/api/db/health");
+        const data = await response.json();
+
+        if (!response.ok || !data.ok) {
+          statusEl.textContent = "Base de dados desligada. Verifica o .env e a string de ligação.";
+          statusEl.classList.add("text-error");
+          return;
+        }
+
+        const date = new Date(data.serverTime).toLocaleString("pt-PT");
+        statusEl.textContent = "Base de dados ligada. Último ping: " + date;
+        statusEl.classList.remove("text-on-surface-variant");
+        statusEl.classList.add("text-green-700");
+      } catch {
+        statusEl.textContent = "Base de dados desligada. Inicia o servidor Node para ativar a API.";
+        statusEl.classList.add("text-error");
+      }
+    })();
+
+    requireAdminAccess().then(async (allowed) => {
+      if (!allowed) return;
+      try {
+        await Promise.all([
+          loadListingsFromServer(),
+          loadTestDriveRequests()
+        ]);
+        renderAll();
+        startTestDriveNotifications();
+      } catch (error) {
+        document.getElementById("listingTableBody").innerHTML = `
+          <tr>
+            <td colspan="4" class="px-6 py-10 text-center text-red-700">${error.message || "Erro ao carregar carros do servidor."}</td>
+          </tr>`;
+        const testDriveRequestsList = document.getElementById("testDriveRequestsList");
+        if (testDriveRequestsList) {
+          testDriveRequestsList.innerHTML = `<p class="text-sm text-red-700">${error.message || "Erro ao carregar pedidos de test drive."}</p>`;
+        }
+      }
+    });
+  </script>
+</body>
+</html>
+
+
+

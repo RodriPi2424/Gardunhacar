@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+
+<html lang="pt"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Hanken+Grotesk:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script defer src="global-header.js?v=20260622-responsive-pass"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#ffffff",
+                        "on-primary-fixed-variant": "#254b5b",
+                        "primary-container": "#153e4d",
+                        "on-tertiary": "#ffffff",
+                        "background": "#f8f9ff",
+                        "surface-container-high": "#dbe9ff",
+                        "on-surface-variant": "#41484b",
+                        "surface-bright": "#f8f9ff",
+                        "on-primary-fixed": "#001f29",
+                        "surface-tint": "#3e6373",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#c1c7cb",
+                        "error-container": "#ffdad6",
+                        "surface-container-highest": "#d1e4ff",
+                        "inverse-on-surface": "#e9f1ff",
+                        "surface-dim": "#c4dcfd",
+                        "on-secondary-fixed": "#261900",
+                        "inverse-primary": "#a5ccdf",
+                        "surface-container": "#e4efff",
+                        "primary": "#002835",
+                        "on-secondary-fixed-variant": "#5d4200",
+                        "tertiary-container": "#503410",
+                        "on-primary-container": "#83a9bb",
+                        "on-tertiary-fixed-variant": "#5f411c",
+                        "tertiary-fixed-dim": "#eabf8f",
+                        "secondary-fixed": "#ffdea4",
+                        "primary-fixed-dim": "#a5ccdf",
+                        "outline": "#71787c",
+                        "tertiary-fixed": "#ffddba",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed-dim": "#fabd32",
+                        "secondary-container": "#fdbf35",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#d1e4ff",
+                        "inverse-surface": "#19324b",
+                        "surface-container-low": "#eef4ff",
+                        "on-tertiary-container": "#c59c6f",
+                        "on-primary": "#ffffff",
+                        "secondary": "#7b5900",
+                        "primary-fixed": "#c1e8fb",
+                        "on-background": "#011d35",
+                        "on-secondary-container": "#6e4f00",
+                        "surface": "#f8f9ff",
+                        "on-tertiary-fixed": "#2b1700",
+                        "on-surface": "#011d35",
+                        "on-secondary": "#ffffff",
+                        "tertiary": "#371f00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-max": "1280px",
+                        "unit-xs": "4px",
+                        "gutter": "24px",
+                        "margin-desktop": "48px",
+                        "margin-mobile": "16px",
+                        "unit-sm": "8px",
+                        "unit-xl": "40px",
+                        "unit-lg": "24px",
+                        "unit-md": "16px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Manrope"],
+                        "headline-lg-mobile": ["Manrope"],
+                        "headline-lg": ["Manrope"],
+                        "label-sm": ["Hanken Grotesk"],
+                        "body-md": ["Manrope"],
+                        "headline-xl": ["Manrope"],
+                        "headline-md": ["Manrope"],
+                        "label-bold": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-bold": ["14px", {"lineHeight": "20px", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f8f9ff;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-browser.js"></script>
+<script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"8caedf609afad31a39b8208b5c0dfb31"})});</script></head>
+<body class="font-body-md text-on-surface">
+<!-- TopAppBar -->
+<header class="sticky top-0 z-50 border-b border-white/10 bg-[#153e4d]">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-3 flex items-center justify-between gap-3">
+<a href="index.html" aria-label="Voltar ao inicio" class="inline-flex items-center">
+<img alt="autenticar" class="h-8 md:h-10 w-auto" src="logo-new-3.png"/>
+</a>
+<div class="hidden md:flex items-center gap-7 text-white/95 text-xs font-semibold">
+<a class="py-1 transition-colors hover:text-white" href="index.html">Inicio</a>
+<a class="py-1 transition-colors hover:text-white" href="index.html#stock">Stock</a>
+<a class="py-1 transition-colors hover:text-white" href="about-us.html">Quem somos</a>
+</div>
+</div>
+</header>
+<main class="max-w-[1280px] mx-auto px-margin-mobile md:px-margin-desktop py-unit-xl">
+<!-- Category Header -->
+<header class="mb-unit-xl">
+<h1 class="font-headline-xl text-headline-xl text-primary mb-unit-sm">Carros para Cidade</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                Comece a sua jornada na estrada com confiança. Selecionámos veículos económicos, seguros e fáceis de manter, ideais para novos condutores que procuram a sua primeira experiência ao volante.
+            </p>
+</header>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Filter Sidebar -->
+<aside class="md:col-span-3 space-y-unit-lg">
+<div class="bg-surface-container-lowest p-unit-lg rounded-xl shadow-sm border border-outline-variant">
+<h2 class="font-label-bold text-label-bold text-primary mb-unit-md uppercase tracking-wider">Filtros de Cidade</h2>
+<!-- Budget Filter -->
+<div class="mb-unit-lg">
+<label class="font-label-bold text-label-bold block mb-unit-sm">Orçamento Máximo</label>
+<select id="budgetFilter" class="w-full bg-surface border border-outline rounded-lg px-unit-md py-unit-sm focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+<option selected="" value="">Selecionar</option>
+<option>Até 5.000 €</option>
+<option>Até 7.500 €</option>
+<option>Até 10.000 €</option>
+<option>Até 15.000 €</option>
+</select>
+</div>
+<!-- Transmission -->
+<div class="mb-unit-lg">
+<label class="font-label-bold text-label-bold block mb-unit-sm">Caixa de Velocidades</label>
+<div class="flex flex-wrap gap-2">
+<button class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full text-label-sm font-label-bold cursor-pointer" data-gear="manual" type="button">Manual</button>
+<button class="bg-surface-variant text-on-surface-variant px-3 py-1 rounded-full text-label-sm font-label-bold cursor-pointer hover:bg-outline-variant" data-gear="automatic" type="button">Automática</button>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary py-3 rounded-xl font-label-bold text-label-bold hover:opacity-90 transition-opacity" id="applyFilters" type="button">
+                        Aplicar Filtros
+                    </button>
+</div>
+</aside>
+<!-- Results Grid -->
+<div class="md:col-span-9">
+<div class="flex justify-between items-center mb-unit-md">
+<span class="font-label-bold text-on-surface-variant" id="resultsCount">0 veículos encontrados</span>
+<div class="flex items-center gap-2">
+<span class="text-label-sm font-label-bold">Ordenar por:</span>
+<select class="bg-transparent border-none text-primary font-label-bold focus:ring-0">
+<option>Relevância</option>
+<option>Preço mais baixo</option>
+<option>Ano mais recente</option>
+</select>
+</div>
+</div>
+<!-- Vehicle Listing Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
+<!-- Vehicle Card 1 -->
+
+<!-- Vehicle Card 2 -->
+
+<!-- Vehicle Card 3 -->
+<!-- Vehicle Card 4 -->
+
+</div>
+
+</div>
+</div>
+</main>
+<!-- Footer Content -->
+<footer class="text-on-surface pb-unit-lg pt-unit-lg px-margin-mobile md:px-margin-desktop text-white" style="background-color: #153E4D; color: #FFFFFF;">
+<div class="max-w-container-max mx-auto grid md:grid-cols-4 gap-unit-lg border-b border-outline-variant/10 pb-unit-lg">
+<div class="md:col-span-1">
+<img alt="autenticar" class="h-10 mb-unit-sm w-auto" src="Logo.png"/>
+<p class="font-body-md text-body-md text-white/80">O seu marketplace de confiança para compra e venda de veículos. Qualidade e transparência em cada quilómetro.</p>
+</div>
+<div class="">
+<h4 class="font-label-bold text-label-bold text-primary mb-unit-sm uppercase tracking-widest !text-white">Veículos</h4>
+<ul class="space-y-1 font-label-sm text-label-sm">
+<li><a class="hover:text-primary text-white/80 hover:text-white" href="#">Carros</a></li>
+<li><a class="hover:text-primary text-white/80 hover:text-white" href="https://www.agrimog.pt/">Máquinas Agrícolas</a></li>
+</ul>
+</div>
+<div class="">
+<h4 class="font-label-bold text-label-bold text-primary mb-unit-sm uppercase tracking-widest !text-white">Empresa</h4>
+<ul class="space-y-1 font-label-sm text-label-sm">
+<li><a class="hover:text-primary text-white/80 hover:text-white" href="about-us.html">Sobre Nós</a></li>
+<li><a class="hover:text-primary text-white/80 hover:text-white" href="#">Blog</a></li>
+<li><a class="hover:text-primary text-white/80 hover:text-white" href="#">Notícias</a></li>
+</ul>
+</div>
+<div class="">
+<h4 class="font-label-bold text-label-bold text-primary mb-unit-sm uppercase tracking-widest !text-white">Suporte</h4>
+<ul class="space-y-1 font-label-sm text-label-sm">
+<li><a class="hover:text-primary text-white/80 hover:text-white" href="#">Ajuda</a></li>
+<li><a class="hover:text-primary text-white/80 hover:text-white" href="#">Contactos</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-container-max mx-auto pt-unit-sm flex flex-col md:flex-row justify-between items-center gap-unit-sm font-label-sm text-label-sm">
+<div class="flex flex-col md:flex-row justify-between items-center w-full gap-unit-sm">
+<div class="flex flex-col md:flex-row items-center gap-unit-md">
+<p class="font-label-sm text-label-sm text-white/80 !text-white/60">© 2024 autenticar. Todos os direitos reservados.</p>
+<div class="flex flex-wrap justify-center gap-unit-lg font-label-sm text-label-sm opacity-80">
+<a class="hover:text-primary !text-white/60 hover:text-white text-white/60" href="livro-reclamacoes.html">Livro de Reclamacoes</a>
+<a class="hover:text-primary !text-white/60 hover:text-white text-white/60" href="conflitos-de-consumo.html">Conflitos de consumo</a>
+<a class="hover:text-primary !text-white/60 hover:text-white text-white/60" href="politica-privacidade.html">Privacidade</a>
+<a class="hover:text-primary !text-white/60 hover:text-white text-white/60" href="politica-de-cookies.html">Cookies</a>
+</div>
+</div>
+<div class="flex items-center gap-unit-sm">
+<a class="inline-flex items-center rounded-full border border-white/20 px-3 py-1 text-white/70 transition-colors hover:border-white/40 hover:text-white" href="login.html">Admin Login</a>
+</div>
+</div>
+</div>
+</footer>
+<script>
+  const apiBase = window.location.protocol === "file:" ? "http://127.0.0.1:3000" : "";
+  async function apiFetch(path, options) {
+    return window.AutenticarApi.fetch(`${apiBase}${path}`, options);
+  }
+
+  (function () {
+    const categoryMap = {
+      "primeiro-carro.html": "primeiro-carro",
+      "carros-economicos.html": "carros-economicos",
+      "carros-familiares.html": "carros-familiares",
+      "carros-cidade.html": "carros-cidade",
+      "carros-automaticos.html": "carros-automaticos",
+      "carros-viagens.html": "carros-viagens",
+      "suvs.html": "suvs",
+      "baixo-consumo.html": "baixo-consumo",
+      "ate-10000.html": "ate-10000",
+      "ate-15000.html": "ate-15000",
+      "destaque.html": "destaque"
+    };
+
+    const page = (location.pathname.split("/").pop() || "").toLowerCase();
+    const category = categoryMap[page];
+    const resultsCount = document.getElementById("resultsCount");
+    const container = document.querySelector(".grid.grid-cols-1.lg\\:grid-cols-2.gap-gutter");
+    const budgetFilter = document.getElementById("budgetFilter");
+    const applyFiltersButton = document.getElementById("applyFilters");
+    const gearButtons = Array.from(document.querySelectorAll("[data-gear]"));
+    let allCars = [];
+    let selectedGear = "";
+
+    if (!category || !container) return;
+
+    function renderEmpty(message = "Sem ve\u00edculos dispon\u00edveis nesta categoria neste momento.") {
+      container.innerHTML = `
+        <article class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(16,42,67,0.08)] border border-outline-variant p-unit-lg">
+          <p class="font-body-md text-body-md text-on-surface-variant">${message}</p>
+        </article>
+      `;
+      if (resultsCount) resultsCount.textContent = "0 ve\u00edculos encontrados";
+    }
+
+    function renderCars(cars) {
+      container.innerHTML = cars.map((car) => {
+        const image = Array.isArray(car.image_urls) && car.image_urls.length ? car.image_urls[0] : "";
+        const title = car.title || `${car.brand || ""} ${car.model || ""}`.trim() || "Viatura";
+        const price = Number(car.price_eur || 0).toLocaleString("pt-PT", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        const reg = car.registration_date || "N/D";
+        const km = Number(car.mileage || 0).toLocaleString("pt-PT");
+        const fuel = car.fuel || "N/D";
+        return `
+          <article class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(16,42,67,0.08)] group hover:shadow-xl transition-shadow border border-outline-variant">
+            <div class="relative h-56">
+              ${image ? `<img class="w-full h-full object-cover" src="${image}" alt="${title}">` : `<div class="w-full h-full bg-surface-container flex items-center justify-center text-on-surface-variant text-sm">Sem imagem</div>`}
+            </div>
+            <div class="p-unit-lg">
+              <div class="flex justify-between items-start mb-unit-sm">
+                <h3 class="font-headline-md text-headline-md text-primary">${title}</h3>
+                <div class="text-primary font-headline-md">${price} \u20AC</div>
+              </div>
+              <div class="flex items-center gap-unit-md text-on-surface-variant mb-unit-lg">
+                <div class="flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">calendar_today</span><span class="text-label-sm">${reg}</span></div>
+                <div class="flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">speed</span><span class="text-label-sm">${km} km</span></div>
+                <div class="flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">local_gas_station</span><span class="text-label-sm">${fuel}</span></div>
+              </div>
+              <div class="flex gap-unit-sm">
+                <a href="carro.html?id=${encodeURIComponent(car.id)}" class="flex-1 bg-primary text-on-primary py-2 rounded-lg font-label-bold text-label-bold hover:opacity-90 transition-opacity text-center">Ver Detalhes</a>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      if (resultsCount) {
+        resultsCount.textContent = `${cars.length} ve\u00edculos encontrados`;
+      }
+    }
+
+    function setGearButtonState() {
+      gearButtons.forEach((button) => {
+        const active = button.dataset.gear === selectedGear;
+        button.className = `${active ? "bg-primary-container text-on-primary-container" : "bg-surface-variant text-on-surface-variant hover:bg-outline-variant"} px-3 py-1 rounded-full text-label-sm font-label-bold cursor-pointer`;
+        button.setAttribute("aria-pressed", active ? "true" : "false");
+      });
+    }
+
+    function getBudgetLimit() {
+      if (!budgetFilter || !budgetFilter.value) return null;
+      const parsedValue = Number.parseInt(String(budgetFilter.value).replace(/[^\d]/g, ""), 10);
+      return Number.isFinite(parsedValue) ? parsedValue : null;
+    }
+
+    function matchesSelectedGear(car) {
+      if (!selectedGear) return true;
+      const transmission = String(car.transmission || "").toLowerCase();
+      if (selectedGear === "automatic") return transmission.includes("auto");
+      if (selectedGear === "manual") return transmission.includes("manual");
+      return true;
+    }
+
+    function applyFilters() {
+      const budgetLimit = getBudgetLimit();
+      const filteredCars = allCars.filter((car) => {
+        const price = Number(car.price_eur || 0);
+        const matchesBudget = budgetLimit == null || (Number.isFinite(price) && price > 0 && price <= budgetLimit);
+        return matchesBudget && matchesSelectedGear(car);
+      });
+
+      if (filteredCars.length === 0) {
+        renderEmpty("Sem ve\u00edculos com os filtros selecionados.");
+        return;
+      }
+
+      renderCars(filteredCars);
+    }
+
+    gearButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const gear = button.dataset.gear || "";
+        selectedGear = selectedGear === gear ? "" : gear;
+        setGearButtonState();
+      });
+    });
+
+    applyFiltersButton?.addEventListener("click", applyFilters);
+    setGearButtonState();
+
+    async function loadCategoryCars() {
+      try {
+        const response = await apiFetch(`/api/cars?category=${encodeURIComponent(category)}&limit=100`);
+        const data = await response.json();
+        if (!response.ok || !data.ok || !Array.isArray(data.cars) || data.cars.length === 0) {
+          renderEmpty();
+          return;
+        }
+
+        allCars = data.cars;
+        renderCars(allCars);
+      } catch {
+        renderEmpty();
+      }
+    }
+
+    loadCategoryCars();
+  })();
+</script>
+</body></html>
+
+
+
+

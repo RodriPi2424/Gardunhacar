@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Viaturas por marca | Autenticar</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Hanken+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <script defer src="global-header.js?v=20260622-responsive-pass"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-browser.js"></script>
+  <style>
+    body { font-family: Manrope, sans-serif; background: #f8f9ff; color: #011d35; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  </style>
+<script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"8caedf609afad31a39b8208b5c0dfb31"})});</script></head>
+<body>
+  <header class="site-header sticky top-0 z-50 border-b border-white/10 bg-[#153e4d]">
+    <div class="mx-auto flex max-w-[1280px] items-center justify-between gap-3 px-4 py-3 md:px-12">
+      <a href="index.html" aria-label="Voltar ao inicio" class="inline-flex items-center">
+        <img alt="autenticar" class="h-8 md:h-10 w-auto" src="logo-new-3.png" />
+      </a>
+      <nav class="hidden items-center gap-7 text-xs font-semibold text-white/95 md:flex">
+        <a class="py-1 transition-colors hover:text-white" href="index.html">Inicio</a>
+        <a class="py-1 transition-colors hover:text-white" href="index.html#stock">Stock</a>
+        <a class="py-1 transition-colors hover:text-white" href="destaque.html">Destaques</a>
+        <a class="py-1 transition-colors hover:text-white" href="about-us.html">Quem somos</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-[1280px] px-4 py-10 md:px-12 md:py-14">
+    <section class="mb-8">
+      <a href="index.html#advanced-search-panel" class="mb-6 inline-flex items-center gap-2 text-sm font-bold text-[#153e4d] hover:underline">
+        <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+        Nova pesquisa
+      </a>
+      <p id="brandEyebrow" class="mb-2 text-sm font-bold uppercase tracking-[0.12em] text-[#3e6373]">Marca</p>
+      <h1 id="pageTitle" class="text-4xl font-extrabold tracking-tight text-[#002835] md:text-5xl">Viaturas por marca</h1>
+      <p id="pageSummary" class="mt-4 max-w-2xl text-lg leading-7 text-[#41484b]">Resultados encontrados no stock Autenticar.</p>
+    </section>
+
+    <section class="mb-8 grid gap-3 rounded-lg border border-[#c1c7cb] bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-5">
+      <select id="brandFilter" class="h-12 rounded-lg border-[#c1c7cb] text-base">
+        <option value="">Marca</option>
+      </select>
+      <select id="modelFilter" class="h-12 rounded-lg border-[#c1c7cb] text-base">
+        <option value="">Modelo</option>
+      </select>
+      <select id="fuelFilter" class="h-12 rounded-lg border-[#c1c7cb] text-base">
+        <option value="">Combustível</option>
+      </select>
+      <input id="maxPriceFilter" class="h-12 rounded-lg border-[#c1c7cb] text-base" placeholder="Preço máximo (€)" type="text" />
+      <input id="maxMileageFilter" class="h-12 rounded-lg border-[#c1c7cb] text-base" placeholder="Quilómetros máximos" type="text" />
+      <button id="applySearchFilters" class="h-12 rounded-lg bg-[#153e4d] px-5 font-bold text-white transition-colors hover:bg-[#002835] sm:col-span-2 lg:col-span-1" type="button">Pesquisar</button>
+    </section>
+
+    <div class="mb-5 flex items-center justify-between gap-4">
+      <span id="resultsCount" class="font-bold text-[#41484b]">0 veículos encontrados</span>
+      <a class="text-sm font-bold text-[#153e4d] hover:underline" href="index.html">Ver categorias</a>
+    </div>
+
+    <section id="resultsGrid" class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <article class="rounded-lg border border-[#c1c7cb] bg-white p-6">
+        <p class="text-[#41484b]">A carregar viaturas...</p>
+      </article>
+    </section>
+  </main>
+
+  <footer class="bg-[#153e4d] px-4 py-10 text-white md:px-12">
+    <div class="mx-auto grid max-w-[1280px] gap-8 border-b border-white/10 pb-8 md:grid-cols-4">
+      <div>
+        <img alt="autenticar" class="mb-3 h-10 w-auto" src="logo-new-3.png" />
+        <p class="max-w-sm text-sm leading-6 text-white/78">O seu marketplace de confianca para compra e venda de veiculos. Qualidade e transparencia em cada quilometro.</p>
+      </div>
+      <div>
+        <h2 class="mb-3 text-xs font-extrabold uppercase tracking-[0.14em] text-white">Veiculos</h2>
+        <ul class="space-y-2 text-sm font-semibold text-white/78">
+          <li><a class="transition-colors hover:text-white" href="index.html#stock">Carros</a></li>
+          <li><a class="transition-colors hover:text-white" href="https://www.agrimog.pt/">Maquinas Agricolas</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="mb-3 text-xs font-extrabold uppercase tracking-[0.14em] text-white">Empresa</h2>
+        <ul class="space-y-2 text-sm font-semibold text-white/78">
+          <li><a class="transition-colors hover:text-white" href="about-us.html">Sobre Nos</a></li>
+          <li><a class="transition-colors hover:text-white" href="destaque.html">Destaques</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="mb-3 text-xs font-extrabold uppercase tracking-[0.14em] text-white">Suporte</h2>
+        <ul class="space-y-2 text-sm font-semibold text-white/78">
+          <li><a class="transition-colors hover:text-white" href="mailto:geral@autenticar.pt">Contactos</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="mx-auto flex max-w-[1280px] flex-col gap-4 pt-5 text-sm text-white/60 md:flex-row md:items-center md:justify-between">
+      <p>2024 autenticar. Todos os direitos reservados.</p>
+      <div class="flex flex-wrap gap-4 font-semibold">
+        <a class="transition-colors hover:text-white" href="livro-reclamacoes.html">Livro de Reclamacoes</a>
+        <a class="transition-colors hover:text-white" href="conflitos-de-consumo.html">Conflitos de consumo</a>
+        <a class="transition-colors hover:text-white" href="politica-privacidade.html">Privacidade</a>
+        <a class="transition-colors hover:text-white" href="politica-de-cookies.html">Cookies</a>
+      </div>
+      <a class="inline-flex w-fit items-center rounded-full border border-white/20 px-3 py-1.5 font-semibold text-white/75 transition-colors hover:border-white/40 hover:text-white" href="login.html">Admin Login</a>
+    </div>
+  </footer>
+
+  <script>
+    const apiBase = window.location.protocol === "file:" ? "http://127.0.0.1:3000" : "";
+    async function apiFetch(path, options) {
+      return window.AutenticarApi.fetch(`${apiBase}${path}`, options);
+    }
+
+    const params = new URLSearchParams(location.search);
+    const state = { cars: [], brands: [] };
+
+    function clean(value) {
+      return String(value || "").trim();
+    }
+
+    function normalize(value) {
+      return clean(value).toLowerCase();
+    }
+
+    function parseNumber(value) {
+      const normalized = clean(value)
+        .replace(/[^\d,.\s]/g, "")
+        .replace(/\s/g, "")
+        .replace(/\.(?=\d{3}\b)/g, "")
+        .replace(",", ".");
+      const number = Number.parseFloat(normalized);
+      return Number.isFinite(number) ? number : null;
+    }
+
+    function uniqueSorted(values) {
+      return Array.from(new Set(values.map(clean).filter(Boolean)))
+        .sort((a, b) => a.localeCompare(b, "pt", { sensitivity: "base" }));
+    }
+
+    function setSelectOptions(select, placeholder, values, selectedValue) {
+      select.innerHTML = "";
+      const placeholderOption = document.createElement("option");
+      placeholderOption.value = "";
+      placeholderOption.textContent = placeholder;
+      select.appendChild(placeholderOption);
+
+      values.forEach((value) => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = value;
+        select.appendChild(option);
+      });
+
+      if (selectedValue && values.includes(selectedValue)) {
+        select.value = selectedValue;
+      }
+    }
+
+    function getFiltersFromControls() {
+      return {
+        brand: clean(document.getElementById("brandFilter").value),
+        model: clean(document.getElementById("modelFilter").value),
+        fuel: clean(document.getElementById("fuelFilter").value),
+        maxPrice: clean(document.getElementById("maxPriceFilter").value),
+        maxMileage: clean(document.getElementById("maxMileageFilter").value)
+      };
+    }
+
+    function getFiltersFromUrl() {
+      return {
+        brand: clean(params.get("brand")),
+        model: clean(params.get("model")),
+        fuel: clean(params.get("fuel")),
+        maxPrice: clean(params.get("maxPrice")),
+        maxMileage: clean(params.get("maxMileage"))
+      };
+    }
+
+    function updateHeading(filters, count) {
+      const brand = filters.brand;
+      document.getElementById("brandEyebrow").textContent = brand ? "Marca" : "Pesquisa";
+      document.getElementById("pageTitle").textContent = brand ? `Viaturas ${brand}` : "Resultados da pesquisa";
+      document.getElementById("pageSummary").textContent = brand
+        ? `${count} viaturas ${brand} encontradas no stock Autenticar.`
+        : `${count} viaturas encontradas no stock Autenticar.`;
+    }
+
+    function carMatchesFilters(car, filters) {
+      const maxPrice = parseNumber(filters.maxPrice);
+      const maxMileage = parseNumber(filters.maxMileage);
+
+      if (filters.brand && normalize(car.brand) !== normalize(filters.brand)) return false;
+      if (filters.model && normalize(car.model) !== normalize(filters.model)) return false;
+      if (filters.fuel && normalize(car.fuel) !== normalize(filters.fuel)) return false;
+      if (maxPrice !== null && Number(car.price_eur || 0) > maxPrice) return false;
+      if (maxMileage !== null && Number(car.mileage || 0) > maxMileage) return false;
+      return true;
+    }
+
+    function renderCars(filters) {
+      const grid = document.getElementById("resultsGrid");
+      const cars = state.cars.filter((car) => carMatchesFilters(car, filters));
+      document.getElementById("resultsCount").textContent = `${cars.length} veículos encontrados`;
+      updateHeading(filters, cars.length);
+
+      if (cars.length === 0) {
+        grid.innerHTML = `
+          <article class="rounded-lg border border-[#c1c7cb] bg-white p-6">
+            <p class="text-[#41484b]">Não encontrámos viaturas com estes filtros.</p>
+          </article>
+        `;
+        return;
+      }
+
+      grid.innerHTML = cars.map((car) => {
+        const image = Array.isArray(car.image_urls) && car.image_urls.length ? car.image_urls[0] : "";
+        const title = car.title || `${car.brand || ""} ${car.model || ""}`.trim() || "Viatura";
+        const price = Number(car.price_eur || 0).toLocaleString("pt-PT", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        const reg = car.registration_date || "N/D";
+        const km = Number(car.mileage || 0).toLocaleString("pt-PT");
+        const fuel = car.fuel || "N/D";
+        return `
+          <article class="overflow-hidden rounded-lg border border-[#c1c7cb] bg-white shadow-sm transition-shadow hover:shadow-lg">
+            <div class="h-60 bg-[#e4efff]">
+              ${image ? `<img class="h-full w-full object-cover" src="${image}" alt="${title}">` : `<div class="flex h-full items-center justify-center text-sm text-[#41484b]">Sem imagem</div>`}
+            </div>
+            <div class="p-5">
+              <div class="mb-3 flex items-start justify-between gap-4">
+                <h2 class="text-xl font-bold text-[#002835]">${title}</h2>
+                <div class="whitespace-nowrap text-xl font-bold text-[#153e4d]">${price} €</div>
+              </div>
+              <div class="mb-5 flex flex-wrap gap-4 text-sm text-[#41484b]">
+                <span class="inline-flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">calendar_today</span>${reg}</span>
+                <span class="inline-flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">speed</span>${km} km</span>
+                <span class="inline-flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">local_gas_station</span>${fuel}</span>
+              </div>
+              <a href="carro.html?id=${encodeURIComponent(car.id)}" class="inline-flex h-11 items-center justify-center rounded-lg bg-[#153e4d] px-5 font-bold text-white transition-colors hover:bg-[#002835]">Ver detalhes</a>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function syncUrl(filters) {
+      const nextParams = new URLSearchParams({ search: "1" });
+      Object.entries(filters).forEach(([key, value]) => {
+        if (clean(value)) nextParams.set(key, clean(value));
+      });
+      history.replaceState(null, "", `marca.html?${nextParams.toString()}`);
+    }
+
+    function updateModelOptions(filters) {
+      const modelSelect = document.getElementById("modelFilter");
+      const matchingCars = filters.brand
+        ? state.cars.filter((car) => normalize(car.brand) === normalize(filters.brand))
+        : state.cars;
+      setSelectOptions(modelSelect, "Modelo", uniqueSorted(matchingCars.map((car) => car.model)), filters.model);
+    }
+
+    async function init() {
+      const filters = getFiltersFromUrl();
+      document.getElementById("maxPriceFilter").value = filters.maxPrice;
+      document.getElementById("maxMileageFilter").value = filters.maxMileage;
+
+      try {
+        const carsResponse = await apiFetch("/api/cars?limit=100");
+        const carsData = await carsResponse.json();
+        state.cars = Array.isArray(carsData.cars) ? carsData.cars : [];
+        state.brands = uniqueSorted(state.cars.map((car) => car.brand));
+
+        setSelectOptions(document.getElementById("brandFilter"), "Marca", state.brands, filters.brand);
+        setSelectOptions(document.getElementById("fuelFilter"), "Combustível", uniqueSorted(state.cars.map((car) => car.fuel)), filters.fuel);
+        updateModelOptions(filters);
+        renderCars(filters);
+      } catch {
+        document.getElementById("resultsGrid").innerHTML = `
+          <article class="rounded-lg border border-[#c1c7cb] bg-white p-6">
+            <p class="text-[#41484b]">Não foi possível carregar as viaturas.</p>
+          </article>
+        `;
+      }
+    }
+
+    document.getElementById("brandFilter").addEventListener("change", () => {
+      const filters = getFiltersFromControls();
+      filters.model = "";
+      updateModelOptions(filters);
+    });
+
+    document.getElementById("applySearchFilters").addEventListener("click", () => {
+      const filters = getFiltersFromControls();
+      syncUrl(filters);
+      renderCars(filters);
+    });
+
+    init();
+  </script>
+</body>
+</html>

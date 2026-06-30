@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <title>Quem Somos | autenticar</title>
+  <meta
+    name="description"
+    content="Conheça a visão da autenticar: uma forma mais humana, criteriosa e confiante de encontrar o carro certo."
+  />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet"
+  />
+  <script defer src="global-header.js?v=20260622-responsive-pass"></script>
+  <style>
+    :root {
+      --ink: #011d35;
+      --ink-soft: #41484b;
+      --sand: #f8f9ff;
+      --sand-deep: #c1e8fb;
+      --mist: #f8f9ff;
+      --line: rgba(113, 120, 124, 0.24);
+      --accent: #fdbf35;
+      --forest: #153e4d;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: "Montserrat", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(193, 232, 251, 0.58), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(21, 62, 77, 0.12), transparent 30%),
+        var(--mist);
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    .font-display {
+      font-family: "Montserrat", sans-serif;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .brand-nav {
+      gap: 1.75rem;
+    }
+
+    .brand-chip {
+      padding: 0.375rem 0;
+      color: rgba(255, 255, 255, 0.82);
+      transition: color 220ms ease, opacity 220ms ease;
+    }
+
+    .brand-chip:hover {
+      color: rgba(255, 255, 255, 1);
+    }
+
+    .grain::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.05;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px);
+      background-size: 4px 4px;
+      mix-blend-mode: multiply;
+    }
+
+    .hero-road {
+      position: absolute;
+      inset: auto -12% -7rem auto;
+      width: min(58vw, 760px);
+      height: min(58vw, 760px);
+      border-radius: 999px;
+      border: 1px solid rgba(246, 241, 232, 0.16);
+      transform: rotate(-22deg);
+      opacity: 0.7;
+    }
+
+    .hero-road::before,
+    .hero-road::after {
+      content: "";
+      position: absolute;
+      inset: 12% 10%;
+      border-radius: inherit;
+      border: 1px solid rgba(246, 241, 232, 0.18);
+    }
+
+    .hero-road::after {
+      inset: 23% 20%;
+      border-style: dashed;
+      opacity: 0.8;
+    }
+
+    .story-line {
+      position: relative;
+    }
+
+    .story-line::before {
+      content: "";
+      position: absolute;
+      left: 18px;
+      top: 1rem;
+      bottom: 1rem;
+      width: 1px;
+      background: linear-gradient(to bottom, rgba(21, 62, 77, 0.22), rgba(253, 191, 53, 0.6));
+    }
+
+    .story-node {
+      position: relative;
+      padding-left: 4.25rem;
+    }
+
+    .story-node::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.15rem;
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      background: linear-gradient(145deg, var(--forest), #254b5b);
+      box-shadow: 0 14px 30px rgba(21, 62, 77, 0.16);
+    }
+
+    .story-node::after {
+      content: "";
+      position: absolute;
+      left: 14px;
+      top: 14px;
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--sand);
+    }
+
+    .quote-mark {
+      font-size: clamp(4rem, 12vw, 8rem);
+      line-height: 0.8;
+    }
+
+    @media (max-width: 768px) {
+      .story-line::before {
+        left: 15px;
+      }
+
+      .story-node {
+        padding-left: 3.5rem;
+      }
+
+      .story-node::before {
+        width: 32px;
+        height: 32px;
+      }
+
+      .story-node::after {
+        left: 11px;
+        top: 11px;
+      }
+    }
+  </style>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: "#011d35",
+            "ink-soft": "#41484b",
+            sand: "#f8f9ff",
+            "sand-deep": "#c1e8fb",
+            mist: "#f8f9ff",
+            accent: "#fdbf35",
+            forest: "#153e4d",
+            primary: "#002835",
+            "primary-container": "#153e4d",
+            "secondary-container": "#fdbf35",
+            surface: "#f8f9ff",
+            "surface-container": "#e4efff",
+            "surface-container-lowest": "#ffffff",
+            outline: "#71787c",
+            "outline-variant": "#c1c7cb"
+          },
+          boxShadow: {
+            editorial: "0 30px 90px rgba(15, 31, 30, 0.18)"
+          },
+          borderRadius: {
+            DEFAULT: "0.125rem",
+            lg: "0.25rem",
+            xl: "0.5rem",
+            full: "0.75rem"
+          },
+          spacing: {
+            "unit-sm": "8px",
+            "unit-xs": "4px",
+            gutter: "24px",
+            "unit-lg": "24px",
+            "margin-mobile": "16px",
+            "margin-desktop": "48px",
+            "container-max": "1280px",
+            "unit-md": "16px",
+            "unit-xl": "40px"
+          },
+          fontFamily: {
+            "headline-lg-mobile": ["Montserrat", "sans-serif"],
+            "label-sm": ["Montserrat", "sans-serif"],
+            "headline-md": ["Montserrat", "sans-serif"],
+            "body-md": ["Montserrat", "sans-serif"],
+            "headline-lg": ["Montserrat", "sans-serif"],
+            "label-bold": ["Montserrat", "sans-serif"],
+            "headline-xl": ["Montserrat", "sans-serif"],
+            "body-lg": ["Montserrat", "sans-serif"]
+          },
+          fontSize: {
+            "headline-lg-mobile": ["24px", { lineHeight: "32px", fontWeight: "700" }],
+            "label-sm": ["12px", { lineHeight: "16px", fontWeight: "500" }],
+            "headline-md": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+            "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+            "headline-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.01em", fontWeight: "700" }],
+            "label-bold": ["14px", { lineHeight: "20px", fontWeight: "700" }],
+            "headline-xl": ["48px", { lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "800" }],
+            "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }]
+          }
+        }
+      }
+    };
+  </script>
+<script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"8caedf609afad31a39b8208b5c0dfb31"})});</script></head>
+<body class="grain bg-surface text-on-surface font-body-md overflow-x-hidden">
+  <main class="relative">
+    <section class="relative left-1/2 right-1/2 ml-[-50vw] mr-[-50vw] w-screen overflow-hidden bg-primary-container text-sand">
+      <div class="hero-road hidden lg:block"></div>
+      <div class="mx-auto flex min-h-[560px] md:min-h-[100dvh] max-w-container-max flex-col p-4 md:p-8">
+        <header class="flex items-center justify-between gap-3">
+          <a href="/" aria-label="Voltar ao início" class="inline-flex items-center">
+            <img src="logo-new-3.png" alt="autenticar" class="h-8 md:h-10 w-auto" />
+          </a>
+          <div class="brand-nav hidden md:flex items-center text-white/95 text-xs font-semibold">
+            <a class="brand-chip" href="/">Inicio</a>
+            <a class="brand-chip" href="about-us">Quem somos</a>
+            <a class="brand-chip" href="destaque">Destaques</a>
+            <a class="brand-chip" href="quiz-carro">Encontrar carro</a>
+          </div>
+        </header>
+
+        <div class="my-auto grid flex-1 items-center gap-10 py-10 md:py-14 lg:gap-20 lg:grid-cols-[520px_460px] xl:grid-cols-[540px_500px]">
+          <div class="relative z-10 max-w-[540px] lg:ml-[100px]">
+            <p class="mb-6 text-xs font-bold uppercase tracking-[0.34em] text-primary-fixed/90">
+              Uma marca feita para escolher melhor
+            </p>
+            <h1 class="max-w-[500px] font-display text-[2.95rem] font-black uppercase leading-[0.9] tracking-[-0.03em] text-white sm:text-[4rem] lg:text-[4.35rem] xl:text-[4.6rem]">
+              <span class="block">Não vendemos</span>
+              <span class="block">carros.</span>
+              <span class="block text-secondary-container">Deciframos</span>
+              <span class="block text-secondary-container">decisões.</span>
+            </h1>
+            <p class="mt-6 max-w-[500px] text-base leading-8 text-sand/78 md:text-lg">
+              A autenticar nasceu para acabar com a compra apressada, confusa e impessoal.
+              Trocamos ruído por critério, pressão por clareza e promessa vazia por acompanhamento real.
+            </p>
+
+            <div class="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row lg:flex-nowrap">
+              <a
+                href="quiz-carro"
+                class="inline-flex h-14 items-center justify-center whitespace-nowrap rounded-full bg-white px-8 text-sm font-extrabold uppercase tracking-[0.16em] text-[#111111] transition hover:bg-white/90 sm:w-auto"
+              >
+                Descobrir o carro certo
+              </a>
+              <a
+                href="#metodo"
+                class="inline-flex h-14 items-center justify-center whitespace-nowrap rounded-full border border-white/20 px-8 text-sm font-bold uppercase tracking-[0.16em] text-white transition hover:border-white/50 hover:bg-white/5 sm:w-auto"
+              >
+                Ver o nosso método
+              </a>
+            </div>
+          </div>
+
+          <div class="relative z-10 lg:justify-self-end lg:w-full lg:max-w-[500px]">
+            <div class="grid items-start gap-4 sm:gap-5 sm:grid-cols-[minmax(0,1fr)_190px] xl:grid-cols-[300px_200px]">
+              <article class="rounded-[2rem] border border-white/10 bg-white/8 p-4 backdrop-blur">
+                <img
+                  src="hero-autenticar.png"
+                  alt="Ambiente automóvel da autenticar"
+                  class="h-[280px] w-full rounded-[1.45rem] object-cover sm:h-[380px] xl:h-[470px]"
+                />
+              </article>
+
+              <div class="flex flex-col gap-4">
+                <article class="rounded-[2rem] border border-white/10 bg-white p-6 text-ink shadow-editorial">
+                  <p class="text-xs font-extrabold uppercase tracking-[0.24em] text-secondary-container">Manifesto</p>
+                  <p class="mt-4 text-[21px] font-medium leading-[1.25] xl:text-[23px]">
+                    A confiança não se pede. Constrói-se em cada detalhe.
+                  </p>
+                </article>
+
+                <article class="rounded-[2rem] border border-white/10 bg-white/8 p-5 backdrop-blur">
+                  <div class="grid gap-4">
+                    <div>
+                      <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-primary-fixed/85">Compromisso</p>
+                      <p class="mt-2 text-[18px] font-extrabold leading-tight text-white">1 contacto</p>
+                      <p class="mt-1 text-[13px] leading-6 text-sand/72">Uma conversa clara do primeiro filtro ao último detalhe.</p>
+                    </div>
+                    <div>
+                      <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-primary-fixed/85">Critério</p>
+                      <p class="mt-2 text-[18px] font-extrabold leading-tight text-white">4 etapas</p>
+                      <p class="mt-1 text-[13px] leading-6 text-sand/72">Perfil, seleção, validação e decisão assistida.</p>
+                    </div>
+                    <div>
+                      <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-primary-fixed/85">Tom</p>
+                      <p class="mt-2 text-[18px] font-extrabold leading-tight text-white">Zero pressão</p>
+                      <p class="mt-1 text-[13px] leading-6 text-sand/72">Preferimos perder uma venda a empurrar o carro errado.</p>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mx-auto grid max-w-[1380px] gap-8 px-5 py-16 md:px-8 lg:grid-cols-[0.92fr_1.08fr] lg:py-24">
+      <div class="rounded-[2rem] border border-[var(--line)] bg-white/80 p-8 shadow-editorial md:p-10">
+        <p class="text-xs font-extrabold uppercase tracking-[0.26em] text-secondary-container">Porque existimos</p>
+        <h2 class="mt-4 font-display text-4xl font-black uppercase leading-[0.95] tracking-[-0.03em] text-primary md:text-5xl">O mercado fala depressa. Nós ouvimos primeiro.</h2>
+      </div>
+
+      <div class="grid gap-6 md:grid-cols-2">
+        <article class="rounded-[2rem] border border-[var(--line)] bg-transparent p-7">
+          <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-ink-soft">01</p>
+          <h3 class="mt-4 text-2xl font-extrabold text-ink">Menos catálogo, mais curadoria</h3>
+          <p class="mt-3 text-base leading-8 text-ink-soft">
+            Em vez de atirar centenas de opções para cima da mesa, reduzimos o universo ao que faz sentido para si.
+          </p>
+        </article>
+        <article class="rounded-[2rem] border border-[var(--line)] bg-surface-container p-7">
+          <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-ink-soft">02</p>
+          <h3 class="mt-4 text-2xl font-extrabold text-ink">Menos discurso, mais contexto</h3>
+          <p class="mt-3 text-base leading-8 text-ink-soft">
+            Explicamos prós, limites, uso real e custo de decisão para que a compra deixe de ser um salto no escuro.
+          </p>
+        </article>
+        <article class="rounded-[2rem] border border-[var(--line)] bg-primary-container p-7 text-sand">
+          <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-secondary-container">03</p>
+          <h3 class="mt-4 text-2xl font-extrabold text-white">Menos pressão, mais tempo certo</h3>
+          <p class="mt-3 text-base leading-8 text-sand/80">
+            A melhor decisão não nasce da urgência. Nasce quando o carro certo encontra o momento certo.
+          </p>
+        </article>
+        <article class="rounded-[2rem] border border-[var(--line)] bg-white/55 p-7">
+          <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-ink-soft">04</p>
+          <h3 class="mt-4 text-2xl font-extrabold text-ink">Menos distância, mais acompanhamento</h3>
+          <p class="mt-3 text-base leading-8 text-ink-soft">
+            Quer esteja a começar a explorar ou já perto de decidir, estamos ao seu lado com o mesmo nível de atenção.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section id="metodo" class="bg-surface-container/60">
+      <div class="mx-auto grid max-w-[1380px] gap-12 px-5 py-16 md:px-8 lg:grid-cols-[0.72fr_1.28fr] lg:py-24">
+        <div>
+          <p class="text-xs font-extrabold uppercase tracking-[0.26em] text-secondary-container">O nosso método</p>
+          <h2 class="mt-4 font-display text-4xl font-black uppercase leading-[0.95] tracking-[-0.03em] text-primary md:text-5xl">Uma decisão boa tem cadência.</h2>
+          <p class="mt-6 max-w-[420px] text-base leading-8 text-ink-soft">
+            Criámos um processo simples, humano e nada automático. Cada etapa existe para reduzir ruído e aumentar confiança.
+          </p>
+        </div>
+
+        <div class="story-line grid gap-8">
+          <article class="story-node rounded-[2rem] border border-black/5 bg-white/80 p-7 shadow-editorial">
+            <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-accent">Escutar</p>
+            <h3 class="mt-3 text-2xl font-extrabold text-ink">Começamos pela vida real</h3>
+            <p class="mt-3 text-base leading-8 text-ink-soft">
+              Rotinas, viagens, família, cidade, orçamento e aquilo que quer evitar repetir. O ponto de partida é sempre humano.
+            </p>
+          </article>
+
+          <article class="story-node rounded-[2rem] border border-black/5 bg-primary-container p-7 text-sand shadow-editorial">
+            <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-secondary-container">Filtrar</p>
+            <h3 class="mt-3 text-2xl font-extrabold text-white">Transformamos intenção em shortlist</h3>
+            <p class="mt-3 text-base leading-8 text-sand/82">
+              Selecionamos os carros que encaixam no uso, no momento e no nível de exigência que definiu connosco.
+            </p>
+          </article>
+
+          <article class="story-node rounded-[2rem] border border-black/5 bg-white/80 p-7 shadow-editorial">
+            <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-accent">Validar</p>
+            <h3 class="mt-3 text-2xl font-extrabold text-ink">Abrimos a decisão por dentro</h3>
+            <p class="mt-3 text-base leading-8 text-ink-soft">
+              Explicamos claramente o que faz cada opção ganhar pontos, onde pode ceder e porque uma escolha é mais sólida do que outra.
+            </p>
+          </article>
+
+          <article class="story-node rounded-[2rem] border border-black/5 bg-transparent p-7">
+            <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-accent">Decidir</p>
+            <h3 class="mt-3 text-2xl font-extrabold text-ink">Fechar com serenidade</h3>
+            <p class="mt-3 text-base leading-8 text-ink-soft">
+              A decisão final continua a ser sua. O nosso trabalho é fazer com que chegue lá com convicção e sem nevoeiro.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="mx-auto max-w-[1380px] px-5 py-16 md:px-8 lg:py-24">
+      <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+        <article class="rounded-[2.2rem] bg-ink p-8 text-sand shadow-editorial md:p-10">
+          <div class="quote-mark font-display text-secondary-container">"</div>
+          <p class="max-w-[680px] -mt-6 text-2xl leading-10 text-white md:text-[2rem] md:leading-[1.55]">
+            A autenticar foi desenhada para pessoas que querem comprar com cabeça, mas sem perder o prazer da escolha.
+          </p>
+            <p class="mt-8 text-sm font-extrabold uppercase tracking-[0.2em] text-secondary-container/90">
+            Assinatura da marca
+          </p>
+        </article>
+
+        <div class="grid gap-6">
+          <article class="rounded-[2rem] border border-[var(--line)] bg-white/75 p-7">
+            <p class="text-xs font-extrabold uppercase tracking-[0.26em] text-accent">Para quem é</p>
+            <p class="mt-4 text-lg leading-8 text-ink-soft">
+              Para quem compra o primeiro carro, para quem muda de fase, para quem quer validar uma decisão sem teatro à volta.
+            </p>
+          </article>
+          <article class="rounded-[2rem] border border-[var(--line)] bg-surface-container p-7">
+            <p class="text-xs font-extrabold uppercase tracking-[0.26em] text-accent">Como queremos ser lembrados</p>
+            <p class="mt-4 text-lg leading-8 text-ink-soft">
+              Como a marca que tornou um processo tenso numa escolha lúcida, bonita e segura.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="px-5 pb-16 md:px-8 lg:pb-24">
+      <div class="mx-auto max-w-[1380px] rounded-[2.4rem] bg-[linear-gradient(135deg,#153e4d_0%,#254b5b_52%,#3e6373_100%)] p-8 text-sand shadow-editorial md:p-10">
+        <div class="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div>
+            <p class="text-xs font-extrabold uppercase tracking-[0.26em] text-secondary-container">Pronto para começar</p>
+            <h2 class="mt-4 font-display text-4xl font-black uppercase leading-[0.95] tracking-[-0.03em] text-white md:text-5xl">
+              Se a escolha importa, o caminho até ela também.
+            </h2>
+            <p class="mt-5 max-w-[620px] text-base leading-8 text-sand/82">
+              Diga-nos o que procura e mostramos-lhe um percurso de decisão mais claro, mais elegante e mais seguro.
+            </p>
+          </div>
+          <div class="flex flex-col gap-4 sm:flex-row lg:flex-col">
+            <a
+              href="quiz-carro"
+              class="inline-flex h-14 items-center justify-center rounded-full bg-white px-7 text-sm font-extrabold uppercase tracking-[0.16em] text-[#111111] transition hover:bg-white/90"
+            >
+              Começar agora
+            </a>
+            <a
+              href="/"
+              class="inline-flex h-14 items-center justify-center rounded-full border border-white/18 px-7 text-sm font-bold uppercase tracking-[0.16em] text-white transition hover:bg-white/10"
+            >
+              Voltar ao início
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+    <footer class="relative left-1/2 right-1/2 ml-[-50vw] mr-[-50vw] w-screen text-on-surface pb-unit-lg pt-unit-lg px-margin-mobile md:px-margin-desktop text-white" style="background-color: #153E4D; color: #FFFFFF;">
+      <div class="max-w-container-max mx-auto grid md:grid-cols-4 gap-unit-lg border-b border-outline-variant/10 pb-unit-lg">
+        <div class="md:col-span-1">
+          <img alt="autenticar" class="h-10 mb-unit-sm w-auto" src="logo-new-3.png"/>
+          <p class="font-body-md text-body-md text-white/80">O seu marketplace de confiança para compra e venda de veículos. Qualidade e transparência em cada quilómetro.</p>
+        </div>
+        <div class="">
+          <h4 class="font-label-bold text-label-bold text-primary mb-unit-sm uppercase tracking-widest !text-white">Veículos</h4>
+          <ul class="space-y-1 font-label-sm text-label-sm">
+            <li><a class="hover:text-primary text-white/80 hover:text-white" href="#">Carros</a></li>
+            <li><a class="hover:text-primary text-white/80 hover:text-white" href="https://www.agrimog.pt/">Máquinas Agrícolas</a></li>
+          </ul>
+        </div>
+        <div class="">
+          <h4 class="font-label-bold text-label-bold text-primary mb-unit-sm uppercase tracking-widest !text-white">Empresa</h4>
+          <ul class="space-y-1 font-label-sm text-label-sm">
+            <li><a class="hover:text-primary text-white/80 hover:text-white" href="about-us">Sobre Nós</a></li>
+          </ul>
+        </div>
+        <div class="">
+          <h4 class="font-label-bold text-label-bold text-primary mb-unit-sm uppercase tracking-widest !text-white">Suporte</h4>
+          <ul class="space-y-1 font-label-sm text-label-sm">
+            <li><a class="hover:text-primary text-white/80 hover:text-white" href="#">Ajuda</a></li>
+            <li><a class="hover:text-primary text-white/80 hover:text-white" href="#">Contactos</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="max-w-container-max mx-auto pt-unit-sm flex flex-col md:flex-row justify-between items-center gap-unit-sm font-label-sm text-label-sm">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full gap-unit-sm">
+          <div class="flex flex-col md:flex-row items-center gap-unit-md">
+            <p class="font-label-sm text-label-sm text-white/80 !text-white/60">© 2024 autenticar. Todos os direitos reservados.</p>
+            <div class="flex flex-wrap justify-center gap-unit-lg font-label-sm text-label-sm opacity-80">
+              <a class="hover:text-primary !text-white/60 hover:text-white text-white/60" href="livro-reclamacoes">Livro de Reclamacoes</a>
+<a class="hover:text-primary !text-white/60 hover:text-white text-white/60" href="conflitos-de-consumo">Conflitos de consumo</a>
+<a class="hover:text-primary !text-white/60 hover:text-white text-white/60" href="politica-privacidade">Privacidade</a>
+<a class="hover:text-primary !text-white/60 hover:text-white text-white/60" href="politica-de-cookies">Cookies</a>
+            </div>
+          </div>
+          <div class="flex items-center gap-unit-sm">
+            <a class="inline-flex items-center rounded-full border border-white/20 px-3 py-1 text-white/70 transition-colors hover:border-white/40 hover:text-white" href="login">Admin Login</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </main>
+</body>
+</html>

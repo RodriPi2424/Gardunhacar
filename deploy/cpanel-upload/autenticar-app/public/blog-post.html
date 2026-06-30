@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <title>Post | autenticar</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script defer src="global-header.js?v=20260622-responsive-pass"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-browser.js?v=posts-admin-20260608"></script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    body {
+      font-family: 'Montserrat', sans-serif !important;
+    }
+  </style>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: "#002835",
+            "primary-container": "#153e4d",
+            surface: "#f8f9ff",
+            "surface-container-low": "#eef4ff",
+            "outline-variant": "#c1c7cb",
+            "on-surface": "#011d35",
+            "on-surface-variant": "#41484b"
+          },
+          spacing: {
+            "margin-mobile": "24px",
+            "margin-desktop": "48px",
+            "container-max": "980px"
+          }
+        }
+      }
+    };
+  </script>
+<script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"8caedf609afad31a39b8208b5c0dfb31"})});</script></head>
+<body class="bg-surface text-on-surface">
+  <header class="site-header sticky top-0 z-50 border-b border-white/10 bg-[#153e4d]"></header>
+  <main id="postRoot" class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12"></main>
+
+  <script>
+    const apiBase = window.location.protocol === "file:" ? "http://127.0.0.1:3000" : "";
+    async function apiFetch(path, options) {
+      return window.AutenticarApi.fetch(`${apiBase}${path}`, options);
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function formatDate(value) {
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "Sem data";
+      return date.toLocaleDateString("pt-PT", { day: "2-digit", month: "long", year: "numeric" });
+    }
+
+    function categoryLabel(category) {
+      const labels = {
+        noticias: "Noticias",
+        guias: "Guias",
+        mercado: "Mercado",
+        manutencao: "Manutencao"
+      };
+      return labels[category] || "Noticias";
+    }
+
+    function paragraphMarkup(content) {
+      return String(content || "")
+        .split(/\n\s*\n/)
+        .map((paragraph) => paragraph.trim())
+        .filter(Boolean)
+        .map((paragraph) => `<p class="text-lg leading-8 text-on-surface-variant">${escapeHtml(paragraph)}</p>`)
+        .join("");
+    }
+
+    async function loadPost() {
+      const slug = new URLSearchParams(window.location.search).get("slug");
+      const root = document.getElementById("postRoot");
+
+      if (!slug) {
+        root.innerHTML = `<div class="rounded-2xl border border-red-200 bg-red-50 p-8 text-center text-red-700">Slug do post em falta.</div>`;
+        return;
+      }
+
+      try {
+        const response = await apiFetch(`/api/posts/${encodeURIComponent(slug)}`);
+        const result = await response.json();
+        if (!response.ok || !result.ok || !result.post) {
+          root.innerHTML = `<div class="rounded-2xl border border-red-200 bg-red-50 p-8 text-center text-red-700">${escapeHtml(result.message || "Nao foi possivel carregar o post.")}</div>`;
+          return;
+        }
+
+        const post = result.post;
+        const image = post.cover_image_url || (Array.isArray(post.image_urls) && post.image_urls[0]) || "https://placehold.co/1200x720/e2e8f0/64748b?text=Autenticar";
+        document.title = `${post.title} | autenticar`;
+
+        root.innerHTML = `
+          <a href="blog-noticias" class="inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline">
+            <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+            Voltar ao blog
+          </a>
+          <article class="mt-6">
+            <div class="flex flex-wrap items-center gap-3">
+              <span class="rounded-full bg-surface-container-low px-3 py-1 text-xs font-bold uppercase tracking-wide text-primary">${escapeHtml(categoryLabel(post.category))}</span>
+              <span class="text-xs font-semibold uppercase tracking-[0.14em] text-on-surface-variant">${escapeHtml(formatDate(post.published_at || post.created_at))}</span>
+            </div>
+            <h1 class="mt-5 text-4xl md:text-6xl font-extrabold leading-tight text-primary">${escapeHtml(post.title)}</h1>
+            <p class="mt-5 max-w-3xl text-xl leading-8 text-on-surface-variant">${escapeHtml(post.excerpt)}</p>
+            <img src="${escapeHtml(image)}" alt="${escapeHtml(post.title)}" class="mt-10 h-[280px] md:h-[520px] w-full rounded-2xl border border-outline-variant object-cover" />
+            <div class="mt-10 space-y-6">
+              ${paragraphMarkup(post.content)}
+            </div>
+          </article>
+        `;
+      } catch {
+        root.innerHTML = `<div class="rounded-2xl border border-red-200 bg-red-50 p-8 text-center text-red-700">Erro de ligacao ao servidor.</div>`;
+      }
+    }
+
+    loadPost();
+  </script>
+</body>
+</html>

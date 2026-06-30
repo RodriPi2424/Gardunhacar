@@ -1,0 +1,231 @@
+﻿<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Área do Cliente | autenticar</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <style>
+    body { font-family: 'Montserrat', sans-serif; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 450, 'GRAD' 0, 'opsz' 24; }
+    .panel { background:#ffffff; border:1px solid #e5e7eb; }
+    .sidebar-link { transition: all .18s ease; }
+    .sidebar-link:hover { background: #edf4f7; }
+    .sidebar-link.active { background: #153e4d; color:#fff; }
+    .overlay { transition: opacity .2s ease, visibility .2s ease; }
+    .overlay.hidden { opacity:0; visibility:hidden; pointer-events:none; }
+    .toast { transition: opacity .2s ease, transform .2s ease; }
+    .toast.hidden { opacity:0; transform: translateY(10px); pointer-events:none; }
+  </style>
+<script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"8caedf609afad31a39b8208b5c0dfb31"})});</script></head>
+<body class="bg-[#f2f4f7] text-[#1f2937] min-h-screen">
+  <div class="min-h-screen grid lg:grid-cols-[240px_1fr]">
+    <aside class="panel border-r border-t-0 border-b-0 border-l-0 p-4 lg:p-5">
+      <div class="mb-6 flex items-center gap-2">
+        <img src="logo-new-3.png" alt="autenticar" class="h-8 w-auto" style="filter: brightness(0);"/>
+      </div>
+
+      <nav class="space-y-2 text-sm">
+        <a class="sidebar-link flex items-center gap-2 rounded-lg px-3 py-2" href="index.html"><span class="material-symbols-outlined text-[18px]">home</span>Início</a>
+        <a class="sidebar-link active flex items-center gap-2 rounded-lg px-3 py-2" href="#"><span class="material-symbols-outlined text-[18px]">grid_view</span>Produto</a>
+        <button data-open="favoritesOverlay" class="sidebar-link w-full text-left flex items-center gap-2 rounded-lg px-3 py-2"><span class="material-symbols-outlined text-[18px]">favorite</span>Favoritos</button>
+        <button data-open="compareOverlay" class="sidebar-link w-full text-left flex items-center gap-2 rounded-lg px-3 py-2"><span class="material-symbols-outlined text-[18px]">compare_arrows</span>Comparar</button>
+        <button data-open="alertsOverlay" class="sidebar-link w-full text-left flex items-center gap-2 rounded-lg px-3 py-2"><span class="material-symbols-outlined text-[18px]">notifications</span>Alertas</button>
+      </nav>
+
+      <div class="mt-8 pt-4 border-t border-gray-200">
+        <a href="login.html?logout=1" class="sidebar-link flex items-center gap-2 rounded-lg px-3 py-2 text-sm"><span class="material-symbols-outlined text-[18px]">logout</span>Terminar sessão</a>
+      </div>
+    </aside>
+
+    <main class="p-4 md:p-6">
+      <header class="panel rounded-xl p-3 md:p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div class="relative w-full md:max-w-[420px]">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[18px]">search</span>
+          <input id="searchInput" type="text" placeholder="Pesquisar carro, marca ou modelo" class="w-full rounded-lg border-gray-300 pl-9 pr-3 h-10 text-sm"/>
+        </div>
+        <div class="flex items-center gap-2 text-xs md:text-sm">
+          <span id="compareCount" class="rounded-full bg-[#e8f0f3] text-[#153e4d] px-3 py-1 font-semibold">0/3 comparação</span>
+          <button data-open="compareOverlay" class="rounded-lg bg-[#153e4d] text-white px-3 py-2 font-semibold">Abrir comparação</button>
+        </div>
+      </header>
+
+      <section class="mt-4">
+        <h1 class="text-2xl md:text-3xl font-extrabold">Product</h1>
+        <p class="text-sm text-gray-500 mt-1">Manage your product inventory, ensuring all listings are up-to-date and accurate.</p>
+      </section>
+
+      <section id="recommendedList" class="mt-4 grid sm:grid-cols-2 xl:grid-cols-4 gap-3"></section>
+    </main>
+  </div>
+
+  <div id="favoritesOverlay" class="overlay hidden fixed inset-0 z-30 bg-black/60 p-4 md:p-8">
+    <div class="panel rounded-xl p-5 max-w-4xl mx-auto">
+      <div class="flex items-center justify-between mb-4"><h3 class="text-xl font-extrabold">Carros favoritos</h3><button data-close class="rounded-lg border border-gray-300 px-3 py-1 text-sm">Fechar</button></div>
+      <div id="favoritesList" class="grid md:grid-cols-2 gap-3"></div>
+    </div>
+  </div>
+
+  <div id="compareOverlay" class="overlay hidden fixed inset-0 z-30 bg-black/60 p-4 md:p-8">
+    <div class="panel rounded-xl p-5 max-w-5xl mx-auto">
+      <div class="flex items-center justify-between mb-4"><h3 class="text-xl font-extrabold">Comparar carros</h3><button data-close class="rounded-lg border border-gray-300 px-3 py-1 text-sm">Fechar</button></div>
+      <div id="compareGrid" class="overflow-x-auto"></div>
+    </div>
+  </div>
+
+  <div id="alertsOverlay" class="overlay hidden fixed inset-0 z-30 bg-black/60 p-4 md:p-8">
+    <div class="panel rounded-xl p-5 max-w-2xl mx-auto">
+      <div class="flex items-center justify-between mb-4"><h3 class="text-xl font-extrabold">Criar alerta</h3><button data-close class="rounded-lg border border-gray-300 px-3 py-1 text-sm">Fechar</button></div>
+      <form id="alertsForm" class="space-y-3">
+        <input class="w-full rounded-lg border-gray-300" placeholder="Modelo (ex: BMW Série 3)" required>
+        <input class="w-full rounded-lg border-gray-300" type="number" min="1000" placeholder="Preço máximo (€)" required>
+        <button class="w-full h-10 rounded-lg bg-[#153e4d] text-white font-bold">Guardar alerta</button>
+      </form>
+      <p id="alertsMessage" class="text-sm mt-3 text-green-700"></p>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden fixed bottom-4 right-4 z-40 rounded-lg bg-[#153e4d] text-white px-4 py-3 text-sm font-semibold shadow-xl"></div>
+
+  <script>
+    const cars = [
+      { id: 1, model: "Toyota GT 86", price: 37612, km: "80L", fuel: "Manual", doors: 2 },
+      { id: 2, model: "Palisade type G", price: 37612, km: "80L", fuel: "Manual", doors: 2 },
+      { id: 3, model: "Mercedes-Benz", price: 37612, km: "80L", fuel: "Auto", doors: 2 },
+      { id: 4, model: "BMW M3 E456i", price: 37612, km: "80L", fuel: "Auto", doors: 2 },
+      { id: 5, model: "Toyota Raize", price: 37612, km: "80L", fuel: "Auto", doors: 2 },
+      { id: 6, model: "Nissan March 4", price: 37612, km: "80L", fuel: "Manual", doors: 2 },
+      { id: 7, model: "Nissan Navara", price: 37612, km: "80L", fuel: "Manual", doors: 2 },
+      { id: 8, model: "Xpander Holigunt", price: 37612, km: "80L", fuel: "Auto", doors: 2 }
+    ];
+
+    const favorites = new Set([1, 4]);
+    const compare = new Set([2, 3]);
+    let query = "";
+    const toast = document.getElementById("toast");
+    const money = (v) => `$${v.toLocaleString("en-US")}`;
+
+    function showToast(text) {
+      toast.textContent = text;
+      toast.classList.remove("hidden");
+      clearTimeout(showToast.t);
+      showToast.t = setTimeout(() => toast.classList.add("hidden"), 1600);
+    }
+
+    function updateCounter() {
+      document.getElementById("compareCount").textContent = `${compare.size}/3 comparação`;
+    }
+
+    function renderRecommended() {
+      const root = document.getElementById("recommendedList");
+      const filtered = cars.filter(car => car.model.toLowerCase().includes(query));
+
+      root.innerHTML = filtered.map(car => `
+        <article class="panel rounded-xl p-3">
+          <div class="flex items-start justify-between gap-2">
+            <h3 class="font-bold text-lg leading-tight">${car.model}</h3>
+            <button data-fav="${car.id}" class="text-gray-400 hover:text-[#153e4d]">
+              <span class="material-symbols-outlined text-[18px]">${favorites.has(car.id) ? "favorite" : "favorite_border"}</span>
+            </button>
+          </div>
+          <div class="my-2 h-[72px] rounded-lg bg-[#eef2f4] flex items-center justify-center text-gray-400 text-xs">imagem carro</div>
+          <p class="text-xs text-gray-500">${car.km} · ${car.fuel} · ${car.doors}</p>
+          <p class="text-xl font-extrabold mt-1">${money(car.price)}</p>
+          <div class="mt-3 flex gap-2">
+            <a href="carro.html" class="h-8 px-3 rounded-md bg-[#153e4d] text-white text-xs font-bold inline-flex items-center">Ver</a>
+            <button data-compare="${car.id}" class="h-8 px-3 rounded-md border border-gray-300 text-xs font-semibold">${compare.has(car.id) ? "Na comparação" : "Comparar"}</button>
+          </div>
+        </article>
+      `).join("");
+
+      if (!filtered.length) {
+        root.innerHTML = '<div class="panel rounded-xl p-5 text-sm text-gray-500">Sem resultados para a pesquisa.</div>';
+      }
+
+      updateCounter();
+    }
+
+    function renderFavorites() {
+      const list = cars.filter(c => favorites.has(c.id));
+      const root = document.getElementById("favoritesList");
+      root.innerHTML = list.length
+        ? list.map(c => `<div class="panel rounded-lg p-3"><p class="font-bold">${c.model}</p><p class="text-sm text-gray-500 mt-1">${money(c.price)}</p></div>`).join("")
+        : '<p class="text-sm text-gray-500">Ainda não tem favoritos.</p>';
+    }
+
+    function renderCompare() {
+      const selected = cars.filter(c => compare.has(c.id));
+      const root = document.getElementById("compareGrid");
+      if (!selected.length) {
+        root.innerHTML = '<p class="text-sm text-gray-500">Sem carros para comparar.</p>';
+        return;
+      }
+
+      root.innerHTML = `
+        <table class="w-full min-w-[560px] border border-gray-200 rounded-lg overflow-hidden">
+          <thead class="bg-gray-50"><tr>${selected.map(c => `<th class="text-left p-3 text-sm">${c.model}</th>`).join("")}</tr></thead>
+          <tbody>
+            <tr class="border-t">${selected.map(c => `<td class="p-3">${money(c.price)}</td>`).join("")}</tr>
+            <tr class="border-t">${selected.map(c => `<td class="p-3">${c.fuel}</td>`).join("")}</tr>
+            <tr class="border-t">${selected.map(c => `<td class="p-3">${c.km}</td>`).join("")}</tr>
+          </tbody>
+        </table>
+      `;
+    }
+
+    document.getElementById("searchInput").addEventListener("input", (e) => {
+      query = e.target.value.trim().toLowerCase();
+      renderRecommended();
+    });
+
+    document.addEventListener("click", (e) => {
+      const openId = e.target.closest("[data-open]")?.getAttribute("data-open");
+      if (openId) {
+        document.getElementById(openId)?.classList.remove("hidden");
+        if (openId === "favoritesOverlay") renderFavorites();
+        if (openId === "compareOverlay") renderCompare();
+      }
+
+      if (e.target.matches("[data-close]")) {
+        e.target.closest(".overlay")?.classList.add("hidden");
+      }
+
+      const favId = Number(e.target.closest("[data-fav]")?.getAttribute("data-fav"));
+      if (favId) {
+        if (favorites.has(favId)) {
+          favorites.delete(favId);
+          showToast("Removido dos favoritos");
+        } else {
+          favorites.add(favId);
+          showToast("Adicionado aos favoritos");
+        }
+        renderRecommended();
+      }
+
+      const compareId = Number(e.target.closest("[data-compare]")?.getAttribute("data-compare"));
+      if (compareId) {
+        if (compare.has(compareId)) {
+          compare.delete(compareId);
+          showToast("Removido da comparação");
+        } else if (compare.size < 3) {
+          compare.add(compareId);
+          showToast("Adicionado à comparação");
+        } else {
+          showToast("Limite de 3 carros");
+        }
+        renderRecommended();
+      }
+    });
+
+    document.getElementById("alertsForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      document.getElementById("alertsMessage").textContent = "Alerta guardado com sucesso.";
+      e.target.reset();
+    });
+
+    renderRecommended();
+  </script>
+</body>
+</html>

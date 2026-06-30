@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+
+<html lang="pt"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script defer src="global-header.js?v=20260623-powered-by"></script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .brand-nav {
+            gap: 1.75rem;
+        }
+        .brand-chip {
+            padding: 0.375rem 0;
+            color: rgba(255, 255, 255, 0.82);
+            transition: color 220ms ease, opacity 220ms ease;
+        }
+        .brand-chip:hover {
+            color: rgba(255, 255, 255, 1);
+        }
+        #contact-overlay {
+            transition: opacity 280ms ease;
+        }
+        #contact-panel {
+            transition: opacity 320ms ease, transform 320ms cubic-bezier(0.22, 1, 0.36, 1), filter 320ms ease;
+        }
+        .home-hero {
+            min-height: 100vh;
+            min-height: 100svh;
+        }
+        .home-hero-content {
+            min-height: inherit;
+            padding-top: max(1rem, env(safe-area-inset-top));
+            padding-bottom: max(1rem, env(safe-area-inset-bottom));
+        }
+        .home-hero > .absolute.inset-0.bg-cover {
+            transform: scale(1.035);
+            transform-origin: center;
+            animation: hero-image-breathe 16s ease-in-out infinite alternate;
+            will-change: transform;
+        }
+        .home-hero-copy > * {
+            animation: hero-copy-rise 760ms cubic-bezier(0.2, 0.9, 0.22, 1) both;
+        }
+        .home-hero-copy > *:nth-child(2) {
+            animation-delay: 120ms;
+        }
+        .home-hero-copy > *:nth-child(3) {
+            animation-delay: 240ms;
+        }
+        .motion-reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            filter: blur(7px);
+            transition:
+                opacity 720ms ease,
+                transform 720ms cubic-bezier(0.2, 0.9, 0.22, 1),
+                filter 720ms ease;
+            transition-delay: var(--motion-delay, 0ms);
+            will-change: opacity, transform, filter;
+        }
+        .motion-reveal.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+        }
+        .motion-widget {
+            transition:
+                transform 280ms cubic-bezier(0.2, 0.9, 0.22, 1),
+                box-shadow 280ms ease,
+                border-color 280ms ease,
+                background-color 280ms ease;
+        }
+        .motion-widget:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 48px rgba(0, 40, 53, 0.13);
+        }
+        #advanced-search-panel:focus-within {
+            transform: translateY(-3px);
+            box-shadow: 0 18px 48px rgba(0, 40, 53, 0.12);
+            border-color: rgba(21, 62, 77, 0.22);
+        }
+        #advanced-search-panel select,
+        #advanced-search-panel input {
+            transition:
+                transform 220ms ease,
+                border-color 220ms ease,
+                box-shadow 220ms ease,
+                background-color 220ms ease;
+        }
+        #advanced-search-panel select:hover,
+        #advanced-search-panel input:hover {
+            transform: translateY(-2px);
+            background-color: rgba(255, 255, 255, 0.86);
+        }
+        #advancedSearchButton,
+        #contact-toggle,
+        .home-hero-copy nav a {
+            transition:
+                transform 260ms cubic-bezier(0.2, 0.9, 0.22, 1),
+                box-shadow 260ms ease,
+                background-color 260ms ease,
+                color 260ms ease;
+        }
+        #advancedSearchButton:hover,
+        #contact-toggle:hover,
+        .home-hero-copy nav a:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 34px rgba(0, 24, 35, 0.18);
+        }
+        #featuredCarsGrid > a {
+            transition:
+                opacity 680ms ease,
+                filter 680ms ease,
+                transform 680ms cubic-bezier(0.2, 0.9, 0.22, 1),
+                box-shadow 280ms ease,
+                border-color 280ms ease;
+        }
+        #featuredCarsGrid > a:hover {
+            transform: translateY(-5px);
+            border-color: rgba(21, 62, 77, 0.2);
+            box-shadow: 0 18px 44px rgba(0, 40, 53, 0.14);
+        }
+        @keyframes hero-copy-rise {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+                filter: blur(7px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+                filter: blur(0);
+            }
+        }
+        @keyframes hero-image-breathe {
+            from {
+                transform: scale(1.035) translate3d(0, 0, 0);
+            }
+            to {
+                transform: scale(1.075) translate3d(-0.6%, -0.4%, 0);
+            }
+        }
+        @media (max-width: 900px) {
+            .home-hero {
+                min-height: calc(100svh - 60px);
+                border-top-width: 0 !important;
+            }
+            .home-hero-content > .global-header-host {
+                width: calc(100% + 2rem) !important;
+                margin-top: calc(-1 * max(1rem, env(safe-area-inset-top))) !important;
+                margin-left: -1rem !important;
+                margin-right: -1rem !important;
+            }
+            .home-hero-copy {
+                padding-top: 1.5rem;
+                padding-bottom: 2rem;
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .home-hero > .absolute.inset-0.bg-cover,
+            .home-hero-copy > *,
+            .motion-reveal {
+                animation: none !important;
+                transition: none !important;
+                opacity: 1 !important;
+                transform: none !important;
+                filter: none !important;
+            }
+            .motion-widget:hover,
+            #advanced-search-panel:focus-within,
+            #advanced-search-panel select:hover,
+            #advanced-search-panel input:hover,
+            #advancedSearchButton:hover,
+            #contact-toggle:hover,
+            .home-hero-copy nav a:hover,
+            #featuredCarsGrid > a:hover {
+                transform: none !important;
+            }
+        }
+        /* Overriding existing font classes to use Montserrat */
+        body { font-family: 'Montserrat', sans-serif !important; }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error-container": "#ffdad6",
+                    "surface-bright": "#f8f9ff",
+                    "secondary-fixed": "#ffdea4",
+                    "secondary-fixed-dim": "#fabd32",
+                    "surface-tint": "#3e6373",
+                    "secondary": "#7b5900",
+                    "background": "#f8f9ff",
+                    "on-secondary-container": "#6e4f00",
+                    "primary-container": "#153e4d",
+                    "surface-container-low": "#eef4ff",
+                    "primary-fixed": "#c1e8fb",
+                    "on-error": "#ffffff",
+                    "on-primary-fixed": "#001f29",
+                    "surface-container": "#e4efff",
+                    "tertiary": "#371f00",
+                    "inverse-surface": "#19324b",
+                    "on-secondary": "#ffffff",
+                    "surface": "#f8f9ff",
+                    "on-tertiary-container": "#c59c6f",
+                    "on-background": "#011d35",
+                    "on-tertiary-fixed-variant": "#5f411c",
+                    "tertiary-fixed": "#ffddba",
+                    "on-error-container": "#93000a",
+                    "inverse-on-surface": "#e9f1ff",
+                    "outline-variant": "#c1c7cb",
+                    "outline": "#71787c",
+                    "surface-container-high": "#dbe9ff",
+                    "on-primary-fixed-variant": "#254b5b",
+                    "surface-dim": "#c4dcfd",
+                    "surface-variant": "#d1e4ff",
+                    "on-tertiary": "#ffffff",
+                    "primary-fixed-dim": "#a5ccdf",
+                    "on-surface-variant": "#41484b",
+                    "on-secondary-fixed": "#261900",
+                    "on-secondary-fixed-variant": "#5d4200",
+                    "secondary-container": "#fdbf35",
+                    "tertiary-container": "#503410",
+                    "surface-container-highest": "#d1e4ff",
+                    "tertiary-fixed-dim": "#eabf8f",
+                    "on-primary-container": "#83a9bb",
+                    "on-primary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "surface-container-lowest": "#ffffff",
+                    "on-surface": "#011d35",
+                    "on-tertiary-fixed": "#2b1700",
+                    "inverse-primary": "#a5ccdf",
+                    "primary": "#002835"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "unit-sm": "8px",
+                    "unit-xs": "4px",
+                    "gutter": "24px",
+                    "unit-lg": "24px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "48px",
+                    "container-max": "1280px",
+                    "unit-md": "16px",
+                    "unit-xl": "40px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Montserrat", "sans-serif"],
+                    "label-sm": ["Montserrat", "sans-serif"],
+                    "headline-md": ["Montserrat", "sans-serif"],
+                    "body-md": ["Montserrat", "sans-serif"],
+                    "headline-lg": ["Montserrat", "sans-serif"],
+                    "label-bold": ["Montserrat", "sans-serif"],
+                    "headline-xl": ["Montserrat", "sans-serif"],
+                    "body-lg": ["Montserrat", "sans-serif"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "label-bold": ["14px", {"lineHeight": "20px", "fontWeight": "700"}],
+                    "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-browser.js"></script>
+<script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"8caedf609afad31a39b8208b5c0dfb31"})});</script></head>
+<body class="bg-surface text-on-surface font-body-md overflow-x-hidden">
+<main class="max-w-container-max mx-auto">
+<!-- Hero Section -->
+<section class="relative left-1/2 right-1/2 ml-[-50vw] mr-[-50vw] w-screen pt-0 mb-unit-xl">
+<div class="home-hero relative overflow-hidden shadow-2xl border-y border-white/10">
+<div class="absolute inset-0 bg-cover bg-center" style="background-image: url('hero-autenticar.png');"></div>
+<div class="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/5"></div>
+<div class="absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-black/50"></div>
+
+<div class="home-hero-content relative z-10 px-4 py-4 md:p-8 flex flex-col">
+<div class="flex items-center justify-between gap-3">
+<a href="index.html" aria-label="Voltar ao inicio" class="inline-flex items-center">
+<img alt="autenticar" class="h-8 md:h-10 w-auto" src="logo-new-3.png"/>
+</a>
+<div class="brand-nav hidden md:flex items-center text-white/95 text-xs font-semibold">
+<a class="brand-chip" href="index.html">Inicio</a>
+<a class="brand-chip" href="about-us.html">Quem somos</a>
+<a class="brand-chip" href="destaque.html">Destaques</a>
+<a class="brand-chip" href="quiz-carro.html">Encontrar carro</a>
+</div>
+</div>
+
+<div class="home-hero-copy my-auto mx-auto md:mx-0 max-w-[620px] pb-4 md:pb-6 text-white text-center md:text-left flex flex-col items-center md:items-start md:pl-[100px]">
+<p class="text-sm md:text-base text-white/80 mb-3">A estrada começa aqui.</p>
+<h1 class="font-black text-[34px] sm:text-[40px] md:text-[64px] leading-[0.95] tracking-[-0.02em] uppercase mb-5 max-w-[12ch]">Compre com confiança</h1>
+<div class="w-full sm:w-auto">
+<div class="flex flex-wrap items-center justify-center md:justify-start gap-3">
+<button id="contact-toggle" type="button" aria-expanded="false" aria-controls="contact-overlay" class="inline-flex w-full sm:w-auto items-center justify-center gap-2 text-center rounded-full border border-white/30 bg-[#153e4d]/18 text-white min-h-12 px-5 py-3 text-sm md:text-base font-semibold shadow-lg backdrop-blur-md hover:bg-[#153e4d]/28 transition-all duration-300">
+<span class="material-symbols-outlined text-[18px]">call</span>
+Contactos
+</button>
+<nav aria-label="Redes sociais" class="flex items-center gap-2">
+<a href="https://www.instagram.com/standautenticar/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/30 bg-[#153e4d]/18 text-white shadow-lg backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-[#153e4d] focus:outline-none focus:ring-2 focus:ring-white/80">
+<svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<rect width="18" height="18" x="3" y="3" rx="5"></rect>
+<circle cx="12" cy="12" r="4"></circle>
+<circle cx="17.5" cy="6.5" r="0.75" fill="currentColor" stroke="none"></circle>
+</svg>
+</a>
+<a href="https://www.facebook.com/standautenticar" target="_blank" rel="noopener noreferrer" aria-label="Facebook" class="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/30 bg-[#153e4d]/18 text-white shadow-lg backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-[#153e4d] focus:outline-none focus:ring-2 focus:ring-white/80">
+<svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+<path d="M13.5 21v-8h2.75l.41-3.2H13.5V7.76c0-.93.26-1.56 1.59-1.56h1.7V3.34c-.29-.04-1.3-.13-2.48-.13-2.45 0-4.13 1.5-4.13 4.25V9.8H7.4V13h2.78v8h3.32Z"></path>
+</svg>
+</a>
+<a href="https://wa.me/351932783312" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" class="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/30 bg-[#153e4d]/18 text-white shadow-lg backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-[#153e4d] focus:outline-none focus:ring-2 focus:ring-white/80">
+<svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+<path d="M20.5 11.6a8.4 8.4 0 0 1-12.4 7.37L3.5 20.5l1.5-4.46A8.4 8.4 0 1 1 20.5 11.6Z"></path>
+<path d="M8.1 7.8c.2-.45.42-.46.73-.47h.63c.2 0 .4.07.52.4l.75 1.82c.1.26.04.47-.12.67l-.57.7c-.17.18-.2.36-.06.6.65 1.12 1.53 2 2.64 2.64.24.14.42.11.6-.06l.7-.82c.18-.22.4-.27.65-.16l1.86.88c.27.13.38.3.34.55-.12.75-.55 1.39-1.18 1.79-.55.34-1.27.46-2.02.23-1.32-.41-2.6-1.18-3.8-2.37-1.2-1.2-2-2.48-2.38-3.8-.22-.75-.1-1.47.24-2.02.12-.2.28-.4.46-.6Z"></path>
+</svg>
+</a>
+</nav>
+</div>
+</div>
+</div>
+</section>
+<div id="contact-overlay" class="hidden fixed inset-0 z-[100] px-3 sm:px-5 opacity-0 overflow-y-auto">
+<div class="absolute inset-0 bg-[#07141b]/58 backdrop-blur-[6px]"></div>
+<div class="relative flex min-h-[100svh] items-center justify-center py-6">
+<div id="contact-panel" role="dialog" aria-modal="true" aria-labelledby="contact-title" class="w-full max-w-[400px] overflow-hidden rounded-[28px] bg-[rgba(255,255,255,0.86)] text-[#153e4d] shadow-[0_24px_80px_rgba(0,0,0,0.24)] ring-1 ring-white/65 backdrop-blur-xl px-6 py-6 text-left opacity-0 scale-95 translate-y-6 blur-sm">
+<div class="flex items-start justify-between gap-4">
+<div>
+<p class="text-[0.68rem] font-semibold uppercase tracking-[0.3em] text-[#fdbf35]">Autenticar</p>
+<h3 id="contact-title" class="mt-2 text-[1.8rem] leading-none font-black uppercase text-[#153e4d]">Contactos</h3>
+<p class="mt-3 max-w-[26ch] text-sm leading-6 text-[#5f6970]">Fale connosco diretamente. Respondemos com rapidez.</p>
+</div>
+<button id="contact-close" type="button" aria-label="Fechar contactos" class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#153e4d]/10 bg-white/55 text-[#153e4d] shadow-sm hover:bg-white transition-colors">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<div class="mt-6 h-px w-full bg-[#153e4d]/10"></div>
+<div class="mt-6 space-y-2.5">
+<a class="flex min-h-[80px] items-center gap-4 rounded-[22px] border border-[#8eb8ff] bg-white/34 px-4 py-4 hover:bg-white/58 transition-all" href="tel:+351932783312">
+<span class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#fdbf35]/22 text-[#153e4d]">
+<span class="material-symbols-outlined text-[20px]">call</span>
+</span>
+<span class="min-w-0">
+<span class="block text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#8a9196]">Telefone</span>
+<span class="block mt-1 text-[1.05rem] font-semibold text-[#153e4d]">+351 932 783 312</span>
+</span>
+</a>
+<a class="flex min-h-[80px] items-center gap-4 rounded-[22px] border border-[#8eb8ff] bg-white/34 px-4 py-4 hover:bg-white/58 transition-all" href="mailto:geral@autenticar.pt">
+<span class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#153e4d]/10 text-[#153e4d]">
+<span class="material-symbols-outlined text-[20px]">mail</span>
+</span>
+<span class="min-w-0">
+<span class="block text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#8a9196]">Email</span>
+<span class="block mt-1 text-[0.91rem] sm:text-[1.05rem] font-semibold text-[#153e4d] break-all">geral@autenticar.pt</span>
+</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+<!-- Advanced Search Section -->
+<section class="px-margin-mobile md:px-margin-desktop mb-unit-xl">
+<div id="advanced-search-panel" class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-unit-lg shadow-sm">
+<div class="flex items-center gap-unit-sm mb-unit-md">
+<span class="material-symbols-outlined text-[28px] text-primary" data-icon="tune" aria-hidden="true">tune</span>
+<h2 class="font-headline-md text-headline-md text-primary">Pesquisa avançada</h2>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-unit-md">
+<select id="advancedBrandFilter" class="w-full h-12 border border-outline-variant rounded-lg px-4 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md">
+<option value="">Marca</option>
+</select>
+<select id="advancedModelFilter" class="w-full h-12 border border-outline-variant rounded-lg px-4 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md">
+<option value="">Modelo</option>
+</select>
+<select id="advancedFuelFilter" class="w-full h-12 border border-outline-variant rounded-lg px-4 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md">
+<option value="">Combustível</option>
+</select>
+<input id="advancedMaxPriceFilter" class="w-full h-12 border border-outline-variant rounded-lg px-4 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md" placeholder="Preço máximo (€)" type="text"/>
+<input id="advancedMaxMileageFilter" class="w-full h-12 border border-outline-variant rounded-lg px-4 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md" placeholder="Quilómetros máximos" type="text"/>
+</div>
+<div class="mt-unit-md">
+<button id="advancedSearchButton" class="w-full md:w-auto bg-primary-container text-white h-12 px-6 rounded-lg font-label-bold text-label-bold hover:bg-primary transition-colors" type="button">Pesquisar agora</button>
+</div>
+</div>
+</section>
+<!-- Featured Vehicles Section -->
+<section class="px-margin-mobile md:px-margin-desktop mb-unit-xl overflow-hidden">
+<div class="flex justify-between items-end mb-unit-lg">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary">Stock dispon&iacute;vel</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Todas as viaturas dispon&iacute;veis na Autenticar</p>
+</div>
+</div>
+<div id="featuredCarsGrid" class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-unit-lg">
+<p class="font-body-md text-body-md text-on-surface-variant">A carregar viaturas...</p>
+</div>
+<nav id="featuredCarsPagination" class="mt-unit-md hidden items-center justify-center gap-unit-sm" aria-label="Pagina&ccedil;&atilde;o do stock"></nav>
+</section>
+<!-- Location Section -->
+<section class="px-margin-mobile md:px-margin-desktop mb-unit-xl" aria-labelledby="location-title">
+<div class="overflow-hidden rounded-[28px] bg-primary-container text-white shadow-lg">
+<div class="grid lg:grid-cols-[0.82fr_1.18fr]">
+<div class="flex flex-col justify-center p-7 sm:p-10 lg:p-12">
+<span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-secondary-container text-primary mb-6" aria-hidden="true">
+<span class="material-symbols-outlined text-[24px]">location_on</span>
+</span>
+<p class="text-xs font-semibold uppercase tracking-[0.24em] text-primary-fixed mb-3">Visite-nos</p>
+<h2 id="location-title" class="font-headline-md text-[28px] sm:text-[32px] leading-tight font-bold mb-4">A nossa localização</h2>
+<address class="not-italic text-base sm:text-lg leading-7 text-white/80">
+<span class="block font-semibold text-white">Loja AM, Centro Empresarial de</span>
+<span class="block">R. Maj. João Luís de Moura</span>
+<span class="block">1685-650 Famões</span>
+</address>
+<a class="mt-7 inline-flex w-fit items-center gap-2 rounded-full bg-secondary-container px-5 py-3 text-sm font-bold text-primary transition-transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-container" href="https://www.google.com/maps/search/?api=1&amp;query=Autenticar%2C%20Com%C3%A9rcio%20de%20Autom%C3%B3veis%2C%20QQR%2B9P%20Fam%C3%B5es" target="_blank" rel="noopener noreferrer">
+Abrir no Google Maps
+<span class="material-symbols-outlined text-[18px]" aria-hidden="true">open_in_new</span>
+</a>
+</div>
+<div class="min-h-[320px] lg:min-h-[430px] bg-surface-container">
+<iframe class="h-full min-h-[320px] lg:min-h-[430px] w-full border-0" src="https://www.google.com/maps?q=Autenticar%2C%20Com%C3%A9rcio%20de%20Autom%C3%B3veis%2C%20QQR%2B9P%20Fam%C3%B5es&amp;output=embed" title="Mapa da localização da Autenticar em Famões" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Content -->
+<footer class="text-on-surface pb-unit-lg pt-unit-lg px-margin-mobile md:px-margin-desktop text-white" style="background-color: #153E4D; color: #FFFFFF;">
+<div class="max-w-container-max mx-auto grid md:grid-cols-4 gap-unit-lg border-b border-outline-variant/10 pb-unit-lg">
+<div class="md:col-span-1">
+<img alt="autenticar" class="h-10 mb-unit-sm w-auto" src="logo-new-3.png"/>
+<p class="font-body-md text-body-md text-white/80">O seu marketplace de confiança para compra e venda de veículos. Qualidade e transparência em cada quilómetro.</p>
+</div>
+<div class="">
+<h4 class="font-label-bold text-label-bold text-primary mb-unit-sm uppercase tracking-widest !text-white">Veículos</h4>
+<ul class="space-y-1 font-label-sm text-label-sm">
+<li><a class="hover:text-primary text-white/80 hover:text-white" href="#">Carros</a></li>
+<li><a class="hover:text-primary text-white/80 hover:text-white" href="https://www.agrimog.pt/">Máquinas Agrícolas</a></li>
+</ul>
+</div>
+<div class="">
+<h4 class="font-label-bold text-label-bold text-primary mb-unit-sm uppercase tracking-widest !text-white">Empresa</h4>
+<ul class="space-y-1 font-label-sm text-label-sm">
+<li><a class="hover:text-primary text-white/80 hover:text-white" href="about-us.html">Sobre Nós</a></li>
+</ul>
+</div>
+<div class="">
+<h4 class="font-label-bold text-label-bold text-primary mb-unit-sm uppercase tracking-widest !text-white">Suporte</h4>
+<ul class="space-y-1 font-label-sm text-label-sm">
+<li><a class="hover:text-primary text-white/80 hover:text-white" href="#">Ajuda</a></li>
+<li><a class="hover:text-primary text-white/80 hover:text-white" href="#">Contactos</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-container-max mx-auto pt-unit-sm flex flex-col md:flex-row justify-between items-center gap-unit-sm font-label-sm text-label-sm">
+<div class="flex flex-col md:flex-row justify-between items-center w-full gap-unit-sm">
+<div class="flex flex-col md:flex-row items-center gap-unit-md">
+<p class="font-label-sm text-label-sm text-white/80 !text-white/60">© 2024 autenticar. Todos os direitos reservados.</p>
+<div class="flex flex-wrap justify-center gap-unit-lg font-label-sm text-label-sm opacity-80">
+<a class="hover:text-primary !text-white/60 hover:text-white text-white/60" href="livro-reclamacoes.html">Livro de Reclamacoes</a>
+<a class="hover:text-primary !text-white/60 hover:text-white text-white/60" href="conflitos-de-consumo.html">Conflitos de consumo</a>
+<a class="hover:text-primary !text-white/60 hover:text-white text-white/60" href="politica-privacidade.html">Privacidade</a>
+<a class="hover:text-primary !text-white/60 hover:text-white text-white/60" href="politica-de-cookies.html">Cookies</a>
+</div>
+</div>
+<div class="flex items-center gap-unit-sm">
+<a class="inline-flex items-center rounded-full border border-white/20 px-3 py-1 text-white/70 transition-colors hover:border-white/40 hover:text-white" href="login.html">Admin Login</a>
+</div>
+</div>
+</div>
+</footer>
+<script>
+  const apiBase = window.location.protocol === "file:" ? "http://127.0.0.1:3000" : "";
+  let motionObserver = null;
+
+  function prefersReducedMotion() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  function registerMotionReveal(elements) {
+    const targets = Array.from(elements || []).filter(Boolean);
+    if (!targets.length) return;
+
+    if (prefersReducedMotion()) {
+      targets.forEach((element) => element.classList.add("is-visible"));
+      return;
+    }
+
+    if (!motionObserver) {
+      motionObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-visible");
+          motionObserver.unobserve(entry.target);
+        });
+      }, { threshold: 0.18, rootMargin: "0px 0px -8% 0px" });
+    }
+
+    targets.forEach((element, index) => {
+      element.classList.add("motion-reveal");
+      if (!element.style.getPropertyValue("--motion-delay")) {
+        element.style.setProperty("--motion-delay", `${Math.min(index * 80, 320)}ms`);
+      }
+      motionObserver.observe(element);
+    });
+  }
+
+  function setupPageMotion() {
+    const featuredSection = document.getElementById("featuredCarsGrid")?.closest("section");
+    const locationSection = document.querySelector("section[aria-labelledby='location-title']");
+    const widgets = [
+      document.getElementById("advanced-search-panel"),
+      document.getElementById("featuredCarsGrid"),
+      locationSection?.firstElementChild
+    ];
+
+    widgets.filter(Boolean).forEach((element) => element.classList.add("motion-widget"));
+
+    registerMotionReveal([
+      document.getElementById("advanced-search-panel"),
+      ...document.querySelectorAll("#advanced-search-panel select, #advanced-search-panel input, #advancedSearchButton"),
+      ...Array.from(featuredSection?.querySelectorAll("h2, p, a") || []),
+      document.getElementById("featuredCarsGrid"),
+      locationSection?.firstElementChild,
+      ...Array.from(locationSection?.querySelectorAll("span, p, h2, address, a") || []),
+      ...document.querySelectorAll("footer > .max-w-container-max > div, footer > .max-w-container-max img, footer > .max-w-container-max h4, footer > .max-w-container-max p")
+    ]);
+  }
+
+  async function apiFetch(path, options) {
+    return window.AutenticarApi.fetch(`${apiBase}${path}`, options);
+  }
+
+  const stockState = {
+    cars: [],
+    page: 1,
+    pageSize: 9
+  };
+
+  function renderFeaturedCarsPage() {
+    const container = document.getElementById("featuredCarsGrid");
+    const pagination = document.getElementById("featuredCarsPagination");
+    if (!container) return;
+
+    const totalPages = Math.ceil(stockState.cars.length / stockState.pageSize);
+    stockState.page = Math.min(Math.max(stockState.page, 1), Math.max(totalPages, 1));
+    const start = (stockState.page - 1) * stockState.pageSize;
+    const pageCars = stockState.cars.slice(start, start + stockState.pageSize);
+
+    if (pageCars.length === 0) {
+      container.className = "bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-unit-lg";
+      container.innerHTML = '<p class="font-body-md text-body-md text-on-surface-variant">Sem viaturas dispon&iacute;veis neste momento.</p>';
+      if (pagination) {
+        pagination.className = "mt-unit-md hidden items-center justify-center gap-unit-sm";
+        pagination.innerHTML = "";
+      }
+      return;
+    }
+
+    container.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-unit-lg bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-unit-lg";
+    container.classList.add("motion-widget");
+    container.innerHTML = pageCars.map((car) => {
+      const image = Array.isArray(car.image_urls) && car.image_urls.length ? car.image_urls[0] : "";
+      const title = car.title || `${car.brand || ""} ${car.model || ""}`.trim() || "Viatura";
+      const subtitle = `${car.registration_date || "N/D"} - ${Number(car.mileage || 0).toLocaleString("pt-PT")} km`;
+      const price = Number(car.price_eur || 0).toLocaleString("pt-PT", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+      return `
+        <a href="carro.html?id=${encodeURIComponent(car.id)}" class="bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-lg transition-shadow border border-outline-variant/30 overflow-hidden group block" aria-label="Ver ${title}">
+          <article class="h-full flex flex-col">
+            <div class="relative h-48 overflow-hidden bg-surface-container">
+              ${image ? `<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="${image}" alt="${title}" />` : `<div class="w-full h-full bg-surface-container flex items-center justify-center text-on-surface-variant text-sm">Sem imagem</div>`}
+            </div>
+            <div class="p-unit-md flex flex-col flex-1">
+              <h4 class="font-headline-md text-headline-md text-primary mb-1">${price} &euro;</h4>
+              <p class="font-body-md text-body-md text-on-surface font-semibold mb-unit-sm line-clamp-2">${title}</p>
+              <p class="font-label-sm text-label-sm text-on-surface-variant mt-auto">${subtitle}</p>
+            </div>
+          </article>
+        </a>
+      `;
+    }).join("");
+    registerMotionReveal(container.querySelectorAll("a"));
+
+    if (!pagination) return;
+    if (totalPages <= 1) {
+      pagination.className = "mt-unit-md hidden items-center justify-center gap-unit-sm";
+      pagination.innerHTML = "";
+      return;
+    }
+
+    const pageButtons = Array.from({ length: totalPages }, (_, index) => {
+      const page = index + 1;
+      const isActive = page === stockState.page;
+      return `<button type="button" data-stock-page="${page}" class="h-10 min-w-10 rounded-lg px-3 text-sm font-bold transition-colors ${isActive ? "bg-primary text-white" : "bg-surface-container-lowest text-primary border border-outline-variant hover:bg-surface-container"}" aria-current="${isActive ? "page" : "false"}">${page}</button>`;
+    }).join("");
+
+    pagination.className = "mt-unit-md flex flex-wrap items-center justify-center gap-unit-sm";
+    pagination.innerHTML = `
+      <button type="button" data-stock-page-prev class="inline-flex h-10 items-center gap-1 rounded-lg border border-outline-variant bg-surface-container-lowest px-3 text-sm font-bold text-primary transition-colors hover:bg-surface-container disabled:cursor-not-allowed disabled:opacity-45" ${stockState.page === 1 ? "disabled" : ""}>
+        <span class="material-symbols-outlined text-[18px]" aria-hidden="true">chevron_left</span>
+        Anterior
+      </button>
+      ${pageButtons}
+      <button type="button" data-stock-page-next class="inline-flex h-10 items-center gap-1 rounded-lg border border-outline-variant bg-surface-container-lowest px-3 text-sm font-bold text-primary transition-colors hover:bg-surface-container disabled:cursor-not-allowed disabled:opacity-45" ${stockState.page === totalPages ? "disabled" : ""}>
+        Seguinte
+        <span class="material-symbols-outlined text-[18px]" aria-hidden="true">chevron_right</span>
+      </button>
+    `;
+  }
+
+  async function loadFeaturedCars() {
+    const container = document.getElementById("featuredCarsGrid");
+    if (!container) return;
+    try {
+      const response = await apiFetch("/api/cars?limit=100");
+      const data = await response.json();
+      if (!response.ok || !data.ok || !Array.isArray(data.cars) || data.cars.length === 0) {
+        renderFeaturedCarsPage();
+        return;
+      }
+      stockState.cars = data.cars;
+      stockState.page = 1;
+      renderFeaturedCarsPage();
+    } catch {
+      renderFeaturedCarsPage();
+    }
+  }
+
+  document.getElementById("featuredCarsPagination")?.addEventListener("click", (event) => {
+    const button = event.target.closest("button");
+    if (!button) return;
+    const totalPages = Math.ceil(stockState.cars.length / stockState.pageSize);
+    if (button.hasAttribute("data-stock-page-prev")) {
+      stockState.page -= 1;
+    } else if (button.hasAttribute("data-stock-page-next")) {
+      stockState.page += 1;
+    } else if (button.dataset.stockPage) {
+      stockState.page = Number.parseInt(button.dataset.stockPage, 10) || 1;
+    }
+    stockState.page = Math.min(Math.max(stockState.page, 1), Math.max(totalPages, 1));
+    renderFeaturedCarsPage();
+  });
+  function uniqueSorted(values) {
+    return Array.from(new Set(values.map((value) => String(value || "").trim()).filter(Boolean)))
+      .sort((a, b) => a.localeCompare(b, "pt", { sensitivity: "base" }));
+  }
+
+  function setSelectOptions(select, placeholder, values) {
+    if (!select) return;
+    const previousValue = select.value;
+    select.innerHTML = "";
+
+    const placeholderOption = document.createElement("option");
+    placeholderOption.value = "";
+    placeholderOption.textContent = placeholder;
+    select.appendChild(placeholderOption);
+
+    values.forEach((value) => {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = value;
+      select.appendChild(option);
+    });
+
+    if (values.includes(previousValue)) {
+      select.value = previousValue;
+    }
+  }
+
+  async function loadAdvancedSearchOptions() {
+    const brandSelect = document.getElementById("advancedBrandFilter");
+    const modelSelect = document.getElementById("advancedModelFilter");
+    const fuelSelect = document.getElementById("advancedFuelFilter");
+    if (!brandSelect || !modelSelect || !fuelSelect) return;
+
+    try {
+      const carsResponse = await apiFetch("/api/cars?limit=100");
+      const carsData = await carsResponse.json();
+      const cars = Array.isArray(carsData.cars) ? carsData.cars : [];
+      const brands = uniqueSorted(cars.map((car) => car.brand));
+
+      const updateModels = () => {
+        const selectedBrand = String(brandSelect.value || "").toLowerCase();
+        const matchingCars = selectedBrand
+          ? cars.filter((car) => String(car.brand || "").trim().toLowerCase() === selectedBrand)
+          : cars;
+        setSelectOptions(modelSelect, "Modelo", uniqueSorted(matchingCars.map((car) => car.model)));
+      };
+
+      setSelectOptions(brandSelect, "Marca", brands);
+      setSelectOptions(fuelSelect, "Combustível", uniqueSorted(cars.map((car) => car.fuel)));
+      updateModels();
+      brandSelect.addEventListener("change", updateModels);
+    } catch {
+      // Keep the placeholder options if the inventory is unavailable.
+    }
+  }
+
+  (() => {
+    const contactToggle = document.getElementById('contact-toggle');
+    const contactOverlay = document.getElementById('contact-overlay');
+    const contactPanel = document.getElementById('contact-panel');
+    const contactClose = document.getElementById('contact-close');
+    const searchButton = document.getElementById('advancedSearchButton');
+
+    if (contactToggle && contactOverlay && contactPanel) {
+      const openContactPanel = () => {
+        contactOverlay.classList.remove('hidden');
+        requestAnimationFrame(() => {
+          contactOverlay.classList.remove('opacity-0');
+          contactPanel.classList.remove('opacity-0', 'scale-95', 'translate-y-6', 'blur-sm');
+          contactPanel.classList.add('opacity-100', 'scale-100', 'translate-y-0');
+        });
+        contactToggle.setAttribute('aria-expanded', 'true');
+        document.body.classList.add('overflow-hidden');
+        contactClose?.focus();
+      };
+
+      const closeContactPanel = () => {
+        contactOverlay.classList.add('opacity-0');
+        contactPanel.classList.add('opacity-0', 'scale-95', 'translate-y-6', 'blur-sm');
+        contactPanel.classList.remove('opacity-100', 'scale-100', 'translate-y-0');
+        contactToggle.setAttribute('aria-expanded', 'false');
+        window.setTimeout(() => {
+          contactOverlay.classList.add('hidden');
+          document.body.classList.remove('overflow-hidden');
+          contactToggle.focus();
+        }, 280);
+      };
+
+      contactToggle.addEventListener('click', () => {
+        if (contactOverlay.classList.contains('hidden')) {
+          openContactPanel();
+          return;
+        }
+        closeContactPanel();
+      });
+
+      contactClose?.addEventListener('click', closeContactPanel);
+
+      contactOverlay.addEventListener('click', (event) => {
+        if (event.target === contactOverlay || event.target === contactOverlay.firstElementChild) {
+          closeContactPanel();
+        }
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !contactOverlay.classList.contains('hidden')) {
+          closeContactPanel();
+        }
+      });
+    }
+
+    searchButton?.addEventListener('click', () => {
+      const params = new URLSearchParams({ search: '1' });
+      [
+        ['brand', document.getElementById('advancedBrandFilter')?.value],
+        ['model', document.getElementById('advancedModelFilter')?.value],
+        ['fuel', document.getElementById('advancedFuelFilter')?.value],
+        ['maxPrice', document.getElementById('advancedMaxPriceFilter')?.value],
+        ['maxMileage', document.getElementById('advancedMaxMileageFilter')?.value]
+      ].forEach(([key, value]) => {
+        const cleanValue = String(value || '').trim();
+        if (cleanValue) params.set(key, cleanValue);
+      });
+
+      window.location.href = `marca.html?${params.toString()}`;
+    });
+  })();
+
+  setupPageMotion();
+  loadFeaturedCars();
+  loadAdvancedSearchOptions();
+</script>
+</body></html>
+
+
+
+
+

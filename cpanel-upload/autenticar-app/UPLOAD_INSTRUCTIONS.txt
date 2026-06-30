@@ -1,0 +1,61 @@
+UPLOAD THIS FOLDER TO CPANEL
+===========================
+
+Upload the contents of this folder to a private app folder, for example:
+
+  /home/autenticar/autenticar-app
+
+Do not upload this folder into public_html.
+
+Correct structure on the server:
+
+  /home/autenticar/autenticar-app/
+    server.js
+    package.json
+    package-lock.json
+    .env or cPanel environment variables
+    public/
+      index.html
+      admin-importar-carro.html
+      supabase-browser.js
+      images and all public website files
+
+In cPanel Setup Node.js App / Application Manager:
+
+  Application root: /home/autenticar/autenticar-app
+  Startup file: server.js
+  Application URL: autenticar.pt
+
+Then run:
+
+  npm install
+
+Set these environment variables in cPanel, or create a private .env file in the app root:
+
+  SUPABASE_URL
+  SUPABASE_ANON_KEY
+  ADMIN_EMAILS
+
+After restart, test this URL:
+
+  https://www.autenticar.pt/api/auth/session-info
+
+Good result:
+
+  JSON response, even if it says session/auth is missing.
+
+Bad result:
+
+  Apache 404 HTML. That means Node is still not connected to the domain.
+
+Security check:
+
+  https://www.autenticar.pt/server.js
+
+Good result:
+
+  404 or unavailable.
+
+Bad result:
+
+  The server.js file downloads. That means backend files are still in the public web folder.

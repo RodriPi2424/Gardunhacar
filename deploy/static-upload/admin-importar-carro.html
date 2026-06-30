@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <title>Admin - Importar Carro</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: "Manrope", sans-serif; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-browser.js?v=alonso-progress-20260611"></script>
+<script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"8caedf609afad31a39b8208b5c0dfb31"})});</script></head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+  <header class="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-slate-200">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div>
+        <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Autenticar Admin</p>
+        <h1 id="pageTitle" class="text-xl md:text-2xl font-extrabold">Importar Carro</h1>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="admin" class="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold hover:bg-slate-100">
+          Voltar ao painel
+        </a>
+        <a href="login?logout=1" class="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold hover:bg-slate-100">
+          Terminar sessÃ£o
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto p-4 md:p-6">
+    <form id="carImportForm" class="space-y-6" novalidate>
+      <section class="bg-white rounded-2xl border border-slate-200 p-5 md:p-6">
+        <h2 class="text-lg font-bold mb-4">Importar por link</h2>
+        <p class="text-sm text-slate-500 mb-3">Cola o URL da viatura em <strong>autenticar.pt</strong> ou <strong>viaturas.alonsosebranco.pt</strong> para importar automaticamente os dados e imagens.</p>
+        <div class="flex flex-col md:flex-row gap-3">
+          <input id="sourceUrlInput" type="url" class="flex-1 rounded-xl border-slate-300" placeholder="https://www.autenticar.pt/viaturas/... ou https://viaturas.alonsosebranco.pt/carros/..." />
+        </div>
+        <p class="mt-2 text-xs text-slate-500">A importaÃ§Ã£o comeÃ§a automaticamente ao carregar Enter no campo do link.</p>
+      </section>
+
+      <section class="bg-white rounded-2xl border border-slate-200 p-5 md:p-6">
+        <h2 class="text-lg font-bold mb-4">Dados principais</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <label class="block md:col-span-2">
+            <span class="text-sm font-semibold text-slate-600">TÃ­tulo</span>
+            <input data-manual-required="true" type="text" name="title" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="Ex: BMW SÃ©rie 3 320d Pack M" />
+          </label>
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">Marca</span>
+            <input data-manual-required="true" type="text" name="brand" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="Ex: BMW" />
+          </label>
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">Modelo</span>
+            <input data-manual-required="true" type="text" name="model" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="Ex: SÃ©rie 3" />
+          </label>
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">Registo</span>
+            <input data-manual-required="true" type="text" name="registrationDate" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="Ex: Fev. 2022" />
+          </label>
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">QuilÃ³metros</span>
+            <input data-manual-required="true" type="number" name="mileage" min="0" step="1" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="78622" />
+          </label>
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">CombustÃ­vel</span>
+            <select data-manual-required="true" name="fuel" class="mt-1 block w-full rounded-xl border-slate-300">
+              <option value="">Selecionar</option>
+              <option>GasÃ³leo</option>
+              <option>Gasolina</option>
+              <option>Bi fuel</option>
+              <option>HÃ­brido</option>
+              <option>HÃ­brido Plug-in</option>
+              <option>ElÃ©trico</option>
+              <option>GPL</option>
+            </select>
+          </label>
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">PreÃ§o (EUR)</span>
+            <input data-manual-required="true" type="number" name="price" step="0.01" min="0" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="19990.00" />
+          </label>
+          <label class="block md:col-span-2">
+            <span class="text-sm font-semibold text-slate-600">ObservaÃ§Ãµes</span>
+            <textarea data-manual-required="true" name="observations" rows="4" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="CondiÃ§Ã£o, histÃ³rico, observaÃ§Ãµes..."></textarea>
+          </label>
+        </div>
+      </section>
+
+      <section class="bg-white rounded-2xl border border-slate-200 p-5 md:p-6">
+        <h2 class="text-lg font-bold mb-4">CaracterÃ­sticas (imagem 2)</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">Lugares</span>
+            <input data-manual-required="true" type="number" name="seats" min="1" step="1" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="5" />
+          </label>
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">Segmento</span>
+            <input data-manual-required="true" type="text" name="segment" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="Ex: UtilitÃ¡rio" />
+          </label>
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">PotÃªncia</span>
+            <input data-manual-required="true" type="text" name="power" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="Ex: 110 Cv" />
+          </label>
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">Origem</span>
+            <select data-manual-required="true" name="origin" class="mt-1 block w-full rounded-xl border-slate-300">
+              <option value="">Selecionar</option>
+              <option>Nacional</option>
+              <option>Importado</option>
+            </select>
+          </label>
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">Cilindrada</span>
+            <input data-manual-required="true" type="text" name="engineDisplacement" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="Ex: 1499 Cc" />
+          </label>
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">TransmissÃ£o</span>
+            <input data-manual-required="true" type="text" name="transmission" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="Ex: Manual de 6 velocidades" />
+          </label>
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">Cor</span>
+            <input data-manual-required="true" type="text" name="color" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="Ex: Branco" />
+          </label>
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">Portas</span>
+            <input data-manual-required="true" type="number" name="doors" min="1" step="1" class="mt-1 block w-full rounded-xl border-slate-300" placeholder="5" />
+          </label>
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">Estado</span>
+            <select data-manual-required="true" name="condition" class="mt-1 block w-full rounded-xl border-slate-300">
+              <option value="">Selecionar</option>
+              <option>Novo</option>
+              <option>Usado</option>
+            </select>
+          </label>
+          <label class="block">
+            <span class="text-sm font-semibold text-slate-600">Garantia</span>
+            <select data-manual-required="true" name="warranty" class="mt-1 block w-full rounded-xl border-slate-300">
+              <option value="">Selecionar</option>
+              <option>Sim</option>
+              <option>NÃ£o</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="bg-white rounded-2xl border border-slate-200 p-5 md:p-6">
+        <h2 class="text-lg font-bold mb-4">Listar em categorias</h2>
+        <p class="text-sm text-slate-500 mb-3">Seleciona onde este carro deve aparecer no website.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+          <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3">
+            <input type="checkbox" name="listingCategory" value="destaque" class="rounded border-slate-300" />
+            <span class="text-sm font-semibold text-slate-700">Destaque</span>
+          </label>
+          <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3">
+            <input type="checkbox" name="listingCategory" value="primeiro-carro" class="rounded border-slate-300" />
+            <span class="text-sm font-semibold text-slate-700">Primeiro carro</span>
+          </label>
+          <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3">
+            <input type="checkbox" name="listingCategory" value="carros-economicos" class="rounded border-slate-300" />
+            <span class="text-sm font-semibold text-slate-700">Carros econÃ³micos</span>
+          </label>
+          <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3">
+            <input type="checkbox" name="listingCategory" value="carros-familiares" class="rounded border-slate-300" />
+            <span class="text-sm font-semibold text-slate-700">Carros familiares</span>
+          </label>
+          <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3">
+            <input type="checkbox" name="listingCategory" value="carros-cidade" class="rounded border-slate-300" />
+            <span class="text-sm font-semibold text-slate-700">Carros para cidade</span>
+          </label>
+          <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3">
+            <input type="checkbox" name="listingCategory" value="carros-automaticos" class="rounded border-slate-300" />
+            <span class="text-sm font-semibold text-slate-700">Carros automÃ¡ticos</span>
+          </label>
+          <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3">
+            <input type="checkbox" name="listingCategory" value="carros-viagens" class="rounded border-slate-300" />
+            <span class="text-sm font-semibold text-slate-700">Carros para viagens</span>
+          </label>
+          <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3">
+            <input type="checkbox" name="listingCategory" value="suvs" class="rounded border-slate-300" />
+            <span class="text-sm font-semibold text-slate-700">SUVs</span>
+          </label>
+          <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3">
+            <input type="checkbox" name="listingCategory" value="baixo-consumo" class="rounded border-slate-300" />
+            <span class="text-sm font-semibold text-slate-700">Baixo consumo</span>
+          </label>
+          <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3">
+            <input type="checkbox" name="listingCategory" value="ate-10000" class="rounded border-slate-300" />
+            <span class="text-sm font-semibold text-slate-700">AtÃ© 10.000â‚¬</span>
+          </label>
+          <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3">
+            <input type="checkbox" name="listingCategory" value="ate-15000" class="rounded border-slate-300" />
+            <span class="text-sm font-semibold text-slate-700">AtÃ© 15.000â‚¬</span>
+          </label>
+        </div>
+      </section>
+
+      <section class="bg-white rounded-2xl border border-slate-200 p-5 md:p-6">
+        <h2 class="text-lg font-bold mb-4">Extras</h2>
+        <p class="text-sm text-slate-500 mb-3">Adiciona os extras do carro (AC, GPS, cÃ¢mara traseira, etc).</p>
+        <div id="extrasCheckboxGrid" class="space-y-5" tabindex="-1"></div>
+        <div class="mt-5 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4">
+          <p class="text-sm font-semibold text-slate-700">Extra temporÃ¡rio</p>
+          <p class="mt-1 text-xs text-slate-500">Se faltar alguma opÃ§Ã£o na lista, podes adicionar manualmente aqui.</p>
+          <div class="mt-3 flex flex-col gap-3 md:flex-row">
+            <input id="extraInput" type="text" class="flex-1 rounded-xl border-slate-300" placeholder="Escreve um extra adicional" />
+            <button id="addExtraBtn" type="button" class="rounded-xl bg-slate-900 px-4 py-2 font-semibold text-white hover:bg-slate-800">Adicionar extra</button>
+          </div>
+          <div id="customExtrasList" class="mt-3 flex flex-wrap gap-2"></div>
+        </div>
+        <input id="extrasHidden" type="hidden" name="extras" />
+      </section>
+
+      <section class="bg-white rounded-2xl border border-slate-200 p-5 md:p-6">
+        <h2 class="text-lg font-bold mb-4">Upload de imagens</h2>
+        <label class="block">
+          <span class="text-sm font-semibold text-slate-600">Imagens do carro</span>
+          <div class="mt-2 flex items-center gap-3">
+            <button id="chooseImagesBtn" type="button" class="rounded-lg border border-slate-300 bg-slate-100 px-3 py-2 text-sm font-semibold hover:bg-slate-200">
+              Escolher ficheiros
+            </button>
+            <span id="selectedImagesLabel" class="text-sm text-slate-600">Nenhum ficheiro selecionado</span>
+          </div>
+          <input id="imageInput" type="file" name="images" accept="image/*" multiple class="sr-only" />
+        </label>
+        <p class="mt-2 text-xs text-slate-500">Podes selecionar vÃ¡rias imagens. Arrasta as fotografias ou usa as setas para alterar a ordem. A primeira serÃ¡ a fotografia de capa.</p>
+        <div id="previewGrid" class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+      </section>
+
+      <div class="flex items-center gap-3">
+        <button id="submitButton" type="submit" class="rounded-xl bg-emerald-600 text-white font-bold px-5 py-3 hover:bg-emerald-700">
+          Importar carro
+        </button>
+        <button type="reset" class="rounded-xl border border-slate-300 font-semibold px-5 py-3 hover:bg-slate-100">
+          Limpar
+        </button>
+      </div>
+      <p id="formStatus" class="text-sm font-semibold text-slate-600"></p>
+    </form>
+  </main>
+
+  <script>
+    const apiBase = window.location.protocol === "file:" ? "http://127.0.0.1:3000" : "";
+    async function apiFetch(path, options) {
+      const url = `${apiBase}${path}`;
+      return apiBase ? window.fetch(url, options) : window.AutenticarApi.fetch(url, options);
+    }
+
+    async function readApiResponse(response) {
+      const responseText = await response.text();
+      try {
+        return responseText ? JSON.parse(responseText) : {};
+      } catch (_error) {
+        return {
+          ok: false,
+          message: responseText || `Resposta invÃ¡lida do servidor (${response.status}).`
+        };
+      }
+    }
+
+    const pageTitle = document.getElementById("pageTitle");
+    const submitButton = document.getElementById("submitButton");
+    const extrasCheckboxGrid = document.getElementById("extrasCheckboxGrid");
+    const extraInput = document.getElementById("extraInput");
+    const addExtraBtn = document.getElementById("addExtraBtn");
+    const customExtrasList = document.getElementById("customExtrasList");
+    const extrasHidden = document.getElementById("extrasHidden");
+    const imageInput = document.getElementById("imageInput");
+    const previewGrid = document.getElementById("previewGrid");
+    const form = document.getElementById("carImportForm");
+    const formStatus = document.getElementById("formStatus");
+    const sourceUrlInput = document.getElementById("sourceUrlInput");
+    const chooseImagesBtn = document.getElementById("chooseImagesBtn");
+    const selectedImagesLabel = document.getElementById("selectedImagesLabel");
+    const searchParams = new URLSearchParams(window.location.search);
+    const editingCarId = searchParams.get("id");
+    const isEditing = Boolean(editingCarId);
+    const extras = [];
+    const customExtras = [];
+    let selectedImageFiles = [];
+    let selectedImportedImageUrls = [];
+    let isManagingImportedImages = false;
+    let draggedImageIndex = null;
+    const EXTRA_GROUPS = [
+      {
+        title: "Ãudio e MultimÃ©dia",
+        options: [
+          "Apple CarPlay",
+          "Android Auto",
+          "Bluetooth",
+          "RÃ¡dio",
+          "Sistema mÃ£os livres",
+          "Porta USB",
+          "Carregador de smartphone wireless",
+          "Sistema de navegaÃ§Ã£o",
+          "Sistema de som",
+          "Head-up display",
+          "EcrÃ£ tÃ¡ctil",
+          "Controlo de funÃ§Ãµes do veÃ­culo por voz",
+          "Acesso Internet"
+        ]
+      },
+      {
+        title: "IluminaÃ§Ã£o e AssistÃªncia Ã  ConduÃ§Ã£o",
+        options: [
+          "AtivaÃ§Ã£o automÃ¡tica de mÃ­nimos",
+          "Limpa farÃ³is",
+          "Luzes diurnas",
+          "Luzes diurnas LED",
+          "FarÃ³is de nevoeiro",
+          "FarÃ³is de nevoeiro LED",
+          "Farolim traseiro LED",
+          "Follow me home",
+          "IluminaÃ§Ã£o interior LED",
+          "Sistema start/stop",
+          "Controlo de pressÃ£o dos pneus",
+          "TravÃ£o de mÃ£o elÃ©ctrico",
+          "DirecÃ§Ã£o assistida",
+          "Diferencial autoblocante",
+          "Diferencial controlado centralmente",
+          "Assistente de trÃ¢nsito",
+          "Sensor de estacionamento dianteiro",
+          "Sensor de estacionamento traseiro",
+          "Assistente de estacionamento",
+          "Sistema de estacionamento autÃ³nomo",
+          "CÃ¢mara 360Âº",
+          "CÃ¢mara de marcha-atrÃ¡s",
+          "Retrovisores exteriores com regulaÃ§Ã£o elÃ©ctrica",
+          "Retrovisores exteriores aquecidos",
+          "Retrovisores exteriores electricamente retrÃ¡teis",
+          "Retrovisor cÃ¢mara nas portas",
+          "Assistente de Ã¢ngulo morto",
+          "Assistente activo de mudanÃ§a de faixa",
+          "Sistema de aviso de transposiÃ§Ã£o da via",
+          "Controlo de proximidade",
+          "Limitador de velocidade",
+          "Assistente de travagem",
+          "Assistente da linha de rodagem em curva",
+          "Controlo de traÃ§Ã£o"
+        ]
+      },
+      {
+        title: "Conforto e Interior",
+        options: [
+          "AC traseiro",
+          "Banco do condutor com regulaÃ§Ã£o elÃ©ctrica",
+          "Banco do passageiro com regulaÃ§Ã£o elÃ©ctrica",
+          "Banco do condutor aquecido",
+          "Banco do passageiro aquecido",
+          "RegulaÃ§Ã£o lombar do banco do condutor elÃ©ctrica",
+          "RegulaÃ§Ã£o lombar do banco do passageiro elÃ©ctrica",
+          "Bancos dianteiros ventilados",
+          "Bancos dianteiros com massagem",
+          "Bancos com memÃ³ria",
+          "Bancos desportivos dianteiros",
+          "Bancos traseiros aquecidos",
+          "Bancos traseiros ventilados",
+          "Bancos traseiros com massagem",
+          "Apoio de braÃ§o dianteiro",
+          "Apoio de braÃ§o traseiro",
+          "Volante em pele",
+          "Volante desportivo",
+          "Comandos do rÃ¡dio no volante",
+          "Volante electricamente ajustÃ¡vel",
+          "Volante multifunÃ§Ãµes",
+          "Volante aquecido",
+          "Volante com patilhas de velocidade",
+          "Manete de velocidades em pele",
+          "Chave digital",
+          "Fecho central sem chave",
+          "Arranque sem chave",
+          "Arranque do motor sem chave",
+          "AC independente",
+          "Hill Descent Control",
+          "Hill Holder",
+          "Reconhecimento activo de sinais de velocidade",
+          "Reconhecimento sinais trÃ¢nsito",
+          "Assistente de prÃ©-colisÃ£o em cruzamento",
+          "ConduÃ§Ã£o autÃ³noma bÃ¡sica",
+          "Sensor de MÃ¡ximos",
+          "FarÃ³is direcionais",
+          "FarÃ³is adaptativos",
+          "Luzes direcionais dinÃ¢micas"
+        ]
+      },
+      {
+        title: "SeguranÃ§a",
+        options: [
+          "ABS",
+          "Controlo de estabilidade (ESP)",
+          "DistribuiÃ§Ã£o electrÃ³nica de travagem",
+          "TravÃ£o assistido electronicamente",
+          "Assistente de travagem em cidade",
+          "Assistente de travagem de proteÃ§Ã£o de peÃµes",
+          "Assistente activo de travagem",
+          "Sistema de alerta de colisÃ£o",
+          "Sistema de alerta prÃ©-colisÃ£o",
+          "Sistema prÃ©-colisÃ£o traseiro",
+          "Sistema prÃ©-colisÃ£o lateral",
+          "Sensores traseiros de alerta de trÃ¡fego",
+          "Sistema de alerta acÃºstico de veÃ­culos (AVAS)",
+          "Sistema de detecÃ§Ã£o de fadiga",
+          "Alerta de pausa para descanso",
+          "Emergency Assist",
+          "Assistente de mudanÃ§a de faixa",
+          "Sistema de seguranÃ§a prÃ©-colisÃ£o",
+          "Chamada automÃ¡tica de SOS",
+          "Airbag do condutor",
+          "Airbag do passageiro",
+          "Airbag joelho condutor",
+          "Airbag joelho passageiro",
+          "Airbags de cabeÃ§a condutor e passageiro",
+          "Airbag central do condutor e passageiro",
+          "Airbags dianteiros para assentos traseiros",
+          "Airbag lateral do condutor",
+          "Airbag lateral do condutor e passageiro",
+          "Airbags cabeÃ§a traseiros",
+          "Airbags laterais traseiros",
+          "Airbag de cortina traseiro transversal",
+          "Cinto de seguranÃ§a traseiro com airbag",
+          "ISOFIX",
+          "Sistema de proteÃ§Ã£o anti-capotamento"
+        ]
+      },
+      {
+        title: "Tecnologia ElÃ©ctrica",
+        options: [
+          "Sistema de recuperaÃ§Ã£o de energia",
+          "FunÃ§Ã£o de carregamento rÃ¡pido",
+          "Cabo de carregamento"
+        ]
+      },
+      {
+        title: "ClimatizaÃ§Ã£o, Vidros e Exterior",
+        options: [
+          "AC automÃ¡tico",
+          "Sensor de chuva",
+          "Desembaciador de pÃ¡ra-brisas",
+          "Limpa vidros: outros",
+          "Vidros elÃ©ctricos dianteiros",
+          "Vidros elÃ©ctricos traseiros",
+          "Vidros traseiros escurecidos",
+          "Capota elÃ©ctrica",
+          "Capota com controlo remoto",
+          "Gancho de Reboque"
+        ]
+      }
+    ];
+
+    if (isEditing) {
+      document.title = "Admin - Editar Carro";
+      pageTitle.textContent = "Editar Carro";
+      submitButton.textContent = "Guardar alteraÃ§Ãµes";
+      sourceUrlInput.closest("section")?.classList.add("hidden");
+    }
+
+    function nextAdminTarget() {
+      return `admin-importar-carro${window.location.search || ""}`;
+    }
+
+    async function requireAdminAccess() {
+      const sessionRaw = localStorage.getItem("autenticar_session_v1");
+      if (!sessionRaw) {
+        window.location.href = `login?next=${encodeURIComponent(nextAdminTarget())}`;
+        return false;
+      }
+
+      let session;
+      try {
+        session = JSON.parse(sessionRaw);
+      } catch {
+        window.location.href = `login?next=${encodeURIComponent(nextAdminTarget())}`;
+        return false;
+      }
+
+      if (!session?.access_token) {
+        window.location.href = `login?next=${encodeURIComponent(nextAdminTarget())}`;
+        return false;
+      }
+
+      try {
+        const response = await apiFetch("/api/auth/session-info", {
+          headers: { Authorization: `Bearer ${session.access_token}` }
+        });
+        const data = await response.json();
+        if (!response.ok || !data.ok || !data.user?.is_admin) {
+          localStorage.removeItem("autenticar_session_v1");
+          localStorage.removeItem("autenticar_user_v1");
+          window.location.href = `login?next=${encodeURIComponent(nextAdminTarget())}`;
+          return false;
+        }
+        return true;
+      } catch {
+        window.location.href = `login?next=${encodeURIComponent(nextAdminTarget())}`;
+        return false;
+      }
+    }
+
+    function setFormStatus(text, type = "neutral") {
+      const classes = {
+        neutral: "text-slate-600",
+        success: "text-emerald-700",
+        error: "text-red-700"
+      };
+      formStatus.className = `text-sm font-semibold ${classes[type] || classes.neutral}`;
+      formStatus.textContent = text;
+    }
+
+    function fileToDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error("Erro ao ler imagem."));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function renderCustomExtras() {
+      customExtrasList.innerHTML = "";
+      customExtras.forEach((extra, index) => {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 hover:bg-slate-100";
+        chip.innerHTML = `<span>${extra}</span><span aria-hidden="true">x</span>`;
+        chip.addEventListener("click", () => {
+          customExtras.splice(index, 1);
+          renderCustomExtras();
+          syncExtrasHidden();
+        });
+        customExtrasList.appendChild(chip);
+      });
+    }
+
+    function syncExtrasHidden() {
+      extras.length = 0;
+      Array.from(form.querySelectorAll('input[name="carExtra"]:checked')).forEach((input) => {
+        if (!extras.includes(input.value)) extras.push(input.value);
+      });
+      customExtras.forEach((extra) => {
+        if (!extras.includes(extra)) extras.push(extra);
+      });
+      extrasHidden.value = JSON.stringify(extras);
+    }
+
+    function addCustomExtra() {
+      const value = String(extraInput.value || "").trim();
+      if (!value) return;
+      if (extras.includes(value) || customExtras.includes(value)) {
+        extraInput.value = "";
+        return;
+      }
+      customExtras.push(value);
+      extraInput.value = "";
+      renderCustomExtras();
+      syncExtrasHidden();
+    }
+
+    function renderExtrasOptions() {
+      extrasCheckboxGrid.innerHTML = "";
+      EXTRA_GROUPS.forEach((group) => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "rounded-xl border border-slate-200 overflow-hidden";
+
+        const heading = document.createElement("h3");
+        heading.className = "bg-slate-100 px-4 py-3 text-sm font-bold text-slate-800";
+        heading.textContent = group.title;
+
+        const grid = document.createElement("div");
+        grid.className = "grid grid-cols-1 md:grid-cols-2 gap-3 p-3";
+
+        group.options.forEach((option) => {
+          const label = document.createElement("label");
+          label.className = "flex min-h-11 items-center gap-3 rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 hover:border-sky-300 hover:bg-sky-50";
+
+          const input = document.createElement("input");
+          input.type = "checkbox";
+          input.name = "carExtra";
+          input.value = option;
+          input.className = "h-4 w-4 rounded border-sky-500 text-sky-600 focus:ring-sky-500";
+          input.addEventListener("change", syncExtrasHidden);
+
+          const text = document.createElement("span");
+          text.textContent = option;
+
+          label.appendChild(input);
+          label.appendChild(text);
+          grid.appendChild(label);
+        });
+
+        wrapper.appendChild(heading);
+        wrapper.appendChild(grid);
+        extrasCheckboxGrid.appendChild(wrapper);
+      });
+      syncExtrasHidden();
+    }
+
+    function syncExtras(values) {
+      const selected = new Set(
+        (Array.isArray(values) ? values : [])
+          .map((value) => String(value || "").trim())
+          .filter(Boolean)
+      );
+      Array.from(form.querySelectorAll('input[name="carExtra"]')).forEach((input) => {
+        input.checked = selected.has(input.value);
+      });
+      customExtras.length = 0;
+      selected.forEach((value) => {
+        const existsInCatalog = EXTRA_GROUPS.some((group) => group.options.includes(value));
+        if (!existsInCatalog && !customExtras.includes(value)) customExtras.push(value);
+      });
+      renderCustomExtras();
+      syncExtrasHidden();
+    }
+
+    function renderExistingImages(urls) {
+      selectedImageFiles = [];
+      selectedImportedImageUrls = Array.isArray(urls) ? urls.filter(Boolean) : [];
+      isManagingImportedImages = true;
+      renderSelectedImages();
+    }
+
+    function moveSelectedImage(fromIndex, toIndex) {
+      const selectedImages = isManagingImportedImages ? selectedImportedImageUrls : selectedImageFiles;
+      if (
+        fromIndex === toIndex ||
+        fromIndex < 0 ||
+        toIndex < 0 ||
+        fromIndex >= selectedImages.length ||
+        toIndex >= selectedImages.length
+      ) return;
+
+      const [movedImage] = selectedImages.splice(fromIndex, 1);
+      selectedImages.splice(toIndex, 0, movedImage);
+      renderSelectedImages();
+    }
+
+    function removeSelectedImage(index) {
+      const selectedImages = isManagingImportedImages ? selectedImportedImageUrls : selectedImageFiles;
+      if (index < 0 || index >= selectedImages.length) return;
+      selectedImages.splice(index, 1);
+      renderSelectedImages();
+    }
+
+    function renderSelectedImages() {
+      previewGrid.innerHTML = "";
+      const selectedImages = isManagingImportedImages ? selectedImportedImageUrls : selectedImageFiles;
+
+      if (selectedImages.length === 0) {
+        selectedImagesLabel.textContent = isManagingImportedImages ? "Nenhuma imagem importada selecionada" : "Nenhum ficheiro selecionado";
+        return;
+      }
+
+      selectedImagesLabel.textContent = isManagingImportedImages
+        ? `${selectedImages.length} imagem(ns) selecionada(s)`
+        : (selectedImages.length === 1 ? selectedImages[0].name : `${selectedImages.length} ficheiros selecionados`);
+
+      selectedImages.forEach((image, index) => {
+        const imageName = isManagingImportedImages ? `Imagem ${index + 1}` : image.name;
+        const wrapper = document.createElement("div");
+        wrapper.className = "group overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm cursor-grab active:cursor-grabbing";
+        wrapper.draggable = true;
+        wrapper.dataset.imageIndex = String(index);
+
+        wrapper.addEventListener("dragstart", (event) => {
+          draggedImageIndex = index;
+          wrapper.classList.add("opacity-50");
+          event.dataTransfer.effectAllowed = "move";
+          event.dataTransfer.setData("text/plain", String(index));
+        });
+        wrapper.addEventListener("dragend", () => {
+          draggedImageIndex = null;
+          wrapper.classList.remove("opacity-50");
+          Array.from(previewGrid.children).forEach((item) => item.classList.remove("ring-2", "ring-emerald-500"));
+        });
+        wrapper.addEventListener("dragover", (event) => {
+          event.preventDefault();
+          event.dataTransfer.dropEffect = "move";
+          wrapper.classList.add("ring-2", "ring-emerald-500");
+        });
+        wrapper.addEventListener("dragleave", () => {
+          wrapper.classList.remove("ring-2", "ring-emerald-500");
+        });
+        wrapper.addEventListener("drop", (event) => {
+          event.preventDefault();
+          wrapper.classList.remove("ring-2", "ring-emerald-500");
+          const fromIndex = draggedImageIndex ?? Number(event.dataTransfer.getData("text/plain"));
+          moveSelectedImage(fromIndex, index);
+        });
+
+        const imageWrap = document.createElement("div");
+        imageWrap.className = "relative";
+
+        const img = document.createElement("img");
+        img.className = "h-28 w-full object-cover pointer-events-none";
+        img.src = isManagingImportedImages ? image : URL.createObjectURL(image);
+        img.alt = `${index + 1}. ${imageName}`;
+        if (!isManagingImportedImages) img.onload = () => URL.revokeObjectURL(img.src);
+
+        const orderBadge = document.createElement("span");
+        orderBadge.className = "absolute left-2 top-2 rounded-full bg-slate-900/85 px-2 py-1 text-xs font-bold text-white";
+        orderBadge.textContent = index === 0 ? "1 Â· Capa" : String(index + 1);
+
+        const controls = document.createElement("div");
+        controls.className = "flex items-center justify-between gap-2 p-2";
+
+        const label = document.createElement("p");
+        label.className = "min-w-0 flex-1 truncate text-xs text-slate-600";
+        label.textContent = imageName;
+
+        const buttons = document.createElement("div");
+        buttons.className = "flex shrink-0 gap-1";
+
+        const previousButton = document.createElement("button");
+        previousButton.type = "button";
+        previousButton.className = "rounded-md border border-slate-200 px-2 py-1 text-sm font-bold text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-30";
+        previousButton.textContent = "â†";
+        previousButton.disabled = index === 0;
+        previousButton.setAttribute("aria-label", `Mover ${imageName} para trÃ¡s`);
+        previousButton.addEventListener("click", () => moveSelectedImage(index, index - 1));
+
+        const nextButton = document.createElement("button");
+        nextButton.type = "button";
+        nextButton.className = previousButton.className;
+        nextButton.textContent = "â†’";
+        nextButton.disabled = index === selectedImages.length - 1;
+        nextButton.setAttribute("aria-label", `Mover ${imageName} para a frente`);
+        nextButton.addEventListener("click", () => moveSelectedImage(index, index + 1));
+
+        const removeButton = document.createElement("button");
+        removeButton.type = "button";
+        removeButton.className = "rounded-md border border-red-200 px-2 py-1 text-sm font-bold text-red-700 hover:bg-red-50";
+        removeButton.textContent = "Ã—";
+        removeButton.title = "Eliminar imagem";
+        removeButton.setAttribute("aria-label", `Eliminar ${imageName}`);
+        removeButton.addEventListener("click", () => removeSelectedImage(index));
+
+        buttons.appendChild(previousButton);
+        buttons.appendChild(nextButton);
+        buttons.appendChild(removeButton);
+        controls.appendChild(label);
+        controls.appendChild(buttons);
+        imageWrap.appendChild(img);
+        imageWrap.appendChild(orderBadge);
+        wrapper.appendChild(imageWrap);
+        wrapper.appendChild(controls);
+        previewGrid.appendChild(wrapper);
+      });
+    }
+
+    function populateForm(car, options = {}) {
+      form.elements.title.value = car.title || "";
+      form.elements.brand.value = car.brand || "";
+      form.elements.model.value = car.model || "";
+      form.elements.registrationDate.value = car.registration_date || "";
+      form.elements.mileage.value = car.mileage ?? "";
+      form.elements.fuel.value = car.fuel || "";
+      form.elements.price.value = car.price_eur ?? "";
+      form.elements.observations.value = car.observations || "";
+      form.elements.seats.value = Number(car.seats) > 0 ? car.seats : "";
+      form.elements.segment.value = car.segment || "";
+      form.elements.power.value = car.power || "";
+      form.elements.origin.value = car.origin || "";
+      form.elements.engineDisplacement.value = car.engine_displacement || "";
+      form.elements.transmission.value = car.transmission || "";
+      form.elements.color.value = car.color || "";
+      form.elements.doors.value = Number(car.doors) > 0 ? car.doors : "";
+      form.elements.condition.value = car.condition || "";
+      form.elements.warranty.value = car.warranty || "";
+
+      syncExtras(car.extras);
+      Array.from(form.querySelectorAll('input[name="listingCategory"]')).forEach((input) => {
+        input.checked = Array.isArray(car.categories) && car.categories.includes(input.value);
+      });
+      if (options.manageImportedImages) {
+        selectedImageFiles = [];
+        imageInput.value = "";
+        selectedImportedImageUrls = Array.isArray(car.image_urls) ? car.image_urls.filter(Boolean) : [];
+        isManagingImportedImages = true;
+        renderSelectedImages();
+      } else {
+        isManagingImportedImages = false;
+        renderExistingImages(car.image_urls);
+      }
+    }
+
+    function populateFromPreview(car) {
+      const currentTitle = String(form.elements.title.value || "").trim();
+      populateForm(car, { manageImportedImages: true });
+      if (currentTitle) {
+        form.elements.title.value = currentTitle;
+      }
+    }
+
+    async function buildFormPayload() {
+      const data = Object.fromEntries(new FormData(form).entries());
+      const files = [...selectedImageFiles];
+      const orderedImageUrls = isManagingImportedImages ? [...selectedImportedImageUrls] : undefined;
+      const selectedCategories = Array.from(
+        form.querySelectorAll('input[name="listingCategory"]:checked')
+      ).map((item) => item.value);
+      const mergedExtras = [...extras];
+      const images = await Promise.all(
+        files.map(async (file) => ({
+          fileName: file.name,
+          base64DataUrl: await fileToDataUrl(file)
+        }))
+      );
+
+      return {
+        car: {
+          title: data.title,
+          brand: data.brand,
+          model: data.model,
+          registration_date: data.registrationDate,
+          mileage: Number(data.mileage),
+          fuel: data.fuel,
+          price_eur: Number(data.price),
+          observations: data.observations || null,
+          seats: Number(data.seats) > 0 ? Number(data.seats) : null,
+          segment: data.segment || null,
+          power: data.power || null,
+          origin: data.origin || null,
+          engine_displacement: data.engineDisplacement || null,
+          transmission: data.transmission || null,
+          color: data.color || null,
+          doors: Number(data.doors) > 0 ? Number(data.doors) : null,
+          condition: data.condition || null,
+          warranty: data.warranty || null,
+          extras: mergedExtras,
+          image_urls: orderedImageUrls
+        },
+        categories: selectedCategories,
+        images,
+        existingImageUrls: orderedImageUrls,
+        remoteImageUrls: sourceUrlInput.dataset.previewLoaded === "1" ? [...selectedImportedImageUrls] : undefined
+      };
+    }
+
+    chooseImagesBtn.addEventListener("click", () => {
+      imageInput.click();
+    });
+
+    addExtraBtn.addEventListener("click", addCustomExtra);
+
+    extraInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        addCustomExtra();
+      }
+    });
+
+    imageInput.addEventListener("change", () => {
+      selectedImageFiles = Array.from(imageInput.files || []);
+      isManagingImportedImages = false;
+      imageInput.value = "";
+      renderSelectedImages();
+    });
+
+    form.addEventListener("reset", () => {
+      setTimeout(syncExtras, 0, []);
+      extraInput.value = "";
+      selectedImageFiles = [];
+      selectedImportedImageUrls = [];
+      isManagingImportedImages = false;
+      previewGrid.innerHTML = "";
+      selectedImagesLabel.textContent = isEditing ? "MantÃ©m as imagens atuais atÃ© gravares novas" : "Nenhum ficheiro selecionado";
+      setFormStatus("");
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const linkValue = sourceUrlInput.value.trim();
+      if (linkValue && !isEditing && sourceUrlInput.dataset.previewLoaded !== "1") {
+        await importFromUrl();
+        return;
+      }
+
+      const requiredFields = Array.from(form.querySelectorAll("[data-manual-required='true']"));
+      for (const field of requiredFields) {
+        const value = String(field.value || "").trim();
+        if (!value) {
+          setFormStatus("Preenche os campos obrigatÃ³rios ou usa um link para importaÃ§Ã£o automÃ¡tica.", "error");
+          field.focus();
+          return;
+        }
+      }
+
+      const selectedCategoriesForValidation = Array.from(
+        form.querySelectorAll('input[name="listingCategory"]:checked')
+      ).map((item) => item.value);
+      if (selectedCategoriesForValidation.length === 0) {
+        setFormStatus("Seleciona pelo menos uma categoria.", "error");
+        return;
+      }
+
+      if (extras.length === 0) {
+        setFormStatus("Seleciona pelo menos um extra.", "error");
+        extrasCheckboxGrid.focus();
+        return;
+      }
+
+      const hasSelectedImages = selectedImageFiles.length > 0;
+      const hasImportedPreviewImages = Boolean(
+        linkValue && sourceUrlInput.dataset.previewLoaded === "1" && selectedImportedImageUrls.length > 0
+      );
+      if (!hasSelectedImages && !hasImportedPreviewImages && !isEditing) {
+        setFormStatus("Adiciona pelo menos uma imagem.", "error");
+        return;
+      }
+
+      setFormStatus(isEditing ? "A guardar alteraÃ§Ãµes..." : "A importar carro...");
+
+      const allowed = await requireAdminAccess();
+      if (!allowed) return;
+
+      const sessionRaw = localStorage.getItem("autenticar_session_v1");
+      if (!sessionRaw) {
+        setFormStatus("SessÃ£o nÃ£o encontrada. Faz login primeiro.", "error");
+        return;
+      }
+
+      let session;
+      try {
+        session = JSON.parse(sessionRaw);
+      } catch {
+        setFormStatus("SessÃ£o invÃ¡lida. Faz login novamente.", "error");
+        return;
+      }
+
+      if (!session?.access_token) {
+        setFormStatus("SessÃ£o invÃ¡lida. Faz login novamente.", "error");
+        return;
+      }
+
+      try {
+        const payload = await buildFormPayload();
+        const selectedCategories = payload.categories;
+        const endpoint = isEditing
+          ? `/api/admin/cars/${encodeURIComponent(editingCarId)}`
+          : (linkValue ? "/api/admin/import-from-url" : "/api/admin/import-car");
+        const response = await apiFetch(endpoint, {
+          method: isEditing ? "PUT" : "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`
+          },
+          body: JSON.stringify(linkValue && !isEditing ? { url: linkValue, ...payload } : payload)
+        });
+
+        const result = await readApiResponse(response);
+
+        if (!response.ok || !result.ok) {
+          setFormStatus(result.message || (isEditing ? "Erro ao guardar carro." : "Erro ao importar carro."), "error");
+          return;
+        }
+
+        setFormStatus(isEditing ? "Carro atualizado com sucesso." : "Carro importado com sucesso.", "success");
+        if (isEditing) {
+          populateForm({ ...payload.car, categories: selectedCategories, image_urls: result.car?.image_urls || [] });
+          selectedImageFiles = [];
+          imageInput.value = "";
+        } else {
+          form.reset();
+        }
+      } catch (_error) {
+        setFormStatus("Erro de ligaÃ§Ã£o ao servidor.", "error");
+      }
+    });
+
+    async function importFromUrl() {
+      const url = sourceUrlInput.value.trim();
+      if (!url) return;
+      if (sourceUrlInput.dataset.loading === "1") return;
+      sourceUrlInput.dataset.loading = "1";
+
+      let parsedUrl;
+      try {
+        parsedUrl = new URL(url);
+      } catch (_error) {
+        parsedUrl = null;
+      }
+      const host = parsedUrl?.hostname?.toLowerCase() || "";
+      const path = parsedUrl?.pathname || "";
+      const isAutenticarUrl = (host === "autenticar.pt" || host === "www.autenticar.pt") && path.includes("/viaturas/");
+      const isAlonsoUrl = host === "viaturas.alonsosebranco.pt" && /^\/carros\/.+\/\d+\/?$/.test(path);
+      if (!isAutenticarUrl && !isAlonsoUrl) {
+        setFormStatus("URL invÃ¡lido. Usa um link de viatura da autenticar.pt ou viaturas.alonsosebranco.pt.", "error");
+        sourceUrlInput.dataset.previewLoaded = "0";
+        sourceUrlInput.dataset.loading = "0";
+        return;
+      }
+
+      if (isAutenticarUrl && !apiBase) {
+        setFormStatus("Importação automática de autenticar.pt precisa do backend. Em modo estático, adiciona o carro manualmente ou usa viaturas.alonsosebranco.pt.", "error");
+        sourceUrlInput.dataset.previewLoaded = "0";
+        sourceUrlInput.dataset.loading = "0";
+        return;
+      }
+      setFormStatus("A ler dados do link...");
+      const allowed = await requireAdminAccess();
+      if (!allowed) {
+        sourceUrlInput.dataset.loading = "0";
+        return;
+      }
+
+      const sessionRaw = localStorage.getItem("autenticar_session_v1");
+      const session = JSON.parse(sessionRaw || "{}");
+
+      try {
+        const response = await apiFetch("/api/admin/preview-import-from-url", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`
+          },
+          body: JSON.stringify({ url })
+        });
+        const result = await readApiResponse(response);
+        if (!response.ok || !result.ok || !result.car) {
+          setFormStatus(result.message || "Falha ao ler o link.", "error");
+          sourceUrlInput.dataset.previewLoaded = "0";
+          sourceUrlInput.dataset.loading = "0";
+          return;
+        }
+        populateFromPreview(result.car);
+        sourceUrlInput.dataset.previewLoaded = "1";
+        setFormStatus("Dados carregados do link. RevÃª o formulÃ¡rio e grava quando estiver tudo certo.", "success");
+        sourceUrlInput.dataset.loading = "0";
+      } catch {
+        setFormStatus("Erro de ligaÃ§Ã£o ao servidor.", "error");
+        sourceUrlInput.dataset.previewLoaded = "0";
+        sourceUrlInput.dataset.loading = "0";
+      }
+    }
+
+    async function loadCarForEditing() {
+      if (!isEditing) return;
+
+      setFormStatus("A carregar dados do carro...");
+      try {
+        const response = await apiFetch(`/api/cars/${encodeURIComponent(editingCarId)}`);
+        const result = await readApiResponse(response);
+        if (!response.ok || !result.ok || !result.car) {
+          setFormStatus(result.message || "NÃ£o foi possÃ­vel carregar o carro.", "error");
+          return;
+        }
+
+        populateForm(result.car);
+        setFormStatus("Podes editar os dados e guardar.", "neutral");
+      } catch {
+        setFormStatus("Erro de ligaÃ§Ã£o ao servidor.", "error");
+      }
+    }
+
+    sourceUrlInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        importFromUrl();
+      }
+    });
+
+    sourceUrlInput.addEventListener("input", () => {
+      sourceUrlInput.dataset.previewLoaded = "0";
+      selectedImportedImageUrls = [];
+      if (isManagingImportedImages) renderSelectedImages();
+    });
+
+    requireAdminAccess().then((allowed) => {
+      if (!allowed) return;
+      renderExtrasOptions();
+      if (isEditing) {
+        loadCarForEditing();
+      }
+    });
+  </script>
+</body>
+</html>
+
+
+

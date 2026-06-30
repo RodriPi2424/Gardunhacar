@@ -1,0 +1,14 @@
+UPLOAD THIS ZIP INTO public_html
+===============================
+
+Extract the contents directly inside public_html.
+
+This is the static version:
+- No Node.js required
+- No npm install required
+- Includes .htaccess clean URL rules
+- Includes favicon/app icon files
+- Manual admin add/edit cars uses Supabase browser fallback
+
+Note:
+Automatic import from autenticar.pt listing links requires backend scraping and is not available in static-only hosting.
