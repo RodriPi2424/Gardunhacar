@@ -20,4 +20,4 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./public/
-          server-dir: /home/wk7402ax/rpinto-242520.store/
+          server-dir: /home/wk7402ax/rpinto-2424520.store/
